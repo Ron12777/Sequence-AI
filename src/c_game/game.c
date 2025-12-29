@@ -651,7 +651,7 @@ static PyObject* CMCTS_select_leaf(CMCTS* self, PyObject* Py_UNUSED(ignored)) {
         if (v == EMPTY) buffer[300 + i] = 1.0f;
     }
     
-    return Py_BuildValue("NOfi", capsule, PyBytes_FromStringAndSize((char*)buffer, sizeof(buffer)), 0.0f, 0);
+    return Py_BuildValue("NNfi", capsule, PyBytes_FromStringAndSize((char*)buffer, sizeof(buffer)), 0.0f, 0);
 }
 
 static PyObject* CMCTS_backpropagate(CMCTS* self, PyObject* args) {

@@ -86,47 +86,56 @@ def worker_process(worker_id: int,
             # Run simulations for all games until all have enough
             sim_counts = [0] * num_games
             
+            # BATCH SIZE for IPC - accumulate this many leaves before sending
+            IPC_BATCH_SIZE = 256
+            
+            # Accumulated leaves waiting for inference
+            pending_leaves = []  # (game_idx, leaf_node)
+            pending_tensors = []  # numpy arrays
+            
             while True:
                 # Find games needing more simulations
                 active = [i for i in range(num_games) if sim_counts[i] < simulations]
                 if not active:
+                    # Flush remaining pending leaves
+                    if pending_leaves:
+                        batch_np = np.stack(pending_tensors)
+                        request_queue.put((worker_id, batch_np))
+                        policies_np, values_np = result_queue.get()
+                        
+                        for k, (i, leaf) in enumerate(pending_leaves):
+                            p_bytes = policies_np[k].astype(np.float32).tobytes()
+                            v = float(values_np[k])
+                            mcts_list[i].backpropagate(leaf, p_bytes, v)
+                            sim_counts[i] += 1
+                        pending_leaves = []
+                        pending_tensors = []
                     break
                 
-                # Batch select_leaf for all active games
-                leaves = []
-                tensors = []
-                terminals = []
-                
+                # Select leaf for each active game
                 for i in active:
                     leaf, tensor_bytes, is_terminal, value = mcts_list[i].select_leaf()
                     if is_terminal:
-                        terminals.append((i, leaf, value))
+                        mcts_list[i].backpropagate(leaf, b'', value)
+                        sim_counts[i] += 1
                     else:
                         tensor = np.frombuffer(tensor_bytes, dtype=np.float32).reshape(8, 10, 10)
-                        leaves.append((i, leaf))
-                        tensors.append(tensor)
+                        pending_leaves.append((i, leaf))
+                        pending_tensors.append(tensor)
                 
-                # Handle terminals locally
-                for (i, leaf, val) in terminals:
-                    mcts_list[i].backpropagate(leaf, b'', val)
-                    sim_counts[i] += 1
-                
-                # Send batch for inference if we have non-terminals
-                if tensors:
-                    batch_np = np.stack(tensors)
-                    
-                    # Send to server: (worker_id, batch_numpy)
+                # If we have enough pending, do IPC
+                if len(pending_leaves) >= IPC_BATCH_SIZE:
+                    batch_np = np.stack(pending_tensors)
                     request_queue.put((worker_id, batch_np))
-                    
-                    # Wait for results
                     policies_np, values_np = result_queue.get()
                     
-                    # Backpropagate results
-                    for k, (i, leaf) in enumerate(leaves):
+                    for k, (i, leaf) in enumerate(pending_leaves):
                         p_bytes = policies_np[k].astype(np.float32).tobytes()
                         v = float(values_np[k])
                         mcts_list[i].backpropagate(leaf, p_bytes, v)
                         sim_counts[i] += 1
+                    pending_leaves = []
+                    pending_tensors = []
             
             # All simulations done - make moves for all games
             for i in range(num_games):
@@ -143,9 +152,9 @@ def worker_process(worker_id: int,
                 card_int, r, c, is_rem, policy_bytes = res
                 policy = np.frombuffer(policy_bytes, dtype=np.float32).copy()
                 
-                # Store state
-                state_tensor = games[i].get_state_tensor(games[i].current_player)
-                game_histories[i].append((state_tensor, policy, games[i].current_player))
+                # Store state (as numpy to avoid SHM leak)
+                state_np = games[i].get_state_numpy(games[i].current_player)
+                game_histories[i].append((state_np, policy, games[i].current_player))
                 
                 # Apply move
                 move = Move(card=Card.from_int(card_int), row=r, col=c, is_removal=(is_rem != 0))

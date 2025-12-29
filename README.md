@@ -6,42 +6,16 @@ An AlphaZero-style AI for the board game **Sequence**, optimized for massive thr
 
 *   **Core Engine:** C-based implementation (`src/c_game/`) for lightning-fast game logic and MCTS simulation.
 *   **Neural Network:** ResNet-based policy/value network (PyTorch).
-*   **Training:** High-throughput "Micro-Batching" architecture.
-    *   **Grace CPU (72 cores):** Runs thousands of concurrent lightweight C-threads for self-play.
-    *   **Hopper GPU (H100):** Consumes massive batches (up to 16k states) for inference.
-    *   **Lock-Free RNG:** Custom Xorshift RNG in C to bypass the Global Interpreter Lock (GIL) and standard C library locks.
-
-## 🚀 Option 1: One-Shot Installation (GH200 / Linux)
-
-Run these commands exactly on your fresh Ubuntu server to get everything running in < 2 minutes.
-
-```bash
-# 1. Update & Install System Deps
-sudo apt update && sudo apt install -y python3-pip python3-dev build-essential git
-
-# 2. Create Virtual Env
-python3 -m venv venv
-source venv/bin/activate
-
-# 3. Install PyTorch for GH200 (ARM64 + CUDA 12.4)
-pip uninstall -y torch torchvision torchaudio
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-
-# 4. Install Other Python Deps
-pip install numpy flask tensorboard
-
-# 5. Compile C Extension (Crucial for Speed)
-python setup.py build_ext --inplace
-
-# 6. Verify Installation (Should show "NVIDIA GH200 480GB")
-python -c "import torch; print(f'CUDA: {torch.cuda.is_available()} | Device: {torch.cuda.get_device_name(0)}'); import c_sequence; print('C-Engine: Loaded')"
-```
+*   **Training:** Multiprocessing architecture with batched GPU inference.
+    *   **Workers:** Multiple processes running MCTS simulations in parallel.
+    *   **GPU Server:** Batches inference requests from all workers for efficient GPU utilization.
+    *   **IPC Batching:** Workers accumulate 256+ states before IPC to minimize overhead.
 
 ---
 
-## 🐳 Option 2: Docker (NGC Container)
+## 🐳 Docker Setup (Recommended for GH200)
 
-Use NVIDIA's pre-built container for full `torch.compile()` support (Triton included).
+Use NVIDIA's NGC container for full `torch.compile()` support.
 
 ```bash
 # ============================================================
@@ -71,61 +45,89 @@ docker run --gpus all -it --rm \
 # INSIDE THE CONTAINER
 # ============================================================
 
-# 4. Install deps and build
+# 4. Install deps and build C extension
 pip install flask tensorboard
 python setup.py build_ext --inplace
 
-# 5. Verify
+# 5. Verify installation
 python -c "import torch; print(f'CUDA: {torch.cuda.is_available()} | Device: {torch.cuda.get_device_name(0)}'); import c_sequence; print('C OK')"
-
-# 6. Train (can use torch.compile now - no --no-compile needed)
-python -m src.train train \
-  --epochs 2000 \
-  --games-per-epoch 100 \
-  --simulations 30 \
-  --batch-size 128 \
-  --batch-size-inference 512 \
-  --buffer-size 50000 \
-  --train-steps 20 \
-  --lr 0.0005 \
-  --workers 14 \
-  --games-per-worker 16 \
-  --verbose
 ```
-
-> **Note:** GH200 has 72 physical cores but Docker exposes 64 vCPU. Use `workers=14, games-per-worker=16` = 224 concurrent games.
 
 ---
 
 ## 🏋️ Training Commands
 
-### 1. The "Baby Model" Test (10 Minutes)
-Use this to quickly verify the pipeline works and generate a playable (but weak) model.
+### Quick Test (5 minutes)
+Verify the pipeline works:
 ```bash
-python -m src.train train --epochs 5 --games-per-epoch 100 --train-steps 50 --simulations 50 --batch-size 256 --batch-size-inference 512 --workers 8 --games-per-worker 16 --buffer-size 10000 --verbose --fresh
+python -m src.train train \
+  --epochs 2 \
+  --games-per-epoch 20 \
+  --simulations 30 \
+  --workers 16 \
+  --games-per-worker 16 \
+  --verbose
 ```
 
-### 2. The "Sweet Spot" Run (5 Hours)
-Balanced for maximum improvement in a short session.
+### Standard Training (Sweet Spot)
+Optimal settings for GH200 (~0.5-0.7 games/s, 70% GPU):
 ```bash
-python -m src.train train --epochs 500 --games-per-epoch 200 --train-steps 100 --simulations 60 --batch-size 256 --batch-size-inference 1024 --workers 14 --games-per-worker 32 --buffer-size 100000 --verbose
+python -m src.train train \
+  --epochs 100 \
+  --games-per-epoch 100 \
+  --simulations 50 \
+  --workers 32 \
+  --games-per-worker 16 \
+  --batch-size 256 \
+  --buffer-size 50000 \
+  --verbose
 ```
 
-### 3. The "God Mode" Run (24+ Hours)
-Maximum depth and quality.
+### Long Training (Overnight)
+Maximum quality:
 ```bash
-python -m src.train train --epochs 5000 --games-per-epoch 500 --train-steps 200 --simulations 200 --batch-size 512 --batch-size-inference 2048 --workers 14 --games-per-worker 64 --buffer-size 500000 --verbose
+python -m src.train train \
+  --epochs 1000 \
+  --games-per-epoch 200 \
+  --simulations 100 \
+  --workers 32 \
+  --games-per-worker 16 \
+  --batch-size 256 \
+  --buffer-size 100000 \
+  --verbose
 ```
+
+### Performance Tuning
+
+| Workers | Games/Worker | Total Games | GPU Usage | Games/s |
+|---------|--------------|-------------|-----------|---------|
+| 8       | 64           | 512         | 40-50%    | ~0.35   |
+| 16      | 32           | 512         | 60%       | ~0.49   |
+| 32      | 16           | 512         | 70%       | ~0.55   |
+| 64      | 8            | 512         | 70%       | ~0.46   |
+
+**Sweet spot: 32 workers × 16 games** - best balance of GPU utilization and throughput.
+
+### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--workers` | 8 | Number of worker processes |
+| `--games-per-worker` | 64 | Games per worker |
+| `--simulations` | 50 | MCTS simulations per move |
+| `--batch-size` | 256 | Training batch size |
+| `--no-compile` | false | Disable torch.compile() |
+| `--fresh` | false | Start training from scratch |
 
 ---
 
 ## 📊 Monitoring
 
-View real-time loss curves on your laptop while the server trains.
+View real-time loss curves:
 
-1.  **On Server:**
+1.  **In Container:**
     ```bash
-    nohup tensorboard --logdir runs --port 6006 --bind_all > /dev/null 2>&1 &
+    tensorboard --logdir runs --port 6006 --bind_all &
     ```
 2.  **On Laptop (SSH Tunnel):**
     ```powershell
@@ -139,19 +141,21 @@ View real-time loss curves on your laptop while the server trains.
 
 1.  **Download Model:**
     ```powershell
-    scp ubuntu@<SERVER_IP>:~/Sequence/models/latest.pt ./models/
+    scp ubuntu@<SERVER_IP>:~/Sequence-Filesystem/Sequence/models/latest.pt ./models/
     ```
 
 2.  **Start Web Server:**
     ```bash
+    pip install flask
     python web/app.py
     ```
-3.  **Open Browser:**
-    Go to `http://localhost:5000`.
+3.  **Open Browser:** Go to `http://localhost:5000`
+
+---
 
 ## Project Structure
 
 *   `src/c_game/`: C source code for game logic and MCTS.
 *   `src/model.py`: PyTorch ResNet architecture.
-*   `src/train.py`: Main training loop (Multiprocessing + Async Inference).
+*   `src/train.py`: Multiprocessing training with batched GPU inference.
 *   `web/`: Flask web interface.

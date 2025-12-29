@@ -102,6 +102,10 @@ class FastSequenceGame:
                     
         return tensor
 
+    def get_state_numpy(self, player: int) -> np.ndarray:
+        """Alias for get_state_tensor since it already returns numpy."""
+        return self.get_state_tensor(player)
+
     def get_result(self, player: int) -> float:
         """Get game result from player's perspective."""
         if not self.game_over:
