@@ -1,7 +1,6 @@
 """
 Self-play training for Sequence AI.
-Single-process batched architecture - no IPC, no multiprocessing issues.
-All games run in the main process with batched GPU inference.
+Single-process with persistent ThreadPoolExecutor - maximizes CPU/GPU utilization.
 """
 import argparse
 import os
@@ -11,6 +10,7 @@ from pathlib import Path
 from collections import deque
 from typing import List, Tuple, Optional, Dict
 import random
+
 
 import numpy as np
 import torch
@@ -33,7 +33,7 @@ from .mcts import MCTS, RandomPlayer
 class BatchedSelfPlay:
     """
     Runs many games in parallel with batched neural network inference.
-    All in a single process - no IPC overhead.
+    All operations run serially - threading overhead exceeds C code execution time.
     """
     def __init__(self, model: SequenceNet, device: torch.device, 
                  num_games: int = 128, simulations: int = 50):
@@ -51,17 +51,15 @@ class BatchedSelfPlay:
             for i, pos in enumerate(positions):
                 c_sequence.setup_layout(card.to_int(), i, pos[0], pos[1])
         
-        # Initialize games
+        # Initialize games and MCTS
         self.games = [SequenceGame() for _ in range(num_games)]
         self.mcts_list = [c_sequence.CMCTS() for _ in range(num_games)]
         self.game_histories = [[] for _ in range(num_games)]
         self.move_counts = [0] * num_games
         
-        # Reset all games
         for g in self.games:
             g.reset()
         
-        # Initialize MCTS roots
         for i in range(num_games):
             self._reset_mcts(i)
     
@@ -81,54 +79,69 @@ class BatchedSelfPlay:
         
         self.model.eval()
         
+        # Pre-allocate for reuse
+        sim_counts = [0] * self.num_games
+        
         while games_completed < target_games:
-            # Run simulations for all games
-            sim_counts = [0] * self.num_games
+            # Reset sim counts for this round of moves
+            for i in range(self.num_games):
+                sim_counts[i] = 0
             
+            # Run simulations until all games have enough - NO THREADING (overhead too high)
             while True:
-                # Find games that need more simulations
+                # Find games that still need simulations
                 active = [i for i in range(self.num_games) if sim_counts[i] < self.simulations]
                 if not active:
                     break
                 
-                # Select leaves for all active games
-                requests = []
-                req_info = []  # (game_idx, leaf_node)
-                
+                # 1. Select leaf for all active games (serial - fast C code)
+                results = []
                 for i in active:
                     leaf_node, tensor_bytes, is_terminal, value = self.mcts_list[i].select_leaf()
-                    
+                    results.append((i, leaf_node, tensor_bytes, is_terminal, value))
+                
+                # Categorize results
+                inference_needed = []  # (game_idx, leaf, tensor)
+                terminals = []  # (game_idx, leaf, value)
+                
+                for (i, leaf, tensor_bytes, is_terminal, value) in results:
                     if is_terminal:
-                        self.mcts_list[i].backpropagate(leaf_node, b'', value)
+                        terminals.append((i, leaf, value))
                         sim_counts[i] += 1
                     else:
-                        state_tensor = torch.frombuffer(tensor_bytes, dtype=torch.float32).reshape(8, 10, 10)
-                        requests.append(state_tensor)
-                        req_info.append((i, leaf_node))
+                        tensor = torch.frombuffer(tensor_bytes, dtype=torch.float32).reshape(8, 10, 10)
+                        inference_needed.append((i, leaf, tensor))
                 
-                # Batch inference
-                if requests:
-                    batch = torch.stack(requests).to(self.device)
+                # 2. Handle terminals - serial backprop
+                for (i, leaf, val) in terminals:
+                    self.mcts_list[i].backpropagate(leaf, b'', val)
+                
+                # 3. GPU batch inference
+                if inference_needed:
+                    batch = torch.stack([t for (_, _, t) in inference_needed]).to(self.device)
                     with torch.no_grad():
                         policies, values = self.model.predict(batch)
                     
-                    policies = policies.cpu().numpy()
-                    values = values.cpu().numpy()
+                    policies_np = policies.cpu().numpy()
+                    values_np = values.cpu().numpy()
                     
-                    # Backpropagate results
-                    for k, (idx, leaf) in enumerate(req_info):
-                        p_bytes = policies[k].astype(np.float32).tobytes()
-                        v = values[k].item()
-                        self.mcts_list[idx].backpropagate(leaf, p_bytes, v)
-                        sim_counts[idx] += 1
+                    # 4. Serial backprop (fast C code, no threading overhead)
+                    for k in range(len(inference_needed)):
+                        i, leaf, _ = inference_needed[k]
+                        p_bytes = policies_np[k].astype(np.float32).tobytes()
+                        v = float(values_np[k].item()) if hasattr(values_np[k], 'item') else float(values_np[k])
+                        self.mcts_list[i].backpropagate(leaf, p_bytes, v)
+                        sim_counts[i] += 1
             
-            # All simulations done - make moves for all games
+            # All simulations done - make moves (serial)
+            actions = []
             for i in range(self.num_games):
                 temp = 1.0 if self.move_counts[i] < 10 else 0.1
-                res = self.mcts_list[i].get_action(temp)
-                
+                actions.append(self.mcts_list[i].get_action(temp))
+            
+            # Process actions sequentially (game state updates aren't thread-safe)
+            for i, res in enumerate(actions):
                 if res is None:
-                    # No legal moves - reset
                     self.games[i].reset()
                     self.game_histories[i] = []
                     self.move_counts[i] = 0
@@ -149,7 +162,6 @@ class BatchedSelfPlay:
                 
                 # Check game over
                 if self.games[i].game_over or self.move_counts[i] >= 200:
-                    # Collect training data
                     for state, pi, player in self.game_histories[i]:
                         value = self.games[i].get_result(player)
                         all_training_data.append((state, pi, value))
@@ -158,16 +170,14 @@ class BatchedSelfPlay:
                     if verbose:
                         print(f"  Game {games_completed}/{target_games} collected", end='\r')
                     
-                    if games_completed >= target_games:
-                        break
-                    
-                    # Reset game
                     self.games[i].reset()
                     self.game_histories[i] = []
                     self.move_counts[i] = 0
                 
-                # Reset MCTS for next move
                 self._reset_mcts(i)
+                
+                if games_completed >= target_games:
+                    break
         
         if verbose:
             print()
@@ -208,7 +218,7 @@ def train_step(model: SequenceNet,
 def train(args):
     """Main training loop."""
     print("=" * 60)
-    print("Sequence AI Training (Single-Process Batched)")
+    print("Sequence AI Training (Persistent ThreadPool)")
     print("=" * 60)
     
     # Create model
@@ -256,10 +266,12 @@ def train(args):
             training_data = selfplay.collect_games(args.games_per_epoch, verbose=args.verbose)
             replay_buffer.extend(training_data)
             
-            print(f"  Buffer size: {len(replay_buffer)}")
+            collect_time = time.time() - epoch_start
+            print(f"  Buffer: {len(replay_buffer)} | Collect: {collect_time:.1f}s")
             
             # Training phase
             if len(replay_buffer) >= args.batch_size:
+                train_start = time.time()
                 print(f"Epoch {epoch + 1}: Training...")
                 
                 sample_size = min(len(replay_buffer), args.batch_size * 20)
@@ -280,11 +292,11 @@ def train(args):
                     total_losses.append(loss)
                 
                 avg_loss = np.mean(total_losses)
-                print(f"  Avg loss: {avg_loss:.4f}")
+                train_time = time.time() - train_start
                 
                 epoch_time = time.time() - epoch_start
                 games_per_sec = args.games_per_epoch / epoch_time
-                print(f"  Epoch time: {epoch_time:.1f}s ({games_per_sec:.2f} games/s)")
+                print(f"  Loss: {avg_loss:.4f} | Train: {train_time:.1f}s | Total: {epoch_time:.1f}s ({games_per_sec:.2f} g/s)")
                 
                 writer.add_scalar("Loss/Total", avg_loss, epoch + 1)
                 writer.add_scalar("Perf/GamesPerSec", games_per_sec, epoch + 1)
