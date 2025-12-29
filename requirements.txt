@@ -1,0 +1,4 @@
+numpy
+flask
+tensorboard
+# Note: PyTorch should be installed manually via the command in README for hardware-specific optimization

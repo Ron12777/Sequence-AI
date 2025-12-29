@@ -1,0 +1,407 @@
+/* Sequence AI - Modern Theme */
+
+:root {
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252526;
+    --bg-panel: #2d2d2d;
+    --bg-board: #004d40; /* Deep green felt */
+    
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    
+    --accent-primary: #007acc;
+    --accent-hover: #005a9e;
+    
+    --player-color: #ef4444; /* Red chip */
+    --ai-color: #3b82f6;     /* Blue chip */
+    --free-color: #fbbf24;
+    
+    --card-white: #f5f5f5;
+    --card-text: #111;
+    --suit-red: #d32f2f;
+    --suit-black: #212121;
+    
+    --border-radius: 8px;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.game-container {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Side Panels */
+.side-panel {
+    flex: 0 0 250px;
+    background: var(--bg-panel);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel-section h3 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* Turn Indicator */
+.turn-indicator {
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.turn-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--player-color);
+    box-shadow: 0 0 8px var(--player-color);
+}
+
+.turn-indicator.ai-turn .turn-dot {
+    background: var(--ai-color);
+    box-shadow: 0 0 8px var(--ai-color);
+}
+
+/* Board */
+.board-container {
+    flex: 0 0 auto;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+    padding: 15px;
+    background: var(--bg-board);
+    border-radius: 16px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.2);
+    border: 8px solid #3e2723; /* Wood trim */
+}
+
+/* Board Cell (Card look) */
+.cell {
+    width: 54px;
+    height: 74px;
+    background: var(--card-white);
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.1s;
+    user-select: none;
+    padding: 4px;
+}
+
+.cell:hover {
+    transform: translateY(-2px) scale(1.05);
+    z-index: 50;
+}
+
+/* Card Content on Board */
+.cell-content {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.cell-rank {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.cell-suit {
+    font-size: 1.8rem;
+    margin-top: -5px;
+}
+
+/* Suit Colors */
+.cell.suit-red { color: var(--suit-red); }
+.cell.suit-black { color: var(--suit-black); }
+
+/* Special Cells (Corners/Free) */
+.cell.free-space {
+    background: #ffd700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Chips Overlay */
+.cell::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4), 
+                inset 0 2px 4px rgba(255,255,255,0.5),
+                inset 0 -2px 4px rgba(0,0,0,0.3);
+    z-index: 20;
+    pointer-events: none;
+}
+
+.cell.has-chip::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.cell.player-chip::after {
+    background: radial-gradient(circle at 30% 30%, #ff5252, #b71c1c);
+    border: 3px solid #7f0000;
+}
+
+.cell.ai-chip::after {
+    background: radial-gradient(circle at 30% 30%, #448aff, #0d47a1);
+    border: 3px solid #002171;
+}
+
+.cell.free-chip::after {
+    background: radial-gradient(circle at 30% 30%, #ffff8d, #f9a825);
+    border: 3px solid #c67100;
+    transform: translate(-50%, -50%) scale(0.7);
+}
+
+
+
+/* Highlights */
+.cell.valid-move {
+    box-shadow: 0 0 0 3px var(--accent-primary);
+}
+
+.cell.valid-move::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 122, 204, 0.1);
+    border-radius: 4px;
+}
+
+.cell.removal-target {
+    box-shadow: 0 0 0 3px #ef4444;
+}
+
+.cell.in-sequence::before {
+    content: '✕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 26px;
+    font-weight: 900;
+    z-index: 30;
+    pointer-events: none;
+    background: none;
+}
+
+.cell.player-chip.in-sequence::before {
+    color: #7f0000;
+}
+
+.cell.ai-chip.in-sequence::before {
+    color: #002171;
+}
+
+.cell.in-sequence {
+    z-index: 2;
+}
+
+
+/* Hand Container */
+.hand-container {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+    z-index: 50;
+    position: relative;
+}
+
+.hand {
+    display: flex;
+    padding: 10px;
+    /* Removed gap to allow negative margins to work predictably */
+}
+
+/* Hand Cards */
+.card {
+    width: 80px;
+    height: 110px;
+    background: var(--card-white);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    user-select: none;
+    margin-left: -20px; /* Overlap */
+}
+
+.card:first-child {
+    margin-left: 0;
+}
+
+.card:hover {
+    transform: translateY(-20px);
+    z-index: 100 !important; /* Ensure hovered card is always on top */
+    margin-right: 20px; /* Push neighbors away slightly */
+}
+
+.card:hover {
+    transform: translateY(-20px);
+    z-index: 10;
+}
+
+.card.selected {
+    transform: translateY(-30px);
+    box-shadow: 0 0 0 3px var(--accent-primary);
+    z-index: 20;
+}
+
+.card-top {
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
+    text-align: left;
+}
+
+.card-center {
+    font-size: 2.5rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.card-bottom {
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
+    transform: rotate(180deg);
+    text-align: left;
+}
+
+.card.suit-red { color: var(--suit-red); }
+.card.suit-black { color: var(--suit-black); }
+
+
+/* Controls */
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn.primary {
+    background: var(--accent-primary);
+    color: white;
+}
+
+.btn.primary:hover { background: var(--accent-hover); }
+
+.btn.secondary {
+    background: #444;
+    color: white;
+}
+
+.select-input {
+    padding: 8px;
+    border-radius: 4px;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    width: 100%;
+}
+
+/* Game Over */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.overlay.visible { display: flex; }
+
+.overlay-content {
+    background: var(--bg-panel);
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.overlay-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
