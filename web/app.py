@@ -9,6 +9,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from flask import Flask, jsonify, request, send_from_directory
 import torch
 import numpy as np
+import threading
+import time
 
 from src.game import SequenceGame, Move
 from src.cards import Card
@@ -23,7 +25,69 @@ game = None
 model = None
 device = None
 mcts = None
+mcts = None
 ai_player = 2  # AI plays as player 2 by default
+
+# Async AI Status
+ai_status_lock = threading.Lock()
+ai_status = {
+    'thinking': False,
+    'simulations': 0,
+    'top_moves': [] 
+}
+
+def process_policy(policy):
+    """
+    Convert raw 100-dim policy to list of top moves.
+    Filters to return only 'significant' moves (e.g. > 50% of top score)
+    to avoid cluttering the UI with low-probability noise.
+    """
+    top_moves = []
+    if policy is not None and len(policy) > 0:
+        # Policy is 100-dim array (board positions)
+        indices = np.argsort(policy)[::-1]
+        
+        best_score = float(policy[indices[0]]) if len(indices) > 0 else 0
+        
+        for idx in indices:
+            score = float(policy[idx])
+            # Visualization threshold:
+            # 1. Must be at least 1% probability
+            # 2. Must be at least 30% of the best move's score (adaptive filtering)
+            if score < 0.01: break
+            if score < (best_score * 0.3): break 
+            
+            top_moves.append({
+                'row': int(idx // 10),
+                'col': int(idx % 10),
+                'score': score
+            })
+            
+            # Limit to max 5 visuals to prevent overload
+            if len(top_moves) >= 5: break
+            
+    return top_moves
+
+def mcts_progress_callback(mcts_conn, sims):
+    """Callback from MCTS to update global status."""
+    global ai_status
+    try:
+        # Get current policy estimate
+        # Note: Temperature 1.0 is standard for policy viewing
+        # cmcts.get_action returns: (card, row, col, is_rem, policy_bytes)
+        if mcts_conn.cmcts:
+            _, _, _, _, policy_bytes = mcts_conn.cmcts.get_action(1.0)
+            if policy_bytes:
+                policy = np.frombuffer(policy_bytes, dtype=np.float32)
+                top_moves = process_policy(policy)
+                
+                with ai_status_lock:
+                    ai_status['simulations'] = sims
+                    ai_status['top_moves'] = top_moves
+                    ai_status['thinking'] = True
+    except Exception as e:
+        print(f"Error in progress callback: {e}")
+
 
 
 def init_ai():
@@ -48,12 +112,15 @@ def init_ai():
     else:
         print("No trained model found, using untrained network")
     
-    mcts = MCTS(model, device, num_simulations=50, temperature=0.5)
+    mcts = MCTS(model, device, num_simulations=50, temperature=0)  # temperature=0 for greedy (deterministic)
     print(f"AI initialized on {device}")
 
 
 def make_ai_move_internal(player_id, simulations=None):
     """Make AI move for the specified player and return the move details."""
+    global game
+    initial_game_state = game
+    
     print(f"AI thinking for Player {player_id}... (Simulations: {simulations})")
     if mcts is None:
         print("MCTS is None, using greedy")
@@ -63,14 +130,32 @@ def make_ai_move_internal(player_id, simulations=None):
     else:
         try:
             print(f"Starting MCTS search (Player {player_id})...")
-            move, policy = mcts.search(game, player_id, simulations=simulations)
+            
+            # Reset status
+            with ai_status_lock:
+                ai_status['thinking'] = True
+                ai_status['simulations'] = 0
+                ai_status['top_moves'] = []
+            
+            move, policy = mcts.search(game, player_id, simulations=simulations, progress_callback=mcts_progress_callback)
+            
+            with ai_status_lock:
+                ai_status['thinking'] = False
+
             print(f"MCTS returned move: {move}")
         except Exception as e:
+            with ai_status_lock:
+                ai_status['thinking'] = False
             print(f"MCTS Error: {e}")
             import traceback
             traceback.print_exc()
             return None
     
+    # Check if game has changed (New Game clicked during thinking)
+    if game is not initial_game_state:
+        print("Game instance changed during AI thinking - aborting status update")
+        return None
+
     if move and game.make_move(move):
         print(f"AI made move: {move}")
         
@@ -86,19 +171,7 @@ def make_ai_move_internal(player_id, simulations=None):
         })
         
         # Process policy for visualization
-        top_moves = []
-        if 'policy' in locals() and policy is not None and len(policy) > 0:
-            # Policy is 100-dim array (board positions)
-            # Filter zero/low probs and sort
-            indices = np.argsort(policy)[::-1]
-            for idx in indices:
-                score = float(policy[idx])
-                if score < 0.01: break
-                top_moves.append({
-                    'row': int(idx // 10),
-                    'col': int(idx % 10),
-                    'score': score
-                })
+        top_moves = process_policy(policy)
         
         return {
             'card': str(move.card),
@@ -117,6 +190,12 @@ def index():
     return send_from_directory('static', 'index.html')
 
 
+@app.route('/api/ai_status')
+def get_ai_status():
+    """Get current AI thinking status."""
+    with ai_status_lock:
+        return jsonify(ai_status)
+
 @app.route('/static/<path:path>')
 def serve_static(path):
     """Serve static files."""
@@ -126,7 +205,13 @@ def serve_static(path):
 @app.route('/api/new_game', methods=['POST'])
 def new_game():
     """Start a new game."""
-    global game, ai_player
+    global game, ai_player, ai_status
+    
+    # Reset AI status immediately to stop stale polling data
+    with ai_status_lock:
+        ai_status['thinking'] = False
+        ai_status['simulations'] = 0
+        ai_status['top_moves'] = []
     
     data = request.get_json() or {}
     ai_player = data.get('ai_player', 2)
@@ -195,7 +280,8 @@ def get_game_state():
             1: [str(c) for c in game.hands.get(1, [])],
             2: [str(c) for c in game.hands.get(2, [])]
         },
-        'history': getattr(game, 'move_history_log', [])
+        'history': getattr(game, 'move_history_log', []),
+        'game_id': getattr(game, 'id', None)
     }
 
 

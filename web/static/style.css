@@ -443,7 +443,7 @@ body {
     padding: 15px;
     border-radius: 8px;
     min-width: 120px;
-    min-height: 400px;
+    /* Removed max-height/overflow to allow growing */
 }
 
 .hand-vertical h3 {
@@ -458,7 +458,7 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    /* Allow overlap */
+    /* Allow natural height */
 }
 
 /* Update Card Styles for Vertical Stack */
@@ -466,6 +466,11 @@ body {
     margin-left: 0;
     margin-bottom: -60px;
     /* Vertical Overlap */
+}
+
+/* Ensure last card takes full height in flow */
+.card-stack .card:last-child {
+    margin-bottom: 0;
 }
 
 .card-stack .card:hover {
@@ -479,39 +484,59 @@ body {
 }
 
 /* AI Top Move Highlights */
-.cell.top-move {
-    position: relative;
-    z-index: 40;
-}
-
-.cell.top-move::after {
-    content: '';
+/* AI Top Move Highlights (Glowing Orb) */
+.move-highlight {
     position: absolute;
-    inset: 4px;
-    border-radius: 4px;
-    /* Square highlight inside cell */
-    border: 3px solid #ffd700;
-    box-shadow: 0 0 10px #ffd700;
-    opacity: var(--move-score, 0.5);
-    /* Dynamic opacity */
-    animation: pulse 1.5s infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    /* Aspect ratio hack to ensure circle */
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    /* Stronger gradient: starts solid, fades out */
+    background: radial-gradient(circle, var(--highlight-color) 20%, rgba(0, 0, 0, 0) 80%);
+    pointer-events: none;
+    z-index: 5;
+    /* Smooth transition for position and size */
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    opacity: 0.9;
+    box-shadow: 0 0 20px var(--highlight-color);
 }
 
-@keyframes pulse {
-    0% {
-        transform: scale(0.95);
-        opacity: 0.5;
-    }
+/* Special Gold Glow for Best Move */
+.move-highlight.best-move {
+    /* Bright gold color overlap */
+    --highlight-color: #ffd700 !important;
+    background: radial-gradient(circle, #ffd700 40%, rgba(0, 0, 0, 0) 60%);
+    box-shadow: 0 0 30px #ffd700, 0 0 15px #ffffff;
+    z-index: 10;
+}
 
-    50% {
-        transform: scale(1.05);
-        opacity: 0.8;
-    }
+/* Active Turn Indicators for Hands */
+.hand-vertical {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 10px;
+}
 
-    100% {
-        transform: scale(0.95);
-        opacity: 0.5;
-    }
+.hand-vertical.active-turn {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* P1 specific glow (Red-ish) */
+.p1-hand.active-turn {
+    border-color: #ff5252;
+    box-shadow: 0 0 25px rgba(255, 82, 82, 0.2);
+}
+
+/* P2 specific glow (Blue-ish) */
+.p2-hand.active-turn {
+    border-color: #448aff;
+    box-shadow: 0 0 25px rgba(68, 138, 255, 0.2);
 }
 
 /* Opponent Hand Overrides */
@@ -544,15 +569,6 @@ body {
 .history-player-1 {
     border-left: 3px solid var(--player-color);
     padding-left: 5px;
-}
-
-.history-player-2 {
-    border-left: 3px solid var(--ai-color);
-    padding-left: 5px;
-}
-
-border-left: 3px solid var(--player-color);
-padding-left: 5px;
 }
 
 .history-player-2 {

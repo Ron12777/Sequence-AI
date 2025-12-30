@@ -6,7 +6,7 @@ import math
 import random
 import numpy as np
 import torch
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Callable
 from dataclasses import dataclass, field
 import time
 
@@ -104,7 +104,7 @@ class MCTS:
                     
         MCTS._layout_initialized = True
 
-    def search(self, game: SequenceGame, player: int, simulations: Optional[int] = None) -> Tuple[Move, np.ndarray]:
+    def search(self, game: SequenceGame, player: int, simulations: Optional[int] = None, progress_callback: Optional[Callable] = None) -> Tuple[Move, np.ndarray]:
         """
         Run MCTS search from current game state.
         
@@ -112,6 +112,7 @@ class MCTS:
             game: Current game state
             player: Player to find move for
             simulations: Optional override for number of simulations
+            progress_callback: Optional callback(mcts_instance, current_sim) -> None
             
         Returns:
             best_move: Selected move
@@ -120,11 +121,11 @@ class MCTS:
         num_sims = simulations if simulations is not None else self.num_simulations
         
         if self.cmcts:
-            return self._search_c(game, player, num_sims)
+            return self._search_c(game, player, num_sims, progress_callback)
         else:
             return self._search_python(game, player, num_sims)
 
-    def _search_c(self, game: SequenceGame, player: int, num_simulations: int) -> Tuple[Move, np.ndarray]:
+    def _search_c(self, game: SequenceGame, player: int, num_simulations: int, progress_callback: Optional[Callable] = None) -> Tuple[Move, np.ndarray]:
         """Run MCTS using C extension."""
         start_time = time.time()
         
@@ -160,6 +161,11 @@ class MCTS:
             
             # Backpropagate (expansion + backprop in C)
             self.cmcts.backpropagate(capsule, policy_bytes, value)
+
+            # Progress callback
+            if progress_callback and (i + 1) % 10 == 0:
+                progress_callback(self, i + 1)
+
         
         # Get action
         # Returns: (card_int, row, col, is_removal_int, policy_bytes)

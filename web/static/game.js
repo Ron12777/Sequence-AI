@@ -7,6 +7,7 @@ let gameState = null;
 let selectedCard = null;
 let watchMode = false;
 let isThinking = false;
+let currentEpoch = 0;
 
 // DOM elements
 const boardEl = document.getElementById('board');
@@ -53,6 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function newGame() {
     isThinking = false; // Reset thinking state
+    currentEpoch++; // Invalidate previous requests
+    const thisEpoch = currentEpoch;
+
     try {
         const response = await fetch('/api/new_game', {
             method: 'POST',
@@ -62,7 +66,12 @@ async function newGame() {
 
         if (!response.ok) throw new Error('Failed to start game');
 
-        gameState = await response.json();
+        const data = await response.json();
+
+        // Race condition check
+        if (thisEpoch !== currentEpoch) return;
+
+        gameState = data;
         selectedCard = null;
 
         renderBoard();
@@ -118,6 +127,8 @@ async function triggerAiTurn() {
     const difficultyEl = document.getElementById('difficulty');
     const difficulty = difficultyEl ? difficultyEl.value : 'medium';
 
+    const thisEpoch = currentEpoch;
+
     try {
         const response = await fetch('/api/ai_move', {
             method: 'POST',
@@ -126,6 +137,9 @@ async function triggerAiTurn() {
         });
 
         if (!response.ok) throw new Error('AI move failed');
+
+        // Race condition check
+        if (thisEpoch !== currentEpoch) return;
 
         const data = await response.json();
         gameState = data;
@@ -448,6 +462,7 @@ async function handleCellClick(row, col) {
     if (!validMove) return;
 
     // Make the move
+    const thisEpoch = currentEpoch;
     try {
         const response = await fetch('/api/move', {
             method: 'POST',
@@ -465,7 +480,12 @@ async function handleCellClick(row, col) {
             throw new Error(error.error || 'Move failed');
         }
 
-        gameState = await response.json();
+        const data = await response.json();
+
+        // Race condition check
+        if (thisEpoch !== currentEpoch) return;
+
+        gameState = data;
         selectedCard = null;
 
         renderBoard();

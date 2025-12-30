@@ -3,6 +3,7 @@ Sequence game logic - board state, moves, and win detection.
 """
 import csv
 import numpy as np
+import uuid
 from typing import List, Tuple, Optional, Set, Dict
 from dataclasses import dataclass, field
 from enum import IntEnum
@@ -55,6 +56,7 @@ class SequenceGame:
         self.completed_sequences: Dict[int, List[Set[Tuple[int, int]]]] = {1: [], 2: []}
         self.game_over = False
         self.winner = None
+        self.id = str(uuid.uuid4())
         
         # Mark corner spaces as FREE
         for r, c in [(0, 0), (0, 9), (9, 0), (9, 9)]:
@@ -99,6 +101,8 @@ class SequenceGame:
         self.completed_sequences = {1: [], 2: []}
         self.game_over = False
         self.winner = None
+        
+        self.id = str(uuid.uuid4())
         
         # Deal cards
         cards_per_player = get_cards_per_player(num_players)
