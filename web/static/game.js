@@ -54,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function newGame() {
     isThinking = false; // Reset thinking state
+    stopAiPolling(); // Stop any background thinking
+    renderTopMoves(null); // Clear all highlights immediately
     currentEpoch++; // Invalidate previous requests
     const thisEpoch = currentEpoch;
 
@@ -73,6 +75,7 @@ async function newGame() {
 
         gameState = data;
         selectedCard = null;
+        renderTopMoves(null); // Clear highlights for new game
 
         renderBoard();
         renderP1Hand();
@@ -116,34 +119,47 @@ function checkAndTriggerAi() {
  */
 async function triggerAiTurn() {
     if (gameState.game_over || isThinking) return;
+    const thisEpoch = currentEpoch;
 
     isThinking = true;
+    renderTopMoves(null); // Clear highlights immediately before thinking delay
     updateStatus();
 
     // Add a small delay for visual clarity
     await new Promise(r => setTimeout(r, 600));
 
+    // [NEW] Second epoch check after delay (before fetch)
+    if (thisEpoch !== currentEpoch) return;
+
     // Get difficulty setting
     const difficultyEl = document.getElementById('difficulty');
     const difficulty = difficultyEl ? difficultyEl.value : 'medium';
 
-    const thisEpoch = currentEpoch;
-
     try {
+        startAiPolling(); // Start watching progress
         const response = await fetch('/api/ai_move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ difficulty: difficulty })
+            body: JSON.stringify({
+                difficulty: difficulty,
+                game_id: gameState.game_id
+            })
         });
 
         if (!response.ok) throw new Error('AI move failed');
 
         // Race condition check
-        if (thisEpoch !== currentEpoch) return;
+        if (thisEpoch !== currentEpoch) {
+            stopAiPolling();
+            return;
+        }
 
         const data = await response.json();
-        gameState = data;
+        stopAiPolling(); // Stop polling when done
 
+        if (thisEpoch !== currentEpoch) return;
+
+        gameState = data;
         isThinking = false;
 
         renderBoard();
@@ -156,14 +172,54 @@ async function triggerAiTurn() {
         renderP2Hand();
         renderHistory();
         updateStatus();
+        updateActiveTurn();
 
         // Loop or check for next turn
         checkAndTriggerAi();
 
     } catch (error) {
-        console.error('Error triggering AI turn:', error);
-        isThinking = false;
-        updateStatus();
+        if (thisEpoch === currentEpoch) {
+            console.error('Error triggering AI turn:', error);
+            stopAiPolling();
+            isThinking = false;
+            updateStatus();
+        }
+    }
+}
+
+let aiPollingInterval = null;
+
+function startAiPolling() {
+    if (aiPollingInterval) clearInterval(aiPollingInterval);
+    const thisEpoch = currentEpoch;
+
+    aiPollingInterval = setInterval(async () => {
+        try {
+            const response = await fetch('/api/ai_status');
+            if (!response.ok) return;
+
+            // Race condition check: If game reset while fetch was in flight, abort
+            if (thisEpoch !== currentEpoch) return;
+
+            const data = await response.json();
+
+            // Double check epoch after parsing json
+            if (thisEpoch !== currentEpoch) return;
+
+            // Only update visualization if thinking and valid data
+            if (data.thinking && data.top_moves && data.top_moves.length > 0) {
+                renderTopMoves(data.top_moves);
+            }
+        } catch (e) {
+            console.error("Polling error", e);
+        }
+    }, 100); // Fast 100ms polling
+}
+
+function stopAiPolling() {
+    if (aiPollingInterval) {
+        clearInterval(aiPollingInterval);
+        aiPollingInterval = null;
     }
 }
 
@@ -241,7 +297,16 @@ function renderBoard() {
 // Helper 
 function formatCardLabel(cardStr) {
     if (cardStr === 'FREE') return '★';
-    return cardStr;
+
+    // Parse
+    const suitChar = cardStr.slice(-1);
+    const rankChar = cardStr.slice(0, -1);
+    const suitSymbol = SUIT_SYMBOLS[suitChar];
+    const isRed = (suitChar === 'H' || suitChar === 'D');
+
+    const colorClass = isRed ? 'suit-red' : 'suit-black';
+
+    return `<span class="card-label-inline ${colorClass}">${rankChar}${suitSymbol}</span>`;
 }
 
 /**
@@ -347,13 +412,27 @@ function createCardElement(cardStr) {
  * Render Top Moves (Highlights)
  */
 function renderTopMoves(moves) {
+    // Clear previous highlights first
+    document.querySelectorAll('.cell').forEach(cell => {
+        cell.classList.remove('top-move', 'best-move', 'p1-move', 'p2-move');
+        cell.style.removeProperty('--move-score');
+    });
+
     if (!moves || moves.length === 0) return;
 
-    moves.forEach(m => {
+    const isP1Turn = gameState.current_player === 1;
+
+    moves.forEach((m, index) => {
         // Find cell
         const cell = document.querySelector(`.cell[data-row="${m.row}"][data-col="${m.col}"]`);
         if (cell) {
             cell.classList.add('top-move');
+            if (index === 0) {
+                cell.classList.add('best-move');
+            } else {
+                // Add p1/p2 specific move class for secondary moves
+                cell.classList.add(isP1Turn ? 'p1-move' : 'p2-move');
+            }
             cell.style.setProperty('--move-score', m.score); // 0.0 to 1.0
         }
     });
@@ -426,6 +505,25 @@ function updateStatus() {
             turnIndicator.querySelector('.text').textContent = 'AI Thinking...';
         }
     }
+
+    updateActiveTurn();
+}
+
+/**
+ * Update Active Turn Highlight
+ */
+function updateActiveTurn() {
+    // Reset
+    if (handP1El) handP1El.parentElement.classList.remove('active-turn');
+    if (handP2El) handP2El.parentElement.classList.remove('active-turn');
+
+    if (gameState.game_over) return;
+
+    if (gameState.current_player === 1) {
+        if (handP1El) handP1El.parentElement.classList.add('active-turn');
+    } else {
+        if (handP2El) handP2El.parentElement.classList.add('active-turn');
+    }
 }
 
 /**
@@ -471,12 +569,18 @@ async function handleCellClick(row, col) {
                 card: selectedCard,
                 row: row,
                 col: col,
-                is_removal: validMove.is_removal
+                is_removal: validMove.is_removal,
+                game_id: gameState.game_id // [NEW] Pass game_id
             })
         });
 
         if (!response.ok) {
             const error = await response.json();
+            // Silent abort on mismatch (assume new game started)
+            if (error.mismatch) {
+                console.log("Move aborted: game instance mismatch");
+                return;
+            }
             throw new Error(error.error || 'Move failed');
         }
 
@@ -487,6 +591,7 @@ async function handleCellClick(row, col) {
 
         gameState = data;
         selectedCard = null;
+        renderTopMoves(null); // Clear highlights after player move success
 
         renderBoard();
         renderP1Hand();

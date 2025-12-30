@@ -173,6 +173,10 @@ def make_ai_move_internal(player_id, simulations=None):
         # Process policy for visualization
         top_moves = process_policy(policy)
         
+        # [NEW] Ensure the move we report back is actually the one we just made, 
+        # and it should match the top_moves[0] if we want to be strict.
+        # But for now, just reporting the actual 'move' applied.
+        
         return {
             'card': str(move.card),
             'row': move.row,
@@ -305,6 +309,12 @@ def make_move():
     if game.game_over:
         return jsonify({'error': 'Game is over'}), 400
     
+    # [NEW] Validate Game ID
+    provided_id = data.get('game_id')
+    if provided_id and provided_id != getattr(game, 'id', None):
+        print(f"Bailing out: provided_id={provided_id}, actual_id={getattr(game, 'id', None)}")
+        return jsonify({'error': 'Game instance mismatch. Please refresh or start a new game.', 'mismatch': True}), 409
+    
     # Parse move
     try:
         card_str = data['card']
@@ -326,6 +336,11 @@ def make_move():
         
         if not game.make_move(move):
             return jsonify({'error': 'Invalid move'}), 400
+            
+        # Reset AI status immediately on human move
+        with ai_status_lock:
+            ai_status['thinking'] = False
+            ai_status['top_moves'] = []
             
         # Log move
         if not hasattr(game, 'move_history_log'):
@@ -359,6 +374,13 @@ def request_ai_move():
     
     # Get difficulty from request
     data = request.get_json() or {}
+    
+    # [NEW] Validate Game ID
+    provided_id = data.get('game_id')
+    if provided_id and provided_id != getattr(game, 'id', None):
+        print(f"Bailing out AI: provided_id={provided_id}, actual_id={getattr(game, 'id', None)}")
+        return jsonify({'error': 'Game instance mismatch during AI request.', 'mismatch': True}), 409
+        
     difficulty = data.get('difficulty', 'medium')
     
     # Map difficulty to simulations

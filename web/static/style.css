@@ -442,7 +442,11 @@ body {
     background: rgba(0, 0, 0, 0.2);
     padding: 15px;
     border-radius: 8px;
-    min-width: 120px;
+    min-width: 140px;
+    /* Slight increase for glow */
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    /* Prepare for border glow */
     /* Removed max-height/overflow to allow growing */
 }
 
@@ -483,35 +487,54 @@ body {
     transform: translateX(20px);
 }
 
-/* AI Top Move Highlights */
 /* AI Top Move Highlights (Glowing Orb) */
-.move-highlight {
+/* AI Top Move Highlights (Glowing Orb) */
+.cell.top-move::before {
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    /* Aspect ratio hack to ensure circle */
-    aspect-ratio: 1/1;
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    /* Stronger gradient: starts solid, fades out */
-    background: radial-gradient(circle, var(--highlight-color) 20%, rgba(0, 0, 0, 0) 80%);
+    background: rgba(128, 128, 128, 1);
+    box-shadow: 0 0 15px rgba(128, 128, 128, 0.6);
     pointer-events: none;
     z-index: 5;
-    /* Smooth transition for position and size */
-    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
-    opacity: 0.9;
-    box-shadow: 0 0 20px var(--highlight-color);
+    transition: all 0.1s ease-out;
+    /* Smooth transition for live updates */
+    opacity: calc(0.3 + 0.7 * var(--move-score, 0));
+}
+
+/* Player 1 Move (Red) */
+.cell.top-move.p1-move::before {
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+}
+
+/* Player 2 Move (Blue) */
+.cell.top-move.p2-move::before {
+    background: rgba(59, 130, 246, 1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
 }
 
 /* Special Gold Glow for Best Move */
-.move-highlight.best-move {
-    /* Bright gold color overlap */
-    --highlight-color: #ffd700 !important;
-    background: radial-gradient(circle, #ffd700 40%, rgba(0, 0, 0, 0) 60%);
-    box-shadow: 0 0 30px #ffd700, 0 0 15px #ffffff;
+.cell.best-move::before {
+    width: 55px;
+    height: 55px;
+    background: rgba(255, 215, 0, 1);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
     z-index: 10;
+    opacity: 1 !important;
+    /* Always fully visible */
 }
+
+
+
+/* Special Gold Glow for Best Move */
+
 
 /* Active Turn Indicators for Hands */
 .hand-vertical {
@@ -537,6 +560,17 @@ body {
 .p2-hand.active-turn {
     border-color: #448aff;
     box-shadow: 0 0 25px rgba(68, 138, 255, 0.2);
+}
+
+/* Inline Card Label in History */
+.card-label-inline {
+    font-weight: bold;
+    display: inline-block;
+}
+
+.history-item span {
+    display: flex;
+    align-items: center;
 }
 
 /* Opponent Hand Overrides */
@@ -574,4 +608,29 @@ body {
 .history-player-2 {
     border-left: 3px solid var(--ai-color);
     padding-left: 5px;
+}
+
+/* Rule Blurb Styling */
+.rule-blurb {
+    margin-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 15px;
+}
+
+.rules p {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #ccc;
+    margin-bottom: 8px;
+}
+
+.rules p strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.rules em {
+    font-size: 0.7rem;
+    color: #888;
+    font-style: italic;
 }
