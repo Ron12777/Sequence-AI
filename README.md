@@ -146,16 +146,22 @@ View real-time loss curves:
 
 2.  **Start Web Server:**
     ```bash
-    pip install flask
     python web/app.py
     ```
-3.  **Open Browser:** Go to `http://localhost:5000`
+3.  **Features:**
+    *   **Live AI "Thinking" Visualization:** Watch the AI's top move candidates and their scores update in real-time.
+    *   **AI Progress Bar:** Track the completion percentage of MCTS simulations.
+    *   **Interactive Turn Indicators:** Modern, glowing UI indicators for active players.
+    *   **Jack Rules Reference:** Quick in-game guide for Wild (2-eyed) and Removal (1-eyed) Jacks.
+    *   **Post-Game Inspection:** Hide the game-over screen to analyze the final board state and sequences.
+    *   **1-Indexed Coordinates:** History uses friendly `(x, y)` coordinates matching the 1-10 board scale.
 
 ---
 
 ## Project Structure
 
-*   `src/c_game/`: C source code for game logic and MCTS.
-*   `src/model.py`: PyTorch ResNet architecture.
-*   `src/train.py`: Multiprocessing training with batched GPU inference.
-*   `web/`: Flask web interface.
+*   `src/`: Core Python logic for training and MCTS.
+*   `src/c_game/`: C engine for deterministic, high-performance game logic.
+*   `tests/`: Core game logic unit tests.
+*   `web/`: Modern Flask-based reactive web interface.
+*   `models/`: Storage for trained neural network weights.

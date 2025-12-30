@@ -309,20 +309,14 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-20px);
+    transform: translateY(-5px);
     z-index: 100 !important;
-    /* Ensure hovered card is always on top */
-    margin-right: 20px;
-    /* Push neighbors away slightly */
-}
-
-.card:hover {
-    transform: translateY(-20px);
-    z-index: 10;
+    /* In horizontal hand, slightly push neighbors for visibility */
+    margin-right: 10px;
 }
 
 .card.selected {
-    transform: translateY(-30px);
+    transform: translateY(-8px);
     box-shadow: 0 0 0 3px var(--accent-primary);
     z-index: 20;
 }
@@ -495,13 +489,27 @@ body {
 }
 
 .card-stack .card:hover {
-    transform: translateY(-10px) translateX(10px);
-    margin-right: 0;
-    z-index: 100 !important;
+    /* Grow in place from center - no shifting */
+    transform: scale(1.05) !important;
+    transform-origin: center center;
+    z-index: inherit !important;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    /* Visual feedback */
+    outline: 2px solid rgba(74, 144, 226, 0.6);
+    outline-offset: -2px;
+}
+
+.card-stack .card:last-child:hover {
+    margin-bottom: 0 !important;
 }
 
 .card-stack .card.selected {
-    transform: translateX(20px);
+    /* Override generic .card.selected - no movement */
+    transform: none !important;
+    z-index: inherit !important;
+    outline: 2px solid var(--accent-primary);
+    outline-offset: -2px;
 }
 
 /* AI Top Move Highlights (Glowing Orb) */

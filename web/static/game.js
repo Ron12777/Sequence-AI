@@ -5,6 +5,7 @@
 // Game state
 let gameState = null;
 let selectedCard = null;
+let hoveredCard = null;
 let watchMode = false;
 let isThinking = false;
 let currentEpoch = 0;
@@ -293,10 +294,11 @@ function renderBoard() {
                 cell.classList.add('has-chip', 'free-chip');
             }
 
-            // Highlight valid moves if card selected
-            if (selectedCard && !gameState.game_over) {
+            // Highlight valid moves if card selected or hovered
+            const activeCard = hoveredCard || selectedCard;
+            if (activeCard && !gameState.game_over) {
                 const validMove = gameState.legal_moves.find(m =>
-                    m.card === selectedCard && m.row === row && m.col === col
+                    m.card === activeCard && m.row === row && m.col === col
                 );
                 if (validMove) {
                     if (validMove.is_removal) {
@@ -378,9 +380,19 @@ function renderP1Hand() {
             card.classList.add('selected');
         }
 
-        // Click handler (only if human turn)
+        // Click and Hover handlers (only if human turn)
         if (gameState.current_player === gameState.human_player && !watchMode) {
             card.addEventListener('click', () => handleCardClick(cardStr));
+
+            card.addEventListener('mouseenter', () => {
+                hoveredCard = cardStr;
+                renderBoard(); // Update board highlights on hover
+            });
+
+            card.addEventListener('mouseleave', () => {
+                hoveredCard = null;
+                renderBoard(); // Restore previous highlights
+            });
         }
 
         handP1El.appendChild(card);
@@ -447,6 +459,9 @@ function renderTopMoves(moves) {
         cell.classList.remove('top-move', 'best-move', 'p1-move', 'p2-move');
         cell.style.removeProperty('--move-score');
     });
+
+    // Only show thinking highlights in Watch AI vs AI mode
+    if (!watchMode) return;
 
     if (!moves || moves.length === 0) return;
 
