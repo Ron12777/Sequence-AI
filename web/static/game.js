@@ -11,6 +11,10 @@ let selectedCard = null;
 let hoveredCard = null;
 let watchMode = false;
 let isThinking = false;
+let analysisMode = false;
+let cardPickerTarget = null; // {type: 'hand', player: 1/2, index: 0}
+let isPaused = false;
+
 
 // DOM Elements
 const boardEl = document.getElementById('board');
@@ -50,6 +54,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     watchAiBtn.addEventListener('click', watchAiVsAi);
     hintBtn.addEventListener('click', getHint);
+
+    // Analysis Mode
+    const analysisBtn = document.getElementById('analysisBtn');
+    const toggleTurnBtn = document.getElementById('toggleTurnBtn');
+    if (analysisBtn) analysisBtn.addEventListener('click', toggleAnalysisMode);
+    if (toggleTurnBtn) toggleTurnBtn.addEventListener('click', toggleTurn);
+
+
+    // Win Prob Toggle
+    if (showEvalBar) {
+        showEvalBar.addEventListener('change', () => {
+            if (evalBarContainer) {
+                evalBarContainer.style.visibility = showEvalBar.checked ? 'visible' : 'hidden';
+                // Also trigger re-eval if checking and waiting? 
+                // Mostly just visibility is enough, but if it was checking in background it's fine.
+                // The container visibility class handling might be elsewhere, let's force style.
+                if (showEvalBar.checked) {
+                    evalBarContainer.classList.add('visible');
+                } else {
+                    evalBarContainer.classList.remove('visible');
+                }
+            }
+        });
+    }
 
     // Depth slider P2 (Default)
     const depthSlider = document.getElementById('depth');
@@ -140,15 +168,28 @@ async function loadModel() {
 function newGame() {
     cancelAiLoop = true; // Stop any ongoing AI vs AI match
     game = new SequenceGame();
-    game.reset();
+    // Keep Analysis Mode if active
+    if (!analysisMode) {
+        game.reset();
+    } else {
+        // If in analysis mode, we might want to just reset the board but keep mode?
+        // Usually New Game means New Game. Let's fully reset.
+        toggleAnalysisMode(); // Exit analysis mode
+        game.reset();
+    }
+
     selectedCard = null;
     hoveredCard = null;
     isThinking = false;
     watchMode = false; // Reset watch mode
+    isPaused = false;
 
     if (gameOverOverlay) {
         gameOverOverlay.classList.remove('visible');
     }
+
+    // Ensure "Reset Board" button is reset to default state
+    updateResetButtonState(false);
 
     renderBoard();
     renderP1Hand();
@@ -181,6 +222,10 @@ function newGame() {
     // Rename main slider to just "Depth" or "AI Depth"
     const depthTitle = document.getElementById('depthTitle');
     if (depthTitle) depthTitle.textContent = "Depth";
+
+    // Show Watch AI button again
+    const watchAiBtn = document.getElementById('watchAiBtn');
+    if (watchAiBtn) watchAiBtn.style.display = 'block';
 }
 
 
@@ -188,15 +233,41 @@ function newGame() {
  * Watch AI vs AI
  */
 async function watchAiVsAi() {
-    newGame(); // This sets cancelAiLoop = true (stopping old loops) and watchMode = false
+    // Auto-Exit Analysis Mode
+    if (analysisMode) {
+        toggleAnalysisMode();
+    }
+
+    // Resume if Paused
+    if (isPaused) {
+        isPaused = false;
+        // The previous loop was cancelled, so we just fall through to start a new loop below.
+    }
+
+    // newGame(); // REMOVE: Continue from current state
+
+    // If game over, THEN reset? Or just stay? 
+    // User wants "continue from current position".
+    // If game is over, we probably can't continue unless we reset.
+    if (!game || game.gameOver) {
+        newGame(); // Must reset if nothing to watch
+    } else {
+        cancelAiLoop = true; // Stop any existing loop first
+        await sleep(100); // Give it a moment to stop
+    }
 
     // Setup for this new match
     cancelAiLoop = false;
     watchMode = true;
 
+    // Update Button to "Pause"
+    updateResetButtonState(true);
+
+    // Hide the separate Watch AI button to avoid confusion
+    const watchAiBtn = document.getElementById('watchAiBtn');
+    if (watchAiBtn) watchAiBtn.style.display = 'none';
+
     // Re-render to show hidden info (P2 hand)
-    renderP1Hand();
-    renderP2Hand();
     renderP1Hand();
     renderP2Hand();
     updateStatus();
@@ -208,6 +279,7 @@ async function watchAiVsAi() {
     // Show P1 Slider
     const depthP1Container = document.getElementById('depthP1Container');
     if (depthP1Container) depthP1Container.style.display = 'block';
+
 
     // Update Slider Titles
     const depthTitle = document.getElementById('depthTitle');
@@ -524,15 +596,21 @@ function renderP1Hand() {
 
     const hand = game.hands[1] || [];
 
-    for (const cardStr of hand) {
+    hand.forEach((cardStr, index) => {
         const card = createCardElement(cardStr);
 
         if (cardStr === selectedCard) {
             card.classList.add('selected');
         }
 
-        if (game.currentPlayer === 1 && !watchMode && !game.gameOver) {
-            card.addEventListener('click', () => handleCardClick(cardStr));
+        // Gameplay or Analysis
+        const isMyTurn = (game.currentPlayer === 1 && !watchMode && !game.gameOver);
+
+        if (isMyTurn || analysisMode) {
+            card.addEventListener('click', () => handleCardClick(cardStr, index));
+        }
+
+        if (isMyTurn) {
             card.addEventListener('mouseenter', () => {
                 hoveredCard = cardStr;
                 renderBoard();
@@ -544,8 +622,9 @@ function renderP1Hand() {
         }
 
         handP1El.appendChild(card);
-    }
+    });
 }
+
 
 /**
  * Render Player 2 Hand
@@ -556,22 +635,39 @@ function renderP2Hand() {
 
     const hand = game.hands[2] || [];
 
-    if (!watchMode && !game.gameOver) {
+    // Show backs only if NOT watch mode AND NOT analysis mode AND NOT game over
+    const showBacks = (!watchMode && !analysisMode && !game.gameOver);
+
+    if (showBacks) {
         // Show backs
         for (let i = 0; i < hand.length; i++) {
             const card = document.createElement('div');
             card.className = 'card back';
             card.style.background = '#4a0e0e';
             card.innerHTML = '<div style="color:rgba(255,255,255,0.1); font-size:3rem; display:flex; justify-content:center; align-items:center; height:100%">S</div>';
+
+            // Allow editing even if backs are shown? No, that would be weird.
+            // But if analysisMode is true, we fall to 'else' block below.
+
             handP2El.appendChild(card);
         }
     } else {
-        for (const cardStr of hand) {
+        hand.forEach((cardStr, index) => {
             const card = createCardElement(cardStr);
+
+            // Allow editing in Analysis Mode
+            if (analysisMode) {
+                card.addEventListener('click', () => {
+                    openCardPicker(2, index);
+                });
+                // Add valid-move style cues? Not needed for P2 usually.
+            }
+
             handP2El.appendChild(card);
-        }
+        });
     }
 }
+
 
 function createCardElement(cardStr) {
     const card = document.createElement('div');
@@ -596,10 +692,23 @@ function createCardElement(cardStr) {
 /**
  * Handle card click
  */
-function handleCardClick(cardStr) {
+function handleCardClick(cardStr, index = -1) {
     if (game.gameOver) return;
+
+    // Analysis Mode: Open Card Picker
+    // Allow even if watchMode is true
+    if (analysisMode) {
+        if (index === -1) {
+            index = game.hands['1'].indexOf(cardStr);
+        }
+        openCardPicker(1, index);
+        return;
+    }
+
     if (game.currentPlayer !== 1) return;
     if (watchMode) return;
+
+
 
     selectedCard = (selectedCard === cardStr) ? null : cardStr;
 
@@ -612,7 +721,15 @@ function handleCardClick(cardStr) {
  */
 async function handleCellClick(row, col) {
     if (game.gameOver) return;
+
+    // Analysis Mode: Cycle Cell State
+    if (analysisMode) {
+        handleAnalysisCellClick(row, col);
+        return;
+    }
+
     if (game.currentPlayer !== 1) return;
+
     if (!selectedCard) return;
 
     const moves = game.getLegalMoves(1);
@@ -916,3 +1033,218 @@ function updateHistory(move, player) {
     historyEl.scrollTop = historyEl.scrollHeight;
 }
 
+
+/**
+ * Analysis Mode Functions
+ */
+function toggleAnalysisMode() {
+    analysisMode = !analysisMode;
+    const btn = document.getElementById('analysisBtn');
+    const controls = document.getElementById('analysisControls');
+
+    if (analysisMode) {
+        if (watchMode && !isPaused) {
+            pauseGame();
+        }
+
+        if (btn) {
+            btn.textContent = "Exit Analysis";
+            btn.classList.add('primary');
+            btn.classList.remove('secondary');
+        }
+        if (controls) controls.style.display = 'block';
+        document.body.classList.add('analysis-mode');
+
+        // Stop any AI thinking
+        cancelAiLoop = true;
+        isThinking = false;
+
+    } else {
+        if (btn) {
+            btn.textContent = "Analysis Board";
+            btn.classList.remove('primary');
+            btn.classList.add('secondary');
+        }
+        if (controls) controls.style.display = 'none';
+        document.body.classList.remove('analysis-mode');
+    }
+
+    updateStatus();
+    renderBoard();
+    renderP1Hand();
+    renderP2Hand(); // Re-render to show/hide backs if needed (though P2 hand click needs handler)
+}
+
+function toggleTurn() {
+    if (!game) return;
+    game.currentPlayer = (game.currentPlayer === 1) ? 2 : 1;
+    updateStatus();
+    renderBoard(); // Update valid moves highlight
+    renderP1Hand();
+}
+
+function handleAnalysisCellClick(row, col) {
+    // Cycle: EMPTY -> P1 -> P2 -> FREE -> EMPTY
+    const current = game.board[row][col];
+    let nextState;
+
+    // ChipState: 0=EMPTY, 1=P1, 2=P2
+    if (current === 0) nextState = 1;
+    else if (current === 1) nextState = 2;
+    // else if (current === 2) nextState = -1; // Removed FREE per user request
+    else nextState = 0;
+
+
+    game.board[row][col] = nextState;
+
+    // Re-check sequences (expensive but necessary to be correct)
+    // Actually, we should probably allow manual sequence setting?
+    // For now, let's just update the board array. 
+    // The game engine 'completedSequences' might get out of sync.
+    // Ideally we should re-scan the board for sequences.
+
+    // A full re-scan is hard without a helper. 
+    // Let's at least update the visual.
+    renderBoard();
+}
+
+/**
+ * Card Picker
+ */
+function openCardPicker(player, index) {
+    cardPickerTarget = { player, index };
+    const overlay = document.getElementById('cardPickerOverlay');
+    const grid = document.getElementById('cardPickerGrid');
+    if (!overlay || !grid) return;
+
+    grid.innerHTML = '';
+
+    // Generate all cards
+    const suits = ['C', 'D', 'H', 'S'];
+    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Q', 'K', 'J']; // J at end for clarity? Or sorted?
+
+    // Helper to add card
+    const addCard = (rank, suit) => {
+        const cardStr = rank + suit;
+        const el = createCardElement(cardStr);
+        el.addEventListener('click', () => selectCard(cardStr));
+        grid.appendChild(el);
+    };
+
+    suits.forEach(suit => {
+        ranks.forEach(rank => {
+            addCard(rank, suit);
+        });
+    });
+
+    overlay.classList.add('visible');
+}
+
+function closeCardPicker() {
+    const overlay = document.getElementById('cardPickerOverlay');
+    if (overlay) overlay.classList.remove('visible');
+    cardPickerTarget = null;
+}
+
+function selectCard(cardStr) {
+    if (!cardPickerTarget || !game) return;
+
+    const { player, index } = cardPickerTarget;
+    if (game.hands[player]) {
+        game.hands[player][index] = cardStr;
+    }
+
+    closeCardPicker();
+    renderP1Hand();
+    renderP2Hand();
+    renderBoard(); // Valid moves updates
+}
+
+// Global scope for HTML onclick
+window.closeCardPicker = closeCardPicker;
+window.toggleAnalysisMode = toggleAnalysisMode; // expose if needed
+window.newGame = newGame; // was likely already exposed
+window.dismissGameOver = () => {
+    if (gameOverOverlay) gameOverOverlay.classList.remove('visible');
+};
+
+// Pause Menu Functions
+// Pause Menu Functions
+window.pauseGame = () => {
+    if (!watchMode) return;
+
+    isPaused = true;
+    cancelAiLoop = true; // Stop the loop
+
+    // Show inline controls
+    const newGameBtn = document.getElementById('newGameBtn');
+    const pauseControls = document.getElementById('pauseControls');
+
+    if (newGameBtn) newGameBtn.style.display = 'none';
+    if (pauseControls) pauseControls.style.display = 'flex';
+};
+
+window.resumeGame = () => {
+    const newGameBtn = document.getElementById('newGameBtn');
+    const pauseControls = document.getElementById('pauseControls');
+
+    if (newGameBtn) newGameBtn.style.display = 'block';
+    if (pauseControls) pauseControls.style.display = 'none';
+
+    isPaused = false;
+    // Resume AI loop
+    watchAiVsAi();
+};
+
+window.resetFromPause = () => {
+    const newGameBtn = document.getElementById('newGameBtn');
+    const pauseControls = document.getElementById('pauseControls');
+
+    if (newGameBtn) newGameBtn.style.display = 'block';
+    if (pauseControls) pauseControls.style.display = 'none';
+
+    isPaused = false;
+    newGame();
+};
+
+function updateResetButtonState(isWatchMode) {
+    const btn = document.getElementById('newGameBtn');
+    if (!btn) return;
+
+    // Ensure button is visible when state changes
+    btn.style.display = 'block';
+    const pauseControls = document.getElementById('pauseControls');
+    if (pauseControls) pauseControls.style.display = 'none';
+
+    if (isWatchMode && !game.gameOver) {
+        btn.textContent = "Pause";
+        btn.classList.add('secondary');
+        btn.classList.remove('primary');
+        btn.style.background = '#e67e22'; // Orange
+    } else {
+        btn.textContent = "Reset Board";
+        btn.classList.add('primary');
+        btn.classList.remove('secondary');
+        btn.style.background = ''; // Default
+    }
+}
+
+// Update the main NewGame listener to handle Pause
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('newGameBtn');
+    if (btn) {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', () => {
+            if (watchMode && !game.gameOver) {
+                // Pause action
+                window.pauseGame();
+            } else {
+                // Reset action
+                watchMode = false;
+                newGame();
+            }
+        });
+    }
+});
