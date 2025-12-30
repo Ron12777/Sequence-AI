@@ -1,4 +1,4 @@
-/* Sequence AI - Modern Theme */
+﻿/* Sequence AI - Modern Theme */
 
 :root {
     --bg-primary: #1e1e1e;
@@ -570,66 +570,54 @@ body {
     outline-offset: -2px;
 }
 
-/* AI Top Move Highlights (Explicit Element) */
-/* AI Top Move Highlights (Explicit Element) */
-.highlight-orb {
+/* AI Top Move Highlights (Glowing Orb) */
+/* AI Top Move Highlights (Glowing Orb) */
+.cell.top-move::before {
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    border: 3px solid #fff;
-    background: transparent;
+    background: rgba(128, 128, 128, 1);
+    box-shadow: 0 0 15px rgba(128, 128, 128, 0.6);
     pointer-events: none;
-    z-index: 9999;
-    /* Ensure on top of everything */
-    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: transform, opacity;
+    z-index: 5;
+    transition: all 0.1s ease-out;
+    /* Smooth transition for live updates */
+    opacity: calc(0.3 + 0.7 * var(--move-score, 0));
 }
 
-.highlight-orb.p1 {
-    /* Player 1 (Red) */
-    border-color: #ef4444;
-    box-shadow: 0 0 15px 2px rgba(239, 68, 68, 0.6);
+/* Player 1 Move (Red) */
+.cell.top-move.p1-move::before {
+    background: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
 }
 
-.highlight-orb.p2 {
-    /* Player 2 (Blue) */
-    border-color: #3b82f6;
-    box-shadow: 0 0 15px 2px rgba(59, 130, 246, 0.6);
+/* Player 2 Move (Blue) */
+.cell.top-move.p2-move::before {
+    background: rgba(59, 130, 246, 1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
 }
 
-.highlight-orb.best {
-    /* Best Move (Gold) */
-    border: 4px solid #ffd700;
-    /* Thicker border */
-    box-shadow: 0 0 30px 10px rgba(255, 215, 0, 0.9), inset 0 0 20px rgba(255, 215, 0, 0.5);
-    /* Stronger outer + inner glow */
-    background: rgba(255, 215, 0, 0.4);
-    /* More visible fill */
-    z-index: 10000;
-    animation: pulse-gold 1.2s infinite ease-in-out;
-    /* Faster, smoother pulse */
+/* Special Gold Glow for Best Move */
+.cell.best-move::before {
+    width: 55px;
+    height: 55px;
+    background: rgba(255, 215, 0, 1);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.5);
+    z-index: 10;
+    opacity: 1 !important;
+    /* Always fully visible */
 }
 
-@keyframes pulse-gold {
-    0% {
-        transform: translate(-50%, -50%) scale(1);
-        box-shadow: 0 0 30px 10px rgba(255, 215, 0, 0.9), inset 0 0 20px rgba(255, 215, 0, 0.5);
-    }
 
-    50% {
-        transform: translate(-50%, -50%) scale(1.15);
-        box-shadow: 0 0 50px 15px rgba(255, 215, 0, 1), inset 0 0 30px rgba(255, 215, 0, 0.7);
-        border-color: #fff;
-    }
 
-    /* Flash white border at peak */
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        box-shadow: 0 0 30px 10px rgba(255, 215, 0, 0.9), inset 0 0 20px rgba(255, 215, 0, 0.5);
-    }
-}
+/* Special Gold Glow for Best Move */
+
 
 /* Active Turn Indicators for Hands */
 .hand-vertical {
@@ -676,16 +664,15 @@ body {
 
 /* Move History */
 .move-history {
-    height: 200px;
-    /* Fixed height to reserve space */
-    min-height: 200px;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
     background: rgba(0, 0, 0, 0.2);
     padding: 10px;
     border-radius: 4px;
     font-size: 0.85rem;
-    display: block;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
 }
 
 .history-item {
@@ -705,7 +692,6 @@ body {
     border-left: 3px solid var(--ai-color);
     padding-left: 5px;
 }
-
 
 /* Rule Blurb Styling */
 .rule-blurb {
@@ -735,21 +721,14 @@ body {
 /* AI Progress Bar Styling */
 .ai-progress-container {
     margin-top: 15px;
-    display: flex;
-    /* Always flex to reserve space */
+    display: none;
+    /* Hidden by default */
     flex-direction: column;
     gap: 8px;
-    height: 34px;
-    /* Fixed height to prevent layout shift */
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-    /* Click through when hidden */
 }
 
 .ai-progress-container.visible {
-    opacity: 1;
-    pointer-events: auto;
+    display: flex;
 }
 
 .progress-bar-bg {
@@ -767,8 +746,7 @@ body {
     height: 100%;
     background: linear-gradient(90deg, #ff9800, #ffd700);
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    transition: width 0.05s linear;
-    /* Much faster, linear transition */
+    transition: width 0.3s ease;
     border-radius: 4px;
 }
 
@@ -779,47 +757,4 @@ body {
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-}
-/* Live Eval Bar */
-.eval-bar-container {
-    margin-top: 10px;
-    height: 24px;
-    background: #333;
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
-    display: none;
-}
-
-.eval-bar-container.visible {
-    display: block;
-}
-
-.eval-bar-bg {
-    width: 100%;
-    height: 100%;
-    background: #3b82f6;
-    position: relative;
-    transition: background 0.3s ease;
-}
-
-.eval-bar-fill {
-    height: 100%;
-    background: #ef4444;
-    width: 50%;
-    transition: width 0.3s ease, background 0.3s ease;
-}
-
-.eval-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: bold;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-    pointer-events: none;
-    white-space: nowrap;
 }

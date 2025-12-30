@@ -119,6 +119,9 @@ class MCTS {
     /**
      * Run MCTS search and return best move
      */
+    /**
+     * Run MCTS search and return best move
+     */
     async search(game, progressCallback = null) {
         const root = new MCTSNode(cloneGame(game), null, null, game.currentPlayer);
 
@@ -126,7 +129,19 @@ class MCTS {
             await this.simulate(root);
 
             if (progressCallback) {
-                progressCallback(i + 1, this.numSimulations);
+                // Calculate root value (win chance)
+                // Normalize roughly to [-1, 1] -> [0, 1] relative to current player
+                // But typically node.value accumulates +1/-1. 
+                // So average is between -1 and 1.
+                const visits = root.visits || 1;
+                const avgValue = root.value / visits;
+                progressCallback(i + 1, this.numSimulations, root.getPolicy(), avgValue);
+            }
+
+            // critical: Yield to main thread to allow UI rendering
+            // If we don't do this, the browser freezes and no progress bar/highlights appear
+            if (i % 5 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 0));
             }
         }
 
@@ -149,7 +164,20 @@ class MCTS {
 
         // Check terminal
         if (node.game.gameOver) {
-            const value = node.game.winner === root.game.currentPlayer ? 1 : -1;
+            // Value must be from the perspective of the player whose turn it WOULD be at this node.
+            // (Strictly, this node represents the state AFTER 'node.player' moved).
+            // So if node.player (Just Moved) Won, then Current Perspective (Opponent) Lost (-1).
+
+            // Note: node.game.winner is 1 or 2.
+            // node.game.currentPlayer is the next player.
+
+            let value = 0;
+            if (node.game.winner === node.game.currentPlayer) {
+                value = 1; // Unlikely if they just moved, but handling consistency
+            } else {
+                value = -1; // The player who just moved won, so "Current Perspective" lost.
+            }
+
             this.backpropagate(node, value);
             return;
         }
@@ -159,6 +187,14 @@ class MCTS {
         if (moves.length === 0) {
             this.backpropagate(node, 0);
             return;
+        }
+
+        // Shuffle moves to ensure random exploration order
+        // This prevents the AI from only exploring the top-left of the board
+        // when simulations are low and priors are flat (e.g. Jacks).
+        for (let i = moves.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [moves[i], moves[j]] = [moves[j], moves[i]];
         }
 
         // Get neural network evaluation
@@ -208,8 +244,11 @@ class MCTS {
             };
         }
 
-        // Get state tensor
-        const stateTensor = game.getStateTensor(game.currentPlayer);
+        // Canonical form: If P2, rotate board 180 degrees
+        const isP2 = game.currentPlayer === 2;
+
+        // Get state tensor (rotate if P2)
+        const stateTensor = game.getStateTensor(game.currentPlayer, isP2);
 
         // Create ONNX tensor - shape [1, 8, 10, 10]
         const inputTensor = new ort.Tensor('float32', stateTensor, [1, 8, 10, 10]);
@@ -224,6 +263,12 @@ class MCTS {
         // Softmax on policy
         const policy = softmax(policyLogits);
 
+        // If P2, we must un-rotate the policy (reverse the array) 
+        // to match the real board coordinates
+        if (isP2) {
+            policy.reverse();
+        }
+
         return { policy, value };
     }
 
@@ -233,8 +278,11 @@ class MCTS {
     backpropagate(node, value) {
         while (node !== null) {
             node.visits += 1;
-            // Value is from perspective of root player
             node.value += value;
+
+            // Value is relative to the player at 'node'
+            // When moving to parent (opponent), we must negate the value
+            value = -value;
             node = node.parent;
         }
     }

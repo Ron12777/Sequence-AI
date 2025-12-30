@@ -280,26 +280,35 @@ class SequenceGame {
      * Convert game state to neural network input tensor
      * Shape: [1, 8, 10, 10]
      */
-    getStateTensor(player) {
+    getStateTensor(player, rotate = false) {
         const opponent = 3 - player;
         const tensor = new Float32Array(8 * 10 * 10);
 
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
-                const idx = c + r * 10;
+                const rawIdx = c + r * 10;
+                // If rotating (P2), map current (r,c) to the rotated position
+                // We fill the tensor at 'destIdx' with the value from 'rawIdx'
+                // Wait. We iterate board r,c. 
+                // If board[0][0] has a chip.
+                // In rotated view, that chip is at [9][9].
+                // So tensor index for [9][9] should get the value.
+                // Index 99.
+                // 99 = 99 - 0. Correct.
+                const destIdx = rotate ? (99 - rawIdx) : rawIdx;
                 const state = this.board[r][c];
 
                 // Channel 0: Current player chips
-                tensor[0 * 100 + idx] = state === player ? 1 : 0;
+                tensor[0 * 100 + destIdx] = state === player ? 1 : 0;
 
                 // Channel 1: Opponent chips
-                tensor[1 * 100 + idx] = state === opponent ? 1 : 0;
+                tensor[1 * 100 + destIdx] = state === opponent ? 1 : 0;
 
                 // Channel 2: Free corners
-                tensor[2 * 100 + idx] = state === ChipState.FREE ? 1 : 0;
+                tensor[2 * 100 + destIdx] = state === ChipState.FREE ? 1 : 0;
 
                 // Channel 3: Empty spaces
-                tensor[3 * 100 + idx] = state === ChipState.EMPTY ? 1 : 0;
+                tensor[3 * 100 + destIdx] = state === ChipState.EMPTY ? 1 : 0;
             }
         }
 
@@ -310,7 +319,9 @@ class SequenceGame {
             const positions = CARD_POSITIONS[card] || [];
             for (const [r, c] of positions) {
                 if (this.board[r][c] === ChipState.EMPTY) {
-                    tensor[(4 + i) * 100 + c + r * 10] = 1;
+                    const rawIdx = c + r * 10;
+                    const destIdx = rotate ? (99 - rawIdx) : rawIdx;
+                    tensor[(4 + i) * 100 + destIdx] = 1;
                 }
             }
             // Handle Jacks
@@ -318,7 +329,9 @@ class SequenceGame {
                 for (let r = 0; r < BOARD_SIZE; r++) {
                     for (let c = 0; c < BOARD_SIZE; c++) {
                         if (this.board[r][c] === ChipState.EMPTY) {
-                            tensor[(4 + i) * 100 + c + r * 10] = 1;
+                            const rawIdx = c + r * 10;
+                            const destIdx = rotate ? (99 - rawIdx) : rawIdx;
+                            tensor[(4 + i) * 100 + destIdx] = 1;
                         }
                     }
                 }

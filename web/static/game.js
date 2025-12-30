@@ -27,6 +27,12 @@ const hintBtn = document.getElementById('hintBtn');
 const aiProgressContainer = document.getElementById('aiProgressContainer');
 const aiProgressBar = document.getElementById('aiProgressBar');
 const aiProgressText = document.getElementById('aiProgressText');
+const evalBarContainer = document.getElementById('evalBarContainer');
+const evalBarFill = document.getElementById('evalBarFill');
+const evalText = document.getElementById('evalText');
+const showEvalBar = document.getElementById('showEvalBar');
+const labelP1 = document.getElementById('labelP1');
+const labelP2 = document.getElementById('labelP2');
 
 // Suit symbols
 const SUIT_SYMBOLS = {
@@ -45,10 +51,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     watchAiBtn.addEventListener('click', watchAiVsAi);
     hintBtn.addEventListener('click', getHint);
 
-    // Depth slider
+    // Depth slider P2 (Default)
     const depthSlider = document.getElementById('depth');
     const depthValue = document.getElementById('depthValue');
     const difficultyLabel = document.getElementById('difficultyLabel');
+    const depthTitle = document.getElementById('depthTitle');
+
+    // Depth Slider P1 (Red AI)
+    const depthP1Slider = document.getElementById('depthP1');
+    const depthP1Value = document.getElementById('depthP1Value');
+    const difficultyLabelP1 = document.getElementById('difficultyLabelP1');
+    const depthP1Container = document.getElementById('depthP1Container');
+    const depthP1Title = document.getElementById('depthP1Title');
 
     function getDifficultyLabel(depth) {
         if (depth <= 5) return 'Instant';
@@ -61,15 +75,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateDepthDisplay() {
-        const val = parseInt(depthSlider.value);
-        depthValue.textContent = val;
-        difficultyLabel.textContent = getDifficultyLabel(val);
+        // Update P2 (Default)
+        if (depthSlider && depthValue && difficultyLabel) {
+            const val = parseInt(depthSlider.value);
+            depthValue.textContent = val;
+            difficultyLabel.textContent = getDifficultyLabel(val);
+        }
+        // Update P1
+        if (depthP1Slider && depthP1Value && difficultyLabelP1) {
+            const val = parseInt(depthP1Slider.value);
+            depthP1Value.textContent = val;
+            difficultyLabelP1.textContent = getDifficultyLabel(val);
+        }
     }
 
-    if (depthSlider && depthValue && difficultyLabel) {
-        depthSlider.addEventListener('input', updateDepthDisplay);
-        updateDepthDisplay();
-    }
+    if (depthSlider) depthSlider.addEventListener('input', updateDepthDisplay);
+    if (depthP1Slider) depthP1Slider.addEventListener('input', updateDepthDisplay);
+    updateDepthDisplay();
 
     // Setup Play Again button
     const playAgainBtn = document.querySelector('.overlay-content .btn');
@@ -84,14 +106,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     newGame();
 });
 
+let cancelAiLoop = false;
+
 /**
  * Load ONNX neural network model
  */
 async function loadModel() {
     try {
         console.log('Loading ONNX model...');
-        onnxSession = await ort.InferenceSession.create('model.onnx');
+        onnxSession = await ort.InferenceSession.create('static/model.onnx');
         console.log('✓ ONNX model loaded');
+
         mcts = new MCTS(onnxSession, 50);
     } catch (e) {
         console.warn('Could not load ONNX model, using random policy:', e);
@@ -103,11 +128,13 @@ async function loadModel() {
  * Start a new game
  */
 function newGame() {
+    cancelAiLoop = true; // Stop any ongoing AI vs AI match
     game = new SequenceGame();
     game.reset();
     selectedCard = null;
     hoveredCard = null;
     isThinking = false;
+    watchMode = false; // Reset watch mode
 
     if (gameOverOverlay) {
         gameOverOverlay.classList.remove('visible');
@@ -123,18 +150,72 @@ function newGame() {
     if (aiProgressContainer) {
         aiProgressContainer.classList.remove('visible');
     }
+
+    // Hide eval bar
+    if (evalBarContainer) {
+        evalBarContainer.classList.remove('visible');
+    }
+
+    // Clear history
+    const historyEl = document.getElementById('moveHistory');
+    if (historyEl) historyEl.innerHTML = '';
+
+    // Reset Labels (User vs AI)
+    if (labelP1) labelP1.textContent = "YOU";
+    if (labelP2) labelP2.textContent = "AI";
+
+    // Hide P1 Slider (User plays P1)
+    const depthP1Container = document.getElementById('depthP1Container');
+    if (depthP1Container) depthP1Container.style.display = 'none';
+
+    // Rename main slider to just "Depth" or "AI Depth"
+    const depthTitle = document.getElementById('depthTitle');
+    if (depthTitle) depthTitle.textContent = "Depth";
 }
+
 
 /**
  * Watch AI vs AI
  */
 async function watchAiVsAi() {
-    watchMode = true;
-    newGame();
+    newGame(); // This sets cancelAiLoop = true (stopping old loops) and watchMode = false
 
-    while (!game.gameOver) {
+    // Setup for this new match
+    cancelAiLoop = false;
+    watchMode = true;
+
+    // Re-render to show hidden info (P2 hand)
+    renderP1Hand();
+    renderP2Hand();
+    renderP1Hand();
+    renderP2Hand();
+    updateStatus();
+
+    // Set Labels (AI vs AI)
+    if (labelP1) labelP1.textContent = "AI 1 (Red)";
+    if (labelP2) labelP2.textContent = "AI 2 (Blue)";
+
+    // Show P1 Slider
+    const depthP1Container = document.getElementById('depthP1Container');
+    if (depthP1Container) depthP1Container.style.display = 'block';
+
+    // Update Slider Titles
+    const depthTitle = document.getElementById('depthTitle');
+    if (depthTitle) depthTitle.textContent = "Blue Depth";
+
+    while (!game.gameOver && !cancelAiLoop) {
+        // AI 1 Turn
         await triggerAiTurn();
-        await sleep(500); // Pause between moves
+        if (cancelAiLoop) break;
+        if (game.gameOver) break;
+        await sleep(500);
+
+        // AI 2 Turn (same function, just called again)
+        if (!game.gameOver && !cancelAiLoop) {
+            await triggerAiTurn();
+            if (cancelAiLoop) break;
+            await sleep(500);
+        }
     }
 }
 
@@ -158,22 +239,110 @@ async function triggerAiTurn() {
         aiProgressText.textContent = 'Thinking...';
     }
 
+    // Determine simulations based on current player
+    // If Watch Mode and P1 turn -> use P1 slider
+    // All other cases (P2 or Human vs AI where AI is P2) -> use default slider
+    let simulations = 50;
+
     const depthSlider = document.getElementById('depth');
-    const simulations = depthSlider ? parseInt(depthSlider.value) : 50;
+    const depthP1Slider = document.getElementById('depthP1');
+
+    if (game.currentPlayer === 1 && watchMode && depthP1Slider) {
+        simulations = parseInt(depthP1Slider.value);
+    } else if (depthSlider) {
+        simulations = parseInt(depthSlider.value);
+    }
+
     mcts.numSimulations = simulations;
 
+    // Force paint before starting heavy calculation
+    await new Promise(r => setTimeout(r, 50));
+
+    // Show eval bar if checked (regardless of mode)
+    // But usually only interesting in Watch Mode or if user wants to see their own winning chance?
+    // User requested: "checkable show eval bar you can enable in ai vs ai and human vs ai mode"
+    if (showEvalBar && showEvalBar.checked && evalBarContainer) {
+        evalBarContainer.classList.add('visible');
+    } else if (evalBarContainer) {
+        evalBarContainer.classList.remove('visible');
+    }
+
     try {
-        const result = await mcts.search(game, (current, total) => {
+        const result = await mcts.search(game, (current, total, policy, value) => {
             const pct = Math.floor((current / total) * 100);
             if (aiProgressBar) aiProgressBar.style.width = pct + '%';
-            if (aiProgressText) aiProgressText.textContent = `${current}/${total} simulations`;
+
+            // Debug info in UI
+            let debugText = `${current}/${total}`;
+            if (aiProgressText) aiProgressText.textContent = debugText;
+
+            // Update Eval Bar
+            if (evalBarContainer && value !== undefined) {
+                // value is roughly -1 to 1 from perspective of Current Turn player.
+                // We want to map it to Red (P1) vs Blue (P2).
+
+                // If Current is P1: +1 means P1 wins (Red 100%), -1 means P2 wins (Red 0%).
+                // If Current is P2: +1 means P2 wins (Red 0%), -1 means P1 wins (Red 100%).
+
+                let p1Advantage = 0; // -1 to 1 scale where 1 is P1 winning
+
+                if (game.currentPlayer === 1) {
+                    p1Advantage = value;
+                } else {
+                    p1Advantage = -value;
+                }
+
+                // Map [-1, 1] to [0%, 100%] width for Red Overlay
+                // 0 -> 50%
+                // 1 -> 100%
+                // -1 -> 0%
+                const redPercent = ((p1Advantage + 1) / 2) * 100;
+
+                // Clamp nicely
+                const clamped = Math.max(0, Math.min(100, redPercent));
+
+                if (evalBarFill) evalBarFill.style.width = `${clamped}%`;
+
+                // Text: "Red 60%" or "Blue 60%"
+                if (evalText) {
+                    if (clamped > 50) {
+                        evalText.textContent = `Red ${Math.round(clamped)}%`;
+                    } else {
+                        evalText.textContent = `Blue ${Math.round(100 - clamped)}%`;
+                    }
+                }
+            }
+
+            // Render live highlights
+            // Update frequently to ensure visibility
+            if (policy) {
+                renderTopMoves(policy);
+            }
         });
 
         if (result.move) {
+            updateHistory(result.move, game.currentPlayer);
             game.makeMove(result.move);
+
+            // Force Eval Bar to 100% if Game Over
+            if (game.gameOver && evalBarContainer && evalBarFill && evalText) {
+                if (game.winner === 1) {
+                    evalBarFill.style.width = '100%';
+                    evalText.textContent = 'Red 100%';
+                } else if (game.winner === 2) {
+                    evalBarFill.style.width = '0%';
+                    evalText.textContent = 'Blue 100%';
+                }
+            }
+        }
+
+        // Show AI thinking highlights
+        if (result.policy) {
+            renderTopMoves(result.policy);
         }
     } catch (e) {
         console.error('MCTS error:', e);
+        if (aiProgressText) aiProgressText.textContent = "Error: " + e.message;
     }
 
     isThinking = false;
@@ -381,6 +550,8 @@ async function handleCellClick(row, col) {
     if (!validMove) return;
 
     game.makeMove(validMove);
+    updateHistory(validMove, 1);
+
     selectedCard = null;
     hoveredCard = null;
 
@@ -406,23 +577,53 @@ async function handleCellClick(row, col) {
 /**
  * Update turn indicator
  */
+/**
+ * Update turn indicator
+ */
 function updateStatus() {
     if (!turnIndicatorEl) return;
 
     const textEl = turnIndicatorEl.querySelector('.text');
+    const dotEl = turnIndicatorEl.querySelector('.turn-dot');
+
+    // Default classes
+    turnIndicatorEl.className = 'turn-indicator';
 
     if (game.gameOver) {
-        textEl.textContent = game.winner === 1 ? 'You Win!' : 'AI Wins!';
-        turnIndicatorEl.className = 'turn-indicator';
-    } else if (isThinking) {
-        textEl.textContent = 'AI Thinking...';
-        turnIndicatorEl.className = 'turn-indicator ai-turn';
-    } else if (game.currentPlayer === 1) {
-        textEl.textContent = watchMode ? 'P1 Turn' : 'Your Turn';
-        turnIndicatorEl.className = 'turn-indicator player-turn';
+        textEl.textContent = game.winner === 1 ? (watchMode ? 'AI 1 Wins!' : 'You Win!') : (watchMode ? 'AI 2 Wins!' : 'AI Wins!');
+        // Keep the winner's color
+        if (game.winner === 1) {
+            turnIndicatorEl.classList.add('player-turn');
+        } else {
+            turnIndicatorEl.classList.add('ai-turn');
+        }
     } else {
-        textEl.textContent = 'AI Turn';
-        turnIndicatorEl.className = 'turn-indicator ai-turn';
+        const isP1 = game.currentPlayer === 1;
+
+        // Update Dot Color
+        // P1 = Red (Player/AI1), P2 = Blue (AI/AI2)
+        if (isP1) {
+            turnIndicatorEl.classList.add('player-turn');
+            turnIndicatorEl.classList.remove('ai-turn');
+        } else {
+            turnIndicatorEl.classList.add('ai-turn');
+            turnIndicatorEl.classList.remove('player-turn');
+        }
+
+        // Update Text
+        if (isThinking) {
+            if (watchMode) {
+                textEl.textContent = isP1 ? 'AI 1 Thinking...' : 'AI 2 Thinking...';
+            } else {
+                textEl.textContent = 'AI Thinking...';
+            }
+        } else {
+            if (watchMode) {
+                textEl.textContent = isP1 ? 'AI 1 Turn' : 'AI 2 Turn';
+            } else {
+                textEl.textContent = isP1 ? 'Your Turn' : 'AI Turn';
+            }
+        }
     }
 }
 
@@ -435,14 +636,129 @@ function renderScores() {
 }
 
 /**
+ * Render Top Moves (Highlights)
+ * Shows AI thinking process with color-coded orbs (Red/Blue) and Gold for best move.
+ */
+/**
+ * Render Top Moves (Highlights)
+ * Shows AI thinking process with color-coded orbs (Red/Blue) and Gold for best move.
+ */
+function renderTopMoves(policy) {
+    try {
+        // Clear previous highlights
+        document.querySelectorAll('.highlight-orb').forEach(el => el.remove());
+
+        // Debug logging for visibility issues
+        if (!watchMode) {
+            return;
+        }
+
+        if (!policy) return;
+
+        // Convert policy (Float32Array) to array of {row, col, score}
+        const moves = [];
+        let bestScore = 0;
+
+        for (let i = 0; i < 100; i++) {
+            if (policy[i] > bestScore) bestScore = policy[i];
+        }
+
+        // Use a tiny epsilon to avoid division by zero, but keep it small
+        const maxScore = Math.max(bestScore, 0.0001);
+
+        for (let i = 0; i < 100; i++) {
+            const score = policy[i];
+
+            // Reduced Thresholds for specific debugging:
+            // Always include if it's the best score (even if low confidence)
+            // Or if it's significant (> 1% AND > 20% of best)
+            const isBest = (Math.abs(score - bestScore) < 0.0001 && score > 0);
+
+            if (!isBest) {
+                if (score < 0.01) continue;
+                if (score < maxScore * 0.2) continue;
+            }
+
+            moves.push({
+                row: Math.floor(i / 10),
+                col: i % 10,
+                score: score
+            });
+        }
+
+        // Shuffle moves to prevent 'Top Row' alignment artifact when scores are tied/uniform
+        for (let i = moves.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [moves[i], moves[j]] = [moves[j], moves[i]];
+        }
+
+        // Sort by score descending (Best move first)
+        moves.sort((a, b) => b.score - a.score);
+
+        // Limit to max 104 visuals (cover all possible moves including Jacks)
+        const topMoves = moves.slice(0, 104);
+
+        const isP1Turn = game.currentPlayer === 1;
+
+        topMoves.forEach((m, index) => {
+            const cell = document.querySelector(`.cell[data-row="${m.row}"][data-col="${m.col}"]`);
+
+            if (cell) {
+                // Create orb
+                const orb = document.createElement('div');
+
+                // Base Class
+                orb.className = 'highlight-orb';
+
+                // Determine type
+                if (index === 0) {
+                    // Best Move -> Gold
+                    orb.classList.add('best');
+                } else {
+                    // Consideration -> Blue (AI) or Red (Player 1)
+                    // Note: In AI vs AI, P1 is Red, P2 is Blue.
+                    orb.classList.add(isP1Turn ? 'p1' : 'p2');
+
+                    // Opacity based on confidence relative to best
+                    // Range 0.4 to 0.9
+                    let relativeConfidence = m.score / maxScore;
+                    if (relativeConfidence < 0.3) relativeConfidence = 0.3; // Min visibility
+
+                    orb.style.opacity = 0.3 + (0.6 * relativeConfidence);
+
+                    // Size variation based on score
+                    const size = 35 + (15 * relativeConfidence); // 35px to 50px
+                    orb.style.width = `${size}px`;
+                    orb.style.height = `${size}px`;
+                }
+
+                cell.appendChild(orb);
+            }
+        });
+    } catch (e) {
+        console.error("renderTopMoves failed:", e);
+    }
+}
+
+/**
  * Show game over overlay
  */
 function showGameOver() {
     if (gameOverOverlay) {
         gameOverOverlay.classList.add('visible');
-        gameOverText.textContent = game.winner === 1 ? '🎉 You Win!' : '🤖 AI Wins!';
+
+        // Check winner correctly
+        let message = '';
+        if (watchMode) {
+            message = game.winner === 1 ? 'AI 1 Wins!' : 'AI 2 Wins!';
+        } else {
+            message = game.winner === 1 ? '🎉 You Win!' : '🤖 AI Wins!';
+        }
+
+        gameOverText.textContent = message;
     }
 }
+
 
 function dismissGameOver() {
     if (gameOverOverlay) {
@@ -485,3 +801,46 @@ async function getHint() {
         }
     }
 }
+
+/**
+ * Update Move History
+ */
+function updateHistory(move, player) {
+    const historyEl = document.getElementById('moveHistory');
+    if (!historyEl) return;
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.classList.add(player === 1 ? 'history-player-1' : 'history-player-2');
+
+    const cardStr = move.card;
+    const suitChar = cardStr.slice(-1);
+    const rankChar = cardStr.slice(0, -1);
+    const suitSymbol = SUIT_SYMBOLS[suitChar];
+    const isRed = (suitChar === 'H' || suitChar === 'D');
+
+    let playerName;
+    if (watchMode) {
+        playerName = player === 1 ? 'AI 1' : 'AI 2';
+    } else {
+        playerName = player === 1 ? 'YOU' : 'AI';
+    }
+
+    // const playerName = player === 1 ? 'YOU' : 'AI';
+    const locText = move.is_removal ? 'Remove' : `(${move.col + 1}, ${move.row + 1})`;
+
+
+    item.innerHTML = `
+        <span class="card-label-inline">
+            ${playerName}: 
+        </span>
+        <span style="color:${isRed ? '#ef4444' : '#e0e0e0'}; margin-left: 5px; font-weight:bold;">
+            ${rankChar}${suitSymbol}
+        </span>
+        <span style="margin-left: 5px;">${locText}</span>
+    `;
+
+    historyEl.appendChild(item);
+    historyEl.scrollTop = historyEl.scrollHeight;
+}
+
