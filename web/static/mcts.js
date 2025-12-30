@@ -133,8 +133,9 @@ class MCTS {
                 // Normalize roughly to [-1, 1] -> [0, 1] relative to current player
                 // But typically node.value accumulates +1/-1. 
                 // So average is between -1 and 1.
+                // Root value is inverted (relative to opponent) due to backprop flip, so we negate it.
                 const visits = root.visits || 1;
-                const avgValue = root.value / visits;
+                const avgValue = -(root.value / visits);
                 progressCallback(i + 1, this.numSimulations, root.getPolicy(), avgValue);
             }
 
@@ -164,18 +165,12 @@ class MCTS {
 
         // Check terminal
         if (node.game.gameOver) {
-            // Value must be from the perspective of the player whose turn it WOULD be at this node.
-            // (Strictly, this node represents the state AFTER 'node.player' moved).
-            // So if node.player (Just Moved) Won, then Current Perspective (Opponent) Lost (-1).
-
-            // Note: node.game.winner is 1 or 2.
-            // node.game.currentPlayer is the next player.
-
+            // Value from the perspective of the player who made the move (node.player)
             let value = 0;
-            if (node.game.winner === node.game.currentPlayer) {
-                value = 1; // Unlikely if they just moved, but handling consistency
-            } else {
-                value = -1; // The player who just moved won, so "Current Perspective" lost.
+            if (node.game.winner === node.player) {
+                value = 1; // The move led to a win
+            } else if (node.game.winner) {
+                value = -1; // The move led to a loss (opponent won)
             }
 
             this.backpropagate(node, value);
@@ -202,7 +197,11 @@ class MCTS {
         if (this.session) {
             const result = await this.evaluate(node.game);
             priors = result.policy;
-            value = result.value;
+
+            // Result.value is for current_player (the one NEXT to move in child state)
+            // We want value for node.player (the one who just moved)
+            // So we negate it.
+            value = -result.value;
         } else {
             // Fallback: uniform priors, random value
             priors = new Float32Array(100).fill(1 / 100);

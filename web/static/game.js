@@ -899,7 +899,7 @@ function updateHistory(move, player) {
     }
 
     // const playerName = player === 1 ? 'YOU' : 'AI';
-    const locText = move.is_removal ? 'Remove' : `(${move.col + 1}, ${move.row + 1})`;
+    const locText = move.is_removal ? `Remove (${move.col + 1}, ${move.row + 1})` : `(${move.col + 1}, ${move.row + 1})`;
 
 
     item.innerHTML = `
