@@ -490,7 +490,7 @@ function renderHistory() {
             <strong>${playerName}</strong>
             <span>${formatCardLabel(h.card)}</span>
             <span>➜</span>
-            <span>(${h.r}, ${h.c})</span>
+            <span>(${h.c + 1}, ${h.r + 1})</span>
         `;
         moveHistoryEl.appendChild(div);
     }
