@@ -122,14 +122,8 @@ async function triggerAiTurn() {
     const thisEpoch = currentEpoch;
 
     isThinking = true;
-    renderTopMoves(null); // Clear highlights immediately before thinking delay
+    renderTopMoves(null); // Clear highlights immediately
     updateStatus();
-
-    // Add a small delay for visual clarity
-    await new Promise(r => setTimeout(r, 600));
-
-    // [NEW] Second epoch check after delay (before fetch)
-    if (thisEpoch !== currentEpoch) return;
 
     // Get difficulty setting
     const difficultyEl = document.getElementById('difficulty');
@@ -213,7 +207,7 @@ function startAiPolling() {
         } catch (e) {
             console.error("Polling error", e);
         }
-    }, 100); // Fast 100ms polling
+    }, 50); // High-frequency 50ms polling for fast AI searches
 }
 
 function stopAiPolling() {
