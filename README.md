@@ -137,24 +137,27 @@ View real-time loss curves:
 
 ---
 
-## 🎮 Play Against AI
+## 🎮 Play Against AI (Web Interface)
 
-1.  **Download Model:**
-    ```powershell
-    scp ubuntu@<SERVER_IP>:~/Sequence-Filesystem/Sequence/models/latest.pt ./models/
-    ```
+The web interface runs **entirely in your browser** - no server required!
 
-2.  **Start Web Server:**
-    ```bash
-    python web/app.py
-    ```
-3.  **Features:**
-    *   **Live AI "Thinking" Visualization:** Watch the AI's top move candidates and their scores update in real-time.
-    *   **AI Progress Bar:** Track the completion percentage of MCTS simulations.
-    *   **Interactive Turn Indicators:** Modern, glowing UI indicators for active players.
-    *   **Jack Rules Reference:** Quick in-game guide for Wild (2-eyed) and Removal (1-eyed) Jacks.
-    *   **Post-Game Inspection:** Hide the game-over screen to analyze the final board state and sequences.
-    *   **1-Indexed Coordinates:** History uses friendly `(x, y)` coordinates matching the 1-10 board scale.
+### Local Play
+```bash
+# Serve static files
+python -m http.server 8080 --directory web/static
+# Open http://localhost:8080
+```
+
+### Deploy to GitHub Pages
+1. Push the `web/static/` folder to your `gh-pages` branch
+2. Enable GitHub Pages in repository settings
+3. Play at `https://yourusername.github.io/Sequence/`
+
+### Features
+- **Client-Side AI:** Neural network runs in browser via ONNX.js
+- **No Server Costs:** Static hosting = free on GitHub Pages
+- **Offline Capable:** Works without internet after initial load
+- **Adjustable Difficulty:** Depth slider (1-500 MCTS simulations)
 
 ---
 
@@ -163,5 +166,9 @@ View real-time loss curves:
 *   `src/`: Core Python logic for training and MCTS.
 *   `src/c_game/`: C engine for deterministic, high-performance game logic.
 *   `tests/`: Core game logic unit tests.
-*   `web/`: Modern Flask-based reactive web interface.
+*   `web/static/`: **Static web app** (HTML/CSS/JS) - deployable to any static host.
+    - `game_engine.js`: Client-side game logic
+    - `mcts.js`: JavaScript MCTS with ONNX.js inference
+    - `model.onnx`: Trained neural network (exported from PyTorch)
 *   `models/`: Storage for trained neural network weights.
+*   `scripts/`: Utility scripts (ONNX export, etc.)
