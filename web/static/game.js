@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const depthP1Container = document.getElementById('depthP1Container');
     const depthP1Title = document.getElementById('depthP1Title');
 
+    // Judge Depth Slider
+    const judgeDepthSlider = document.getElementById('judgeDepth');
+    const judgeDepthValue = document.getElementById('judgeDepthValue');
+
     function getDifficultyLabel(depth) {
         if (depth <= 5) return 'Instant';
         if (depth <= 15) return 'Super Easy';
@@ -87,10 +91,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             depthP1Value.textContent = val;
             difficultyLabelP1.textContent = getDifficultyLabel(val);
         }
+        // Update Judge
+        if (judgeDepthSlider && judgeDepthValue) {
+            const val = parseInt(judgeDepthSlider.value);
+            judgeDepthValue.textContent = val;
+        }
     }
 
     if (depthSlider) depthSlider.addEventListener('input', updateDepthDisplay);
     if (depthP1Slider) depthP1Slider.addEventListener('input', updateDepthDisplay);
+    if (judgeDepthSlider) judgeDepthSlider.addEventListener('input', updateDepthDisplay);
     updateDepthDisplay();
 
     // Setup Play Again button
@@ -205,6 +215,9 @@ async function watchAiVsAi() {
 
     while (!game.gameOver && !cancelAiLoop) {
         // AI 1 Turn
+        await runJudgeEval();
+        if (cancelAiLoop) break;
+
         await triggerAiTurn();
         if (cancelAiLoop) break;
         if (game.gameOver) break;
@@ -212,6 +225,9 @@ async function watchAiVsAi() {
 
         // AI 2 Turn (same function, just called again)
         if (!game.gameOver && !cancelAiLoop) {
+            await runJudgeEval();
+            if (cancelAiLoop) break;
+
             await triggerAiTurn();
             if (cancelAiLoop) break;
             await sleep(500);
@@ -221,6 +237,95 @@ async function watchAiVsAi() {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Run Judge Evaluation (Pre-Move)
+ */
+async function runJudgeEval() {
+    if (!mcts || !game || game.gameOver) return;
+
+    // Only run if eval bar is enabled
+    if (!showEvalBar || !showEvalBar.checked) {
+        if (evalBarContainer) evalBarContainer.classList.remove('visible');
+        return;
+    }
+
+    if (evalBarContainer) evalBarContainer.classList.add('visible');
+    // if (evalText) evalText.textContent = "Judging...";
+
+    const judgeSlider = document.getElementById('judgeDepth');
+    let judgeSims = judgeSlider ? parseInt(judgeSlider.value) : 50;
+
+    // Apply "Min Judge Depth" Logic:
+    // "Make the judge depth only kick in if its higher than the depth of the ai it just came from"
+    // I.e. Judge Sim Count = Max(Judge Slider, Previous Player Depth)
+
+    // Determine Previous Player
+    const prevPlayer = (game.currentPlayer === 1) ? 2 : 1;
+    let prevPlayerDepth = 0;
+
+    const depthSlider = document.getElementById('depth'); // P2 (Blue)
+    const depthP1Slider = document.getElementById('depthP1'); // P1 (Red) - Visible in Watch Mode
+
+    if (prevPlayer === 2) {
+        // Previous was P2 (Always AI)
+        if (depthSlider) prevPlayerDepth = parseInt(depthSlider.value);
+    } else {
+        // Previous was P1
+        if (watchMode && depthP1Slider) {
+            // P1 is AI in Watch Mode
+            prevPlayerDepth = parseInt(depthP1Slider.value);
+        } else {
+            // P1 is Human
+            prevPlayerDepth = 0;
+        }
+    }
+
+    if (prevPlayerDepth > judgeSims) {
+        judgeSims = prevPlayerDepth;
+    }
+
+    // Save old sims
+    const oldSims = mcts.numSimulations;
+    mcts.numSimulations = judgeSims;
+
+    try {
+        await mcts.search(game, (current, total, policy, value) => {
+            updateEvalBar(value);
+        });
+    } catch (e) {
+        console.error("Judge error:", e);
+    } finally {
+        mcts.numSimulations = oldSims;
+    }
+}
+
+function updateEvalBar(value) {
+    if (!evalBarContainer || value === undefined) return;
+
+    let p1Advantage = 0; // -1 to 1 scale where 1 is P1 winning
+
+    if (game.currentPlayer === 1) {
+        p1Advantage = value;
+    } else {
+        p1Advantage = -value;
+    }
+
+    // Map [-1, 1] to [0%, 100%] width for Red Overlay
+    const redPercent = ((p1Advantage + 1) / 2) * 100;
+    const clamped = Math.max(0, Math.min(100, redPercent));
+
+    if (evalBarFill) evalBarFill.style.width = `${clamped}%`;
+
+    // Text: "Red 60%" or "Blue 60%"
+    if (evalText) {
+        if (clamped > 50) {
+            evalText.textContent = `Red ${Math.round(clamped)}%`;
+        } else {
+            evalText.textContent = `Blue ${Math.round(100 - clamped)}%`;
+        }
+    }
 }
 
 /**
@@ -276,42 +381,8 @@ async function triggerAiTurn() {
             let debugText = `${current}/${total}`;
             if (aiProgressText) aiProgressText.textContent = debugText;
 
-            // Update Eval Bar
-            if (evalBarContainer && value !== undefined) {
-                // value is roughly -1 to 1 from perspective of Current Turn player.
-                // We want to map it to Red (P1) vs Blue (P2).
-
-                // If Current is P1: +1 means P1 wins (Red 100%), -1 means P2 wins (Red 0%).
-                // If Current is P2: +1 means P2 wins (Red 0%), -1 means P1 wins (Red 100%).
-
-                let p1Advantage = 0; // -1 to 1 scale where 1 is P1 winning
-
-                if (game.currentPlayer === 1) {
-                    p1Advantage = value;
-                } else {
-                    p1Advantage = -value;
-                }
-
-                // Map [-1, 1] to [0%, 100%] width for Red Overlay
-                // 0 -> 50%
-                // 1 -> 100%
-                // -1 -> 0%
-                const redPercent = ((p1Advantage + 1) / 2) * 100;
-
-                // Clamp nicely
-                const clamped = Math.max(0, Math.min(100, redPercent));
-
-                if (evalBarFill) evalBarFill.style.width = `${clamped}%`;
-
-                // Text: "Red 60%" or "Blue 60%"
-                if (evalText) {
-                    if (clamped > 50) {
-                        evalText.textContent = `Red ${Math.round(clamped)}%`;
-                    } else {
-                        evalText.textContent = `Blue ${Math.round(100 - clamped)}%`;
-                    }
-                }
-            }
+            // Update Eval Bar (REMOVED - now handled by Judge)
+            // if (evalBarContainer && value !== undefined) { ... }
 
             // Render live highlights
             // Update frequently to ensure visibility
@@ -570,6 +641,7 @@ async function handleCellClick(row, col) {
     if (game.currentPlayer === 2) {
         // Force DOM repaint before AI starts thinking
         await sleep(10);
+        await runJudgeEval();
         await triggerAiTurn();
     }
 }
