@@ -10,7 +10,9 @@ let isThinking = false;
 
 // DOM elements
 const boardEl = document.getElementById('board');
-const handEl = document.getElementById('hand');
+const handP1El = document.getElementById('handP1');
+const handP2El = document.getElementById('handP2');
+const moveHistoryEl = document.getElementById('moveHistory');
 const turnIndicator = document.getElementById('turnIndicator');
 const playerSequences = document.getElementById('playerSequences');
 const aiSequences = document.getElementById('aiSequences');
@@ -36,13 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     watchAiBtn.addEventListener('click', watchAiVsAi);
     hintBtn.addEventListener('click', getHint);
-    
+
     // Setup Play Again button in overlay
     const playAgainBtn = document.querySelector('.overlay-content .btn');
     if (playAgainBtn) {
         playAgainBtn.onclick = () => newGame(); // Inherits current watchMode
     }
-    
+
     newGame();
 });
 
@@ -57,21 +59,23 @@ async function newGame() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ai_player: 2 })
         });
-        
+
         if (!response.ok) throw new Error('Failed to start game');
-        
+
         gameState = await response.json();
         selectedCard = null;
-        
+
         renderBoard();
-        renderHand();
+        renderP1Hand();
+        renderP2Hand();
+        renderHistory();
         updateStatus();
-        
+
         gameOverOverlay.classList.remove('visible');
-        
+
         // Check if AI should start
         checkAndTriggerAi();
-        
+
     } catch (error) {
         console.error('Error starting game:', error);
         alert('Failed to start game. Is the server running?');
@@ -91,7 +95,7 @@ async function watchAiVsAi() {
  */
 function checkAndTriggerAi() {
     if (gameState.game_over || isThinking) return;
-    
+
     const isAiTurn = watchMode || (gameState.current_player === gameState.ai_player);
     if (isAiTurn) {
         triggerAiTurn();
@@ -103,36 +107,45 @@ function checkAndTriggerAi() {
  */
 async function triggerAiTurn() {
     if (gameState.game_over || isThinking) return;
-    
+
     isThinking = true;
-    updateStatus(); 
-    
+    updateStatus();
+
     // Add a small delay for visual clarity
     await new Promise(r => setTimeout(r, 600));
-    
+
     // Get difficulty setting
     const difficultyEl = document.getElementById('difficulty');
     const difficulty = difficultyEl ? difficultyEl.value : 'medium';
-    
+
     try {
         const response = await fetch('/api/ai_move', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ difficulty: difficulty })
         });
-        
+
         if (!response.ok) throw new Error('AI move failed');
-        
-        gameState = await response.json();
+
+        const data = await response.json();
+        gameState = data;
+
         isThinking = false;
-        
+
         renderBoard();
-        renderHand();
+        // Render highlights if available
+        if (data.ai_move && data.ai_move.top_moves) {
+            renderTopMoves(data.ai_move.top_moves);
+        }
+
+        renderP1Hand();
+        renderP2Hand();
+        renderHistory();
         updateStatus();
-        
+
         // Loop or check for next turn
         checkAndTriggerAi();
-        
+
     } catch (error) {
         console.error('Error triggering AI turn:', error);
         isThinking = false;
@@ -145,16 +158,16 @@ async function triggerAiTurn() {
  */
 function renderBoard() {
     boardEl.innerHTML = '';
-    
+
     for (let row = 0; row < 10; row++) {
         for (let col = 0; col < 10; col++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.dataset.row = row;
             cell.dataset.col = col;
-            
+
             const cardLabel = gameState.board_layout[row][col];
-            
+
             // Check for corner (free) spaces
             if (cardLabel === 'FREE') {
                 cell.classList.add('free-space');
@@ -165,9 +178,9 @@ function renderBoard() {
                 const rankChar = cardLabel.slice(0, -1);
                 const suitSymbol = SUIT_SYMBOLS[suitChar];
                 const isRed = (suitChar === 'H' || suitChar === 'D');
-                
+
                 cell.classList.add(isRed ? 'suit-red' : 'suit-black');
-                
+
                 cell.innerHTML = `
                     <div class="cell-content">
                         <span class="cell-rank">${rankChar}</span>
@@ -175,7 +188,7 @@ function renderBoard() {
                     </div>
                 `;
             }
-            
+
             // Chip state
             const chipState = gameState.board[row][col];
             if (chipState === gameState.human_player) {
@@ -185,10 +198,10 @@ function renderBoard() {
             } else if (chipState === -1) {
                 cell.classList.add('has-chip', 'free-chip');
             }
-            
+
             // Highlight valid moves if card selected
             if (selectedCard && !gameState.game_over) {
-                const validMove = gameState.legal_moves.find(m => 
+                const validMove = gameState.legal_moves.find(m =>
                     m.card === selectedCard && m.row === row && m.col === col
                 );
                 if (validMove) {
@@ -199,19 +212,19 @@ function renderBoard() {
                     }
                 }
             }
-            
+
             // Highlight sequences
             highlightSequences(cell, row, col);
-            
+
             // Click handler
             cell.addEventListener('click', () => handleCellClick(row, col));
-            
+
             boardEl.appendChild(cell);
         }
     }
 }
 
-// Helper (no longer used directly for rendering but good utility)
+// Helper 
 function formatCardLabel(cardStr) {
     if (cardStr === 'FREE') return '★';
     return cardStr;
@@ -231,7 +244,7 @@ function highlightSequences(cell, row, col) {
         }
         return false;
     };
-    
+
     if (checkSequence(gameState.sequences[gameState.human_player]) ||
         checkSequence(gameState.sequences[gameState.ai_player])) {
         cell.classList.add('in-sequence');
@@ -239,39 +252,124 @@ function highlightSequences(cell, row, col) {
 }
 
 /**
- * Render player's hand
+ * Render Player 1 Hand (Left)
  */
-function renderHand() {
-    handEl.innerHTML = '';
-    
-    for (const cardStr of gameState.hand) {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.card = cardStr;
-        
-        const suitChar = cardStr.slice(-1);
-        const rankChar = cardStr.slice(0, -1);
-        const suitSymbol = SUIT_SYMBOLS[suitChar];
-        const isRed = (suitChar === 'H' || suitChar === 'D');
-        
-        card.classList.add(isRed ? 'suit-red' : 'suit-black');
-        
-        // Content
-        card.innerHTML = `
-            <div class="card-top">${rankChar}<br>${suitSymbol}</div>
-            <div class="card-center">${suitSymbol}</div>
-            <div class="card-bottom">${rankChar}<br>${suitSymbol}</div>
-        `;
-        
-        // Selected state
-        if (cardStr === selectedCard) {
+function renderP1Hand() {
+    if (!handP1El) return;
+    handP1El.innerHTML = '';
+
+    // Human Player (P1)
+    const p1Hand = (gameState.hands && gameState.hands[1]) || [];
+
+    for (const cardStr of p1Hand) {
+        const card = createCardElement(cardStr);
+
+        // Selected state (only if human turn)
+        if (cardStr === selectedCard && gameState.current_player === gameState.human_player) {
             card.classList.add('selected');
         }
-        
-        // Click handler
-        card.addEventListener('click', () => handleCardClick(cardStr));
-        
-        handEl.appendChild(card);
+
+        // Click handler (only if human turn)
+        if (gameState.current_player === gameState.human_player && !watchMode) {
+            card.addEventListener('click', () => handleCardClick(cardStr));
+        }
+
+        handP1El.appendChild(card);
+    }
+}
+
+/**
+ * Render Player 2 Hand (Right)
+ */
+function renderP2Hand() {
+    if (!handP2El) return;
+    handP2El.innerHTML = '';
+
+    const p2Hand = (gameState.hands && gameState.hands[2]) || [];
+
+    // In WatchMode (AI vs AI), show cards face up.
+    // In Human vs AI, show card backs.
+    const showFaceUp = watchMode;
+
+    if (!showFaceUp && !gameState.game_over) {
+        // Show backs
+        for (let i = 0; i < p2Hand.length; i++) {
+            const card = document.createElement('div');
+            card.className = 'card back';
+            card.style.background = '#4a0e0e'; // Red-ish back pattern placeholder
+            card.innerHTML = '<div style="color:rgba(255,255,255,0.1); font-size:3rem; display:flex; justify-content:center; align-items:center; height:100%">S</div>';
+            handP2El.appendChild(card);
+        }
+    } else {
+        // Show cards
+        for (const cardStr of p2Hand) {
+            const card = createCardElement(cardStr);
+            handP2El.appendChild(card);
+        }
+    }
+}
+
+function createCardElement(cardStr) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.card = cardStr;
+
+    const suitChar = cardStr.slice(-1);
+    const rankChar = cardStr.slice(0, -1);
+    const suitSymbol = SUIT_SYMBOLS[suitChar];
+    const isRed = (suitChar === 'H' || suitChar === 'D');
+
+    card.classList.add(isRed ? 'suit-red' : 'suit-black');
+
+    card.innerHTML = `
+        <div class="card-top">${rankChar}<br>${suitSymbol}</div>
+        <div class="card-center">${suitSymbol}</div>
+        <div class="card-bottom">${rankChar}<br>${suitSymbol}</div>
+    `;
+    return card;
+}
+
+/**
+ * Render Top Moves (Highlights)
+ */
+function renderTopMoves(moves) {
+    if (!moves || moves.length === 0) return;
+
+    moves.forEach(m => {
+        // Find cell
+        const cell = document.querySelector(`.cell[data-row="${m.row}"][data-col="${m.col}"]`);
+        if (cell) {
+            cell.classList.add('top-move');
+            cell.style.setProperty('--move-score', m.score); // 0.0 to 1.0
+        }
+    });
+}
+
+/**
+ * Render History
+ */
+function renderHistory() {
+    if (!moveHistoryEl) return;
+    moveHistoryEl.innerHTML = '';
+
+    const history = gameState.history || [];
+    // Show newest at top
+    for (let i = history.length - 1; i >= 0; i--) {
+        const h = history[i];
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.classList.add(h.player === 1 ? 'history-player-1' : 'history-player-2');
+
+        let playerName = h.player === 1 ? 'YOU' : 'AI';
+        if (watchMode) playerName = `P${h.player}`;
+
+        div.innerHTML = `
+            <strong>${playerName}</strong>
+            <span>${formatCardLabel(h.card)}</span>
+            <span>➜</span>
+            <span>(${h.r}, ${h.c})</span>
+        `;
+        moveHistoryEl.appendChild(div);
     }
 }
 
@@ -282,14 +380,14 @@ function updateStatus() {
     // Sequences count
     playerSequences.textContent = gameState.sequences[1].length;
     aiSequences.textContent = gameState.sequences[2].length;
-    
+
     // Turn indicator
     turnIndicator.classList.remove('ai-turn', 'game-over');
-    
+
     if (gameState.game_over) {
         turnIndicator.classList.add('game-over');
         turnIndicator.querySelector('.text').textContent = 'Game Over';
-        
+
         // Show overlay
         if (gameState.winner === 1) {
             gameOverText.textContent = watchMode ? '🤖 AI 1 Wins!' : '🎉 You Win!';
@@ -299,7 +397,7 @@ function updateStatus() {
             gameOverText.textContent = 'Draw!';
         }
         gameOverOverlay.classList.add('visible');
-        
+
     } else {
         const currentPlayer = gameState.current_player;
         if (watchMode) {
@@ -322,14 +420,15 @@ function updateStatus() {
 function handleCardClick(cardStr) {
     if (gameState.game_over) return;
     if (gameState.current_player !== gameState.human_player) return;
-    
+    if (watchMode) return;
+
     if (selectedCard === cardStr) {
         selectedCard = null;
     } else {
         selectedCard = cardStr;
     }
-    
-    renderHand();
+
+    renderP1Hand();
     renderBoard();
 }
 
@@ -340,14 +439,14 @@ async function handleCellClick(row, col) {
     if (gameState.game_over) return;
     if (gameState.current_player !== gameState.human_player) return;
     if (!selectedCard) return;
-    
+
     // Check if this is a valid move
     const validMove = gameState.legal_moves.find(m =>
         m.card === selectedCard && m.row === row && m.col === col
     );
-    
+
     if (!validMove) return;
-    
+
     // Make the move
     try {
         const response = await fetch('/api/move', {
@@ -360,22 +459,24 @@ async function handleCellClick(row, col) {
                 is_removal: validMove.is_removal
             })
         });
-        
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || 'Move failed');
         }
-        
+
         gameState = await response.json();
         selectedCard = null;
-        
+
         renderBoard();
-        renderHand();
+        renderP1Hand();
+        renderP2Hand();
+        renderHistory();
         updateStatus();
-        
+
         // Use central logic to check if AI needs to move
         checkAndTriggerAi();
-        
+
     } catch (error) {
         console.error('Error making move:', error);
         alert('Failed to make move: ' + error.message);
@@ -387,26 +488,28 @@ async function handleCellClick(row, col) {
  */
 async function getHint() {
     if (gameState.game_over) return;
-    if (gameState.current_player !== gameState.human_player) return;
-    
+
+    // In watch mode, maybe allowed? No, hint is usually for human.
+    if (gameState.current_player !== gameState.human_player && !watchMode) return;
+
     try {
         hintBtn.disabled = true;
         hintBtn.textContent = 'Thinking...';
-        
+
         const response = await fetch('/api/hint');
-        
+
         if (!response.ok) {
             throw new Error('Failed to get hint');
         }
-        
+
         const hint = await response.json();
-        
+
         // Select the suggested card and highlight the move
         selectedCard = hint.card;
-        
-        renderHand();
+
+        renderP1Hand();
         renderBoard();
-        
+
         // Flash the suggested cell
         const cells = document.querySelectorAll('.cell');
         const targetCell = cells[hint.row * 10 + hint.col];
@@ -416,7 +519,7 @@ async function getHint() {
                 targetCell.style.outline = '';
             }, 2000);
         }
-        
+
     } catch (error) {
         console.error('Error getting hint:', error);
         alert('Failed to get hint');

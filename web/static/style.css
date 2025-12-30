@@ -4,25 +4,28 @@
     --bg-primary: #1e1e1e;
     --bg-secondary: #252526;
     --bg-panel: #2d2d2d;
-    --bg-board: #004d40; /* Deep green felt */
-    
+    --bg-board: #004d40;
+    /* Deep green felt */
+
     --text-primary: #e0e0e0;
     --text-secondary: #a0a0a0;
-    
+
     --accent-primary: #007acc;
     --accent-hover: #005a9e;
-    
-    --player-color: #ef4444; /* Red chip */
-    --ai-color: #3b82f6;     /* Blue chip */
+
+    --player-color: #ef4444;
+    /* Red chip */
+    --ai-color: #3b82f6;
+    /* Blue chip */
     --free-color: #fbbf24;
-    
+
     --card-white: #f5f5f5;
     --card-text: #111;
     --suit-red: #d32f2f;
     --suit-black: #212121;
-    
+
     --border-radius: 8px;
-    --shadow-card: 0 1px 3px rgba(0,0,0,0.2);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 * {
@@ -72,7 +75,7 @@ body {
     background: var(--bg-panel);
     padding: 20px;
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -88,7 +91,7 @@ body {
 /* Turn Indicator */
 .turn-indicator {
     padding: 15px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius);
     display: flex;
     align-items: center;
@@ -120,8 +123,9 @@ body {
     padding: 15px;
     background: var(--bg-board);
     border-radius: 16px;
-    box-shadow: inset 0 0 40px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.2);
-    border: 8px solid #3e2723; /* Wood trim */
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 8px solid #3e2723;
+    /* Wood trim */
 }
 
 /* Board Cell (Card look) */
@@ -165,8 +169,13 @@ body {
 }
 
 /* Suit Colors */
-.cell.suit-red { color: var(--suit-red); }
-.cell.suit-black { color: var(--suit-black); }
+.cell.suit-red {
+    color: var(--suit-red);
+}
+
+.cell.suit-black {
+    color: var(--suit-black);
+}
 
 /* Special Cells (Corners/Free) */
 .cell.free-space {
@@ -187,9 +196,9 @@ body {
     height: 42px;
     border-radius: 50%;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4), 
-                inset 0 2px 4px rgba(255,255,255,0.5),
-                inset 0 -2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
     z-index: 20;
     pointer-events: none;
 }
@@ -266,7 +275,7 @@ body {
     display: flex;
     justify-content: center;
     padding: 20px;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     z-index: 50;
     position: relative;
 }
@@ -287,12 +296,13 @@ body {
     flex-direction: column;
     justify-content: space-between;
     padding: 5px;
-    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     transition: transform 0.2s;
     position: relative;
     user-select: none;
-    margin-left: -20px; /* Overlap */
+    margin-left: -20px;
+    /* Overlap */
 }
 
 .card:first-child {
@@ -301,8 +311,10 @@ body {
 
 .card:hover {
     transform: translateY(-20px);
-    z-index: 100 !important; /* Ensure hovered card is always on top */
-    margin-right: 20px; /* Push neighbors away slightly */
+    z-index: 100 !important;
+    /* Ensure hovered card is always on top */
+    margin-right: 20px;
+    /* Push neighbors away slightly */
 }
 
 .card:hover {
@@ -339,8 +351,13 @@ body {
     text-align: left;
 }
 
-.card.suit-red { color: var(--suit-red); }
-.card.suit-black { color: var(--suit-black); }
+.card.suit-red {
+    color: var(--suit-red);
+}
+
+.card.suit-black {
+    color: var(--suit-black);
+}
 
 
 /* Controls */
@@ -364,7 +381,9 @@ body {
     color: white;
 }
 
-.btn.primary:hover { background: var(--accent-hover); }
+.btn.primary:hover {
+    background: var(--accent-hover);
+}
 
 .btn.secondary {
     background: #444;
@@ -384,14 +403,16 @@ body {
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 100;
 }
 
-.overlay.visible { display: flex; }
+.overlay.visible {
+    display: flex;
+}
 
 .overlay-content {
     background: var(--bg-panel);
@@ -404,4 +425,137 @@ body {
     font-size: 2.5rem;
     margin-bottom: 20px;
     color: var(--text-primary);
+}
+
+/* Game Area */
+.game-area {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* Vertical Hands */
+.hand-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    min-width: 120px;
+    min-height: 400px;
+}
+
+.hand-vertical h3 {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.card-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    /* Allow overlap */
+}
+
+/* Update Card Styles for Vertical Stack */
+.card-stack .card {
+    margin-left: 0;
+    margin-bottom: -60px;
+    /* Vertical Overlap */
+}
+
+.card-stack .card:hover {
+    transform: translateY(-10px) translateX(10px);
+    margin-right: 0;
+    z-index: 100 !important;
+}
+
+.card-stack .card.selected {
+    transform: translateX(20px);
+}
+
+/* AI Top Move Highlights */
+.cell.top-move {
+    position: relative;
+    z-index: 40;
+}
+
+.cell.top-move::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 4px;
+    /* Square highlight inside cell */
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 10px #ffd700;
+    opacity: var(--move-score, 0.5);
+    /* Dynamic opacity */
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0.5;
+    }
+}
+
+/* Opponent Hand Overrides */
+.p2-hand .card.back {
+    background: #444;
+    border: 1px solid #666;
+}
+
+/* Move History */
+.move-history {
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.history-player-1 {
+    border-left: 3px solid var(--player-color);
+    padding-left: 5px;
+}
+
+.history-player-2 {
+    border-left: 3px solid var(--ai-color);
+    padding-left: 5px;
+}
+
+border-left: 3px solid var(--player-color);
+padding-left: 5px;
+}
+
+.history-player-2 {
+    border-left: 3px solid var(--ai-color);
+    padding-left: 5px;
 }

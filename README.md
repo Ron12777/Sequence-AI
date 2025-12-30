@@ -24,7 +24,7 @@ Use NVIDIA's NGC container for full `torch.compile()` support.
 scp -r C:\Users\rhnm0\Documents\GitHub\Sequence ubuntu@<SERVER_IP>:~/Sequence-Filesystem/
 
 # ============================================================
-# ON THE GH200 SERVER
+# ON THE GH200 SERVER after you ssh into it
 # ============================================================
 
 # 1. (One-time) Add user to docker group

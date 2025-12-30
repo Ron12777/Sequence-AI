@@ -73,11 +73,39 @@ def make_ai_move_internal(player_id, simulations=None):
     
     if move and game.make_move(move):
         print(f"AI made move: {move}")
+        
+        # Log move
+        if not hasattr(game, 'move_history_log'):
+            game.move_history_log = []
+        game.move_history_log.append({
+            'player': player_id,
+            'move': str(move),
+            'card': str(move.card),
+            'r': move.row,
+            'c': move.col
+        })
+        
+        # Process policy for visualization
+        top_moves = []
+        if 'policy' in locals() and policy is not None and len(policy) > 0:
+            # Policy is 100-dim array (board positions)
+            # Filter zero/low probs and sort
+            indices = np.argsort(policy)[::-1]
+            for idx in indices:
+                score = float(policy[idx])
+                if score < 0.01: break
+                top_moves.append({
+                    'row': int(idx // 10),
+                    'col': int(idx % 10),
+                    'score': score
+                })
+        
         return {
             'card': str(move.card),
             'row': move.row,
             'col': move.col,
-            'is_removal': move.is_removal
+            'is_removal': move.is_removal,
+            'top_moves': top_moves
         }
     print(f"AI failed to make a legal move for player {player_id}")
     return None
@@ -105,6 +133,7 @@ def new_game():
     
     game = SequenceGame()
     game.reset()
+    game.move_history_log = []
     
     return jsonify(get_game_state())
 
@@ -161,7 +190,12 @@ def get_game_state():
         'sequences': {
             1: [list(seq) for seq in game.completed_sequences[1]],
             2: [list(seq) for seq in game.completed_sequences[2]]
-        }
+        },
+        'hands': {
+            1: [str(c) for c in game.hands.get(1, [])],
+            2: [str(c) for c in game.hands.get(2, [])]
+        },
+        'history': getattr(game, 'move_history_log', [])
     }
 
 
@@ -206,6 +240,17 @@ def make_move():
         
         if not game.make_move(move):
             return jsonify({'error': 'Invalid move'}), 400
+            
+        # Log move
+        if not hasattr(game, 'move_history_log'):
+            game.move_history_log = []
+        game.move_history_log.append({
+            'player': human_player,
+            'move': str(move),
+            'card': str(move.card),
+            'r': row,
+            'c': col
+        })
         
     except (KeyError, ValueError) as e:
         return jsonify({'error': f'Invalid move data: {e}'}), 400
