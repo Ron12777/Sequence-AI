@@ -242,8 +242,7 @@ body {
     box-shadow: 0 0 0 3px #ef4444;
 }
 
-.cell.in-sequence::before {
-    content: '✕';
+.cell.in-sequence .sequence-mark {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -255,11 +254,11 @@ body {
     background: none;
 }
 
-.cell.player-chip.in-sequence::before {
+.cell.player-chip.in-sequence .sequence-mark {
     color: #7f0000;
 }
 
-.cell.ai-chip.in-sequence::before {
+.cell.ai-chip.in-sequence .sequence-mark {
     color: #002171;
 }
 
@@ -414,17 +413,35 @@ body {
     display: flex;
 }
 
-.overlay-content {
-    background: var(--bg-panel);
-    padding: 40px;
-    border-radius: 12px;
-    text-align: center;
-}
-
 .overlay-content h2 {
     font-size: 2.5rem;
     margin-bottom: 20px;
     color: var(--text-primary);
+}
+
+.overlay-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.overlay-close:hover {
+    color: white;
+}
+
+.overlay-content {
+    position: relative;
+    background: var(--bg-panel);
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
 }
 
 /* Game Area */
@@ -633,4 +650,45 @@ body {
     font-size: 0.7rem;
     color: #888;
     font-style: italic;
+}
+
+/* AI Progress Bar Styling */
+.ai-progress-container {
+    margin-top: 15px;
+    display: none;
+    /* Hidden by default */
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ai-progress-container.visible {
+    display: flex;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff9800, #ffd700);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-text {
+    font-size: 0.75rem;
+    color: #ffd700;
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }

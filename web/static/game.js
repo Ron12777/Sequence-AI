@@ -22,6 +22,9 @@ const gameOverText = document.getElementById('gameOverText');
 const newGameBtn = document.getElementById('newGameBtn');
 const watchAiBtn = document.getElementById('watchAiBtn');
 const hintBtn = document.getElementById('hintBtn');
+const aiProgressContainer = document.getElementById('aiProgressContainer');
+const aiProgressBar = document.getElementById('aiProgressBar');
+const aiProgressText = document.getElementById('aiProgressText');
 
 // Suit symbols
 const SUIT_SYMBOLS = {
@@ -115,6 +118,15 @@ function checkAndTriggerAi() {
 }
 
 /**
+ * Hide the game over overlay
+ */
+function dismissGameOver() {
+    if (gameOverOverlay) {
+        gameOverOverlay.classList.remove('visible');
+    }
+}
+
+/**
  * Trigger AI turn
  */
 async function triggerAiTurn() {
@@ -124,6 +136,13 @@ async function triggerAiTurn() {
     isThinking = true;
     renderTopMoves(null); // Clear highlights immediately
     updateStatus();
+
+    // Reset and show progress bar
+    if (aiProgressContainer) {
+        aiProgressContainer.classList.add('visible');
+        aiProgressBar.style.width = '0%';
+        aiProgressText.textContent = 'Starting search...';
+    }
 
     // Get difficulty setting
     const difficultyEl = document.getElementById('difficulty');
@@ -200,6 +219,13 @@ function startAiPolling() {
             // Double check epoch after parsing json
             if (thisEpoch !== currentEpoch) return;
 
+            // Update progress bar
+            if (data.thinking && data.target_simulations > 0) {
+                const percent = Math.min(100, Math.round((data.simulations / data.target_simulations) * 100));
+                aiProgressBar.style.width = `${percent}%`;
+                aiProgressText.textContent = `${percent}% Thinking...`;
+            }
+
             // Only update visualization if thinking and valid data
             if (data.thinking && data.top_moves && data.top_moves.length > 0) {
                 renderTopMoves(data.top_moves);
@@ -214,6 +240,10 @@ function stopAiPolling() {
     if (aiPollingInterval) {
         clearInterval(aiPollingInterval);
         aiPollingInterval = null;
+    }
+    // Hide progress bar
+    if (aiProgressContainer) {
+        aiProgressContainer.classList.remove('visible');
     }
 }
 
@@ -321,6 +351,12 @@ function highlightSequences(cell, row, col) {
     if (checkSequence(gameState.sequences[gameState.human_player]) ||
         checkSequence(gameState.sequences[gameState.ai_player])) {
         cell.classList.add('in-sequence');
+
+        // Add dedicated 'X' element to avoid pseudo-element collision with highlights
+        const mark = document.createElement('div');
+        mark.className = 'sequence-mark';
+        mark.textContent = '✕';
+        cell.appendChild(mark);
     }
 }
 

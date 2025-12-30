@@ -23,6 +23,13 @@
                         <div class="turn-dot"></div>
                         <span class="text">Your Turn</span>
                     </div>
+                    <!-- AI Progress Bar -->
+                    <div id="aiProgressContainer" class="ai-progress-container">
+                        <div class="progress-bar-bg">
+                            <div id="aiProgressBar" class="progress-bar-fill"></div>
+                        </div>
+                        <span id="aiProgressText" class="progress-text">0% Thinking...</span>
+                    </div>
                 </div>
 
                 <div class="panel-section">
@@ -101,6 +108,7 @@
     <!-- Game Over Overlay -->
     <div id="gameOverOverlay" class="overlay">
         <div class="overlay-content">
+            <button class="overlay-close" onclick="dismissGameOver()">&times;</button>
             <h2 id="gameOverText">Game Over</h2>
             <button onclick="newGame()" class="btn primary">Play Again</button>
         </div>

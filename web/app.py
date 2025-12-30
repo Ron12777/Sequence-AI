@@ -33,6 +33,7 @@ ai_status_lock = threading.Lock()
 ai_status = {
     'thinking': False,
     'simulations': 0,
+    'target_simulations': 0,
     'top_moves': [] 
 }
 
@@ -122,6 +123,12 @@ def make_ai_move_internal(player_id, simulations=None):
     initial_game_state = game
     
     print(f"AI thinking for Player {player_id}... (Simulations: {simulations})")
+    with ai_status_lock:
+        ai_status['thinking'] = True
+        ai_status['simulations'] = 0
+        ai_status['target_simulations'] = simulations
+        ai_status['top_moves'] = []
+    
     if mcts is None:
         print("MCTS is None, using greedy")
         # Fallback to greedy player if no model
@@ -215,6 +222,7 @@ def new_game():
     with ai_status_lock:
         ai_status['thinking'] = False
         ai_status['simulations'] = 0
+        ai_status['target_simulations'] = 0
         ai_status['top_moves'] = []
     
     data = request.get_json() or {}
