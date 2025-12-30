@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sequence AI</title>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -112,7 +112,15 @@
         </div>
     </div>
 
-    <script src="static/game.js"></script>
+    <!-- ONNX Runtime Web for neural network inference -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js"></script>
+
+    <!-- Game Engine & MCTS -->
+    <script src="game_engine.js"></script>
+    <script src="mcts.js"></script>
+
+    <!-- Main Game UI -->
+    <script src="game.js"></script>
 </body>
 
 </html>
