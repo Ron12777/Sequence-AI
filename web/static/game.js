@@ -44,6 +44,32 @@ document.addEventListener('DOMContentLoaded', () => {
     watchAiBtn.addEventListener('click', watchAiVsAi);
     hintBtn.addEventListener('click', getHint);
 
+    // Depth slider live update with difficulty label
+    const depthSlider = document.getElementById('depth');
+    const depthValue = document.getElementById('depthValue');
+    const difficultyLabel = document.getElementById('difficultyLabel');
+
+    function getDifficultyLabel(depth) {
+        if (depth <= 5) return 'Instant';
+        if (depth <= 15) return 'Super Easy';
+        if (depth <= 30) return 'Easy';
+        if (depth <= 75) return 'Medium';
+        if (depth <= 150) return 'Hard';
+        if (depth <= 300) return 'Very Hard';
+        return 'Extreme';
+    }
+
+    function updateDepthDisplay() {
+        const val = parseInt(depthSlider.value);
+        depthValue.textContent = val;
+        difficultyLabel.textContent = getDifficultyLabel(val);
+    }
+
+    if (depthSlider && depthValue && difficultyLabel) {
+        depthSlider.addEventListener('input', updateDepthDisplay);
+        updateDepthDisplay(); // Initialize
+    }
+
     // Setup Play Again button in overlay
     const playAgainBtn = document.querySelector('.overlay-content .btn');
     if (playAgainBtn) {
@@ -145,9 +171,9 @@ async function triggerAiTurn() {
         aiProgressText.textContent = 'Starting search...';
     }
 
-    // Get difficulty setting
-    const difficultyEl = document.getElementById('difficulty');
-    const difficulty = difficultyEl ? difficultyEl.value : 'medium';
+    // Get depth (simulations) from slider
+    const depthEl = document.getElementById('depth');
+    const simulations = depthEl ? parseInt(depthEl.value) : 50;
 
     try {
         startAiPolling(); // Start watching progress
@@ -155,7 +181,7 @@ async function triggerAiTurn() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                difficulty: difficulty,
+                simulations: simulations,
                 game_id: gameState.game_id
             })
         });

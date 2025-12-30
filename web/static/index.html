@@ -58,12 +58,10 @@
                     <div class="controls">
                         <button id="newGameBtn" class="btn primary">New Game</button>
                         <button id="watchAiBtn" class="btn secondary">Watch AI vs AI</button>
-                        <div class="control-group">
-                            <select id="difficulty" class="select-input">
-                                <option value="easy">Easy</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
+                        <div class="control-group depth-control">
+                            <label for="depth">Depth: <span id="depthValue">50</span> <span id="difficultyLabel"
+                                    class="difficulty-label">Medium</span></label>
+                            <input type="range" id="depth" min="1" max="500" step="1" value="50">
                         </div>
                         <button id="hintBtn" class="btn secondary">Get Hint</button>
                     </div>

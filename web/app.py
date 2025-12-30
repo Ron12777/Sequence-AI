@@ -96,8 +96,8 @@ def init_ai():
     global model, device, mcts
     
     print("Initializing AI...")
-    # Disable compilation locally to avoid Windows hang
-    model, device = create_model(compile_model=False)
+    # Force CPU inference for web server
+    model, device = create_model(device='cpu', compile_model=False)
     
     # Try to load trained model
     models_dir = Path(__file__).parent.parent / "models"
@@ -106,14 +106,14 @@ def init_ai():
     if checkpoint_path.exists():
         print(f"Loading trained model from {checkpoint_path}")
         try:
-            model, device, _ = load_model(str(checkpoint_path), compile_model=False)
+            model, device, _ = load_model(str(checkpoint_path), device='cpu', compile_model=False)
             print("Model loaded successfully")
         except Exception as e:
             print(f"Error loading model: {e}")
     else:
         print("No trained model found, using untrained network")
     
-    mcts = MCTS(model, device, num_simulations=50, temperature=0)  # temperature=0 for greedy (deterministic)
+    mcts = MCTS(model, device, num_simulations=50, temperature=0)
     print(f"AI initialized on {device}")
 
 
@@ -380,7 +380,7 @@ def request_ai_move():
     if game.game_over:
         return jsonify({'error': 'Game is over'}), 400
     
-    # Get difficulty from request
+    # Get simulations directly from request
     data = request.get_json() or {}
     
     # [NEW] Validate Game ID
@@ -389,15 +389,9 @@ def request_ai_move():
         print(f"Bailing out AI: provided_id={provided_id}, actual_id={getattr(game, 'id', None)}")
         return jsonify({'error': 'Game instance mismatch during AI request.', 'mismatch': True}), 409
         
-    difficulty = data.get('difficulty', 'medium')
-    
-    # Map difficulty to simulations
-    sim_map = {
-        'easy': 50,
-        'medium': 400,
-        'hard': 1600
-    }
-    simulations = sim_map.get(difficulty, 400)
+    # Read simulations directly from slider (default 50)
+    simulations = data.get('simulations', 50)
+    simulations = max(10, min(1000, simulations))  # Clamp between 10-1000
     
     # Make move for the current player
     current_p = game.current_player
