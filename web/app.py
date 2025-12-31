@@ -18,7 +18,7 @@ from src.model import create_model, load_model
 from src.mcts import MCTS, RandomPlayer, GreedyPlayer
 
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='static', static_url_path='')
 
 # Global game state
 game = None
@@ -207,10 +207,6 @@ def get_ai_status():
     with ai_status_lock:
         return jsonify(ai_status)
 
-@app.route('/static/<path:path>')
-def serve_static(path):
-    """Serve static files."""
-    return send_from_directory('static', path)
 
 
 @app.route('/api/new_game', methods=['POST'])

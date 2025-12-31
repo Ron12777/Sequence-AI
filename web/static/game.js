@@ -153,7 +153,7 @@ let cancelAiLoop = false;
 async function loadModel() {
     try {
         console.log('Loading ONNX model...');
-        onnxSession = await ort.InferenceSession.create('static/model.onnx');
+        onnxSession = await ort.InferenceSession.create('model.onnx');
         console.log('✓ ONNX model loaded');
 
         mcts = new MCTS(onnxSession, 50);
