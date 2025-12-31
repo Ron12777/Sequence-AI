@@ -1093,9 +1093,9 @@ input:checked+.slider:before {
 }
 
 /* ================================
-   TABLET BREAKPOINT (768px - 1023px)
+   TABLET BREAKPOINT (1024px - 1199px)
    ================================ */
-@media screen and (max-width: 1023px) {
+@media screen and (max-width: 1199px) {
     :root {
         --cell-width: 45px;
         --cell-height: 62px;
@@ -1149,9 +1149,9 @@ input:checked+.slider:before {
 }
 
 /* ================================
-   MOBILE BREAKPOINT (<768px)
+   MOBILE BREAKPOINT (<1024px) - Includes iPads
    ================================ */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 1023px) {
     :root {
         /* Calculate cell size to fit 10 cells + gaps + padding + border in viewport width */
         --cell-width: calc((100vw - 60px) / 10);
@@ -1275,13 +1275,18 @@ input:checked+.slider:before {
     }
 
     /* Smaller text on cells */
+    /* Responsive text on cells - scales with board size */
     .cell-rank {
-        font-size: 0.9rem;
+        font-size: calc((100vw - 60px) / 10 * 0.45);
+        /* ~45% of cell width */
+        font-weight: bold;
     }
 
     .cell-suit {
-        font-size: 1.1rem;
-        margin-top: -2px;
+        font-size: calc((100vw - 60px) / 10 * 0.55);
+        /* ~55% of cell width */
+        margin-top: 0;
+        line-height: 1;
     }
 
     /* Card styling adjustments */

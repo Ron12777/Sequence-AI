@@ -36,12 +36,12 @@ const evalBarFill = document.getElementById('evalBarFill');
 const evalText = document.getElementById('evalText');
 const showEvalBar = document.getElementById('showEvalBar');
 
-// Suit symbols
+// Suit symbols - using text variation selector to prevent emoji rendering on iOS
 const SUIT_SYMBOLS = {
-    'C': '♣',
-    'D': '♦',
-    'H': '♥',
-    'S': '♠'
+    'C': '♣\uFE0E',
+    'D': '♦\uFE0E',
+    'H': '♥\uFE0E',
+    'S': '♠\uFE0E'
 };
 
 // Initialize
