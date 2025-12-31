@@ -23,3 +23,4 @@ jobs:
         with:
           folder: web/static # The folder the action should deploy.
           branch: gh-pages # The branch the action should deploy to.
+          single-commit: true # clear history to keep graph clean
