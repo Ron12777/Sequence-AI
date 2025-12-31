@@ -107,9 +107,12 @@ class SequenceGame:
         # Deal cards
         cards_per_player = get_cards_per_player(num_players)
         self.hands = {
-            1: self.deck.draw_many(cards_per_player),
-            2: self.deck.draw_many(cards_per_player)
+            1: [self.draw_playable_card(1) for _ in range(cards_per_player)],
+            2: [self.draw_playable_card(2) for _ in range(cards_per_player)]
         }
+        # Filter out None values in case deck ran out (unlikely)
+        self.hands[1] = [c for c in self.hands[1] if c]
+        self.hands[2] = [c for c in self.hands[2] if c]
     
     def get_legal_moves(self, player: Optional[int] = None) -> List[Move]:
         """Get all legal moves for a player."""
@@ -165,6 +168,20 @@ class SequenceGame:
             if self.board[r, c] == ChipState.EMPTY:
                 return False
         return True
+
+    def draw_playable_card(self, player: int) -> Optional[Card]:
+        """Draw a card that is playable for the given player."""
+        # Safety limit effectively bounded by deck size
+        while True:
+            card = self.deck.draw()
+            if not card:
+                return None
+            
+            if not self.is_dead_card(card, player):
+                return card
+            
+            # Card is dead, add to discard
+            self.discard_piles[player].append(card)
     
     def make_move(self, move: Move) -> bool:
         """Execute a move. Returns True if successful."""
@@ -203,7 +220,7 @@ class SequenceGame:
                 self.winner = player
         
         # Draw new card
-        new_card = self.deck.draw()
+        new_card = self.draw_playable_card(player)
         if new_card:
             self.hands[player].append(new_card)
         

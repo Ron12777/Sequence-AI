@@ -112,8 +112,11 @@ class SequenceGame {
 
         // Deal 7 cards each (for 2 players)
         for (let i = 0; i < 7; i++) {
-            this.hands[1].push(this.deck.pop());
-            this.hands[2].push(this.deck.pop());
+            const card1 = this.drawPlayableCard(1);
+            if (card1) this.hands[1].push(card1);
+
+            const card2 = this.drawPlayableCard(2);
+            if (card2) this.hands[2].push(card2);
         }
     }
 
@@ -173,6 +176,62 @@ class SequenceGame {
     }
 
     /**
+     * Check if a card can be played by the given player on current board
+     */
+    isCardPlayable(card, player) {
+        // Red Jack (Two-eyed): JD, JC - Wild
+        if (isRedJack(card)) {
+            // Playable if there is ANY empty space
+            return this.board.some(row => row.some(cell => cell === ChipState.EMPTY));
+        }
+
+        // Black Jack (One-eyed): JH, JS - Remove
+        if (isBlackJack(card)) {
+            // Playable if there is ANY opponent chip that is not protected
+            const opponent = 3 - player;
+            const protected_ = this.getProtectedPositions(opponent);
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if (this.board[r][c] === opponent && !protected_.has(`${r},${c}`)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Normal Card
+        const positions = CARD_POSITIONS[card] || [];
+        for (const [r, c] of positions) {
+            if (this.board[r][c] === ChipState.EMPTY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Draw a card that is playable. Discards dead cards.
+     */
+    drawPlayableCard(player) {
+        // Safety count to prevent infinite loops (though deck size is finite)
+        let checks = 0;
+        const maxChecks = this.deck.length + 1;
+
+        while (this.deck.length > 0) {
+            const card = this.deck.pop();
+            checks++;
+
+            if (this.isCardPlayable(card, player)) {
+                return card;
+            }
+            // Card is dead, discard it (loop continues)
+            // Ideally we might want to log this or animate it, but for logic fixes this is sufficient.
+        }
+        return null; // Deck empty
+    }
+
+    /**
      * Execute a move
      */
     makeMove(move) {
@@ -207,7 +266,10 @@ class SequenceGame {
 
         // Draw new card
         if (this.deck.length > 0) {
-            this.hands[player].push(this.deck.pop());
+            const newCard = this.drawPlayableCard(player);
+            if (newCard) {
+                this.hands[player].push(newCard);
+            }
         }
 
         // Switch player
