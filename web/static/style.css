@@ -160,6 +160,34 @@ body {
     margin-left: 8px;
 }
 
+.depth-number-input {
+    background: var(--bg-secondary);
+    border: 1px solid #444;
+    color: var(--text-primary);
+    width: 60px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    margin-left: 4px;
+    outline: none;
+    appearance: none;
+    -moz-appearance: textfield;
+    /* Hide arrows for Firefox */
+}
+
+/* Hide arrows for Chrome, Safari, Edge */
+.depth-number-input::-webkit-outer-spin-button,
+.depth-number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.depth-number-input:focus {
+    border-color: var(--accent-primary);
+    background: #333;
+}
+
 .depth-control input[type="range"] {
     width: 100%;
     height: 6px;

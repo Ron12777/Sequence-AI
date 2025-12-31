@@ -111,25 +111,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Update P2 (Default)
         if (depthSlider && depthValue && difficultyLabel) {
             const val = parseInt(depthSlider.value);
-            depthValue.textContent = val;
+            depthValue.value = val;
             difficultyLabel.textContent = getDifficultyLabel(val);
         }
         // Update P1
         if (depthP1Slider && depthP1Value && difficultyLabelP1) {
             const val = parseInt(depthP1Slider.value);
-            depthP1Value.textContent = val;
+            depthP1Value.value = val;
             difficultyLabelP1.textContent = getDifficultyLabel(val);
         }
         // Update Judge
         if (judgeDepthSlider && judgeDepthValue) {
             const val = parseInt(judgeDepthSlider.value);
-            judgeDepthValue.textContent = val;
+            judgeDepthValue.value = val;
         }
     }
 
     if (depthSlider) depthSlider.addEventListener('input', updateDepthDisplay);
     if (depthP1Slider) depthP1Slider.addEventListener('input', updateDepthDisplay);
     if (judgeDepthSlider) judgeDepthSlider.addEventListener('input', updateDepthDisplay);
+
+    function handleNumericInput(inputEl, sliderEl, labelEl) {
+        if (!inputEl || !sliderEl) return;
+
+        const clamp = (val) => Math.max(1, Math.min(500, val));
+
+        inputEl.addEventListener('input', () => {
+            let val = parseInt(inputEl.value);
+            if (!isNaN(val)) {
+                // For live input, we allow partial typing but clamp for the slider
+                const clamped = clamp(val);
+                sliderEl.value = clamped;
+                if (labelEl) labelEl.textContent = getDifficultyLabel(clamped);
+            }
+        });
+
+        // Strict correction on blur
+        inputEl.addEventListener('blur', () => {
+            let val = parseInt(inputEl.value);
+            if (isNaN(val)) val = 50; // Default fallback
+            const clamped = clamp(val);
+            inputEl.value = clamped;
+            sliderEl.value = clamped;
+            if (labelEl) labelEl.textContent = getDifficultyLabel(clamped);
+        });
+    }
+
+    handleNumericInput(depthValue, depthSlider, difficultyLabel);
+    handleNumericInput(depthP1Value, depthP1Slider, difficultyLabelP1);
+    handleNumericInput(judgeDepthValue, judgeDepthSlider);
+
     updateDepthDisplay();
 
     // Setup Play Again button
@@ -961,6 +992,8 @@ function showGameOver() {
 
         gameOverText.textContent = message;
     }
+    // Ensure "Reset Board" button is restored when game ends
+    updateResetButtonState(false);
 }
 
 

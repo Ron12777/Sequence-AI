@@ -84,23 +84,25 @@
                         <button id="watchAiBtn" class="btn secondary">Watch AI vs AI</button>
                         <!-- P1 Depth (Red AI) - Hidden by default -->
                         <div id="depthP1Container" class="control-group depth-control" style="display: none;">
-                            <label for="depthP1"><span id="depthP1Title">Red Depth</span>: <span
-                                    id="depthP1Value">50</span> <span id="difficultyLabelP1"
-                                    class="difficulty-label">Medium</span></label>
+                            <label for="depthP1"><span id="depthP1Title">Red Depth</span>: <input type="number"
+                                    id="depthP1Value" class="depth-number-input" min="1" max="500" value="50"> <span
+                                    id="difficultyLabelP1" class="difficulty-label">Medium</span></label>
                             <input type="range" id="depthP1" min="1" max="500" step="1" value="50">
                         </div>
 
                         <!-- P2 Depth (Blue AI / Default AI) -->
                         <div class="control-group depth-control">
-                            <label for="depth"><span id="depthTitle">Depth</span>: <span id="depthValue">50</span> <span
-                                    id="difficultyLabel" class="difficulty-label">Medium</span></label>
+                            <label for="depth"><span id="depthTitle">Depth</span>: <input type="number" id="depthValue"
+                                    class="depth-number-input" min="1" max="500" value="50"> <span id="difficultyLabel"
+                                    class="difficulty-label">Medium</span></label>
                             <input type="range" id="depth" min="1" max="500" step="1" value="50">
                         </div>
 
                         <!-- Judge Depth (Eval Bar) -->
                         <div class="control-group depth-control">
-                            <label for="judgeDepth"><span id="judgeDepthTitle">Judge Min Depth</span>: <span
-                                    id="judgeDepthValue">50</span></label>
+                            <label for="judgeDepth"><span id="judgeDepthTitle">Win Prob Calc Min Depth</span>: <input
+                                    type="number" id="judgeDepthValue" class="depth-number-input" min="1" max="500"
+                                    value="50"></label>
                             <input type="range" id="judgeDepth" min="1" max="500" step="1" value="50">
                         </div>
                         <button id="hintBtn" class="btn secondary">Get Hint</button>
