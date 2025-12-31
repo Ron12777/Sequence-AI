@@ -1,0 +1,25 @@
+name: Deploy Web to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'web/static/**' # Only trigger if web files change to save resources
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: web/static # The folder the action should deploy.
+          branch: gh-pages # The branch the action should deploy to.
