@@ -31,3 +31,6 @@ ENV/
 # OS
 Thumbs.db
 .DS_Store
+
+# Downloaded files to get the cool loss curves from my Lambda cloud filesystem
+downloads/

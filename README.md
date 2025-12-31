@@ -1,32 +1,30 @@
-# Sequence AI (AlphaZero Implementation)
+# Sequence AI 
 
-An AlphaZero-style AI for the board game **Sequence**, optimized for massive throughput on NVIDIA GH200 (Grace Hopper) superchips.
+An AI for the board game Sequence, trained on a NVIDIA GH200
 
-## Architecture
+## Training Architecture
 
-*   **Core Engine:** C-based implementation (`src/c_game/`) for lightning-fast game logic and MCTS simulation.
+*   **Core Engine:** C-based implementation (`src/c_game/`) for for game logic and MCTS simulation. 
 *   **Neural Network:** ResNet-based policy/value network (PyTorch).
 *   **Training:** Multiprocessing architecture with batched GPU inference.
     *   **Workers:** Multiple processes running MCTS simulations in parallel.
     *   **GPU Server:** Batches inference requests from all workers for efficient GPU utilization.
-    *   **IPC Batching:** Workers accumulate 256+ states before IPC to minimize overhead.
+The game logic and MCTS does not need to be in C. You could very easily use python and do everything through numpy arrays, it is not CPU bound in any sense. 
 
----
 
-## 🐳 Docker Setup (Recommended for GH200)
+## Docker Setup 
+This was done through Lambda Cloud on a GH200 running Ubuntu Server 24.04. 
+You do not need to do this, but it is recommended as for some reason the base image they have the pytorch wasn't working with the CUDA version they had on there, and you would have to update pytorch. Also torch.compile() doesn't work on the base image, so you would have to built from the base image to get that to work, it's just easier to use docker. 
 
-Use NVIDIA's NGC container for full `torch.compile()` support.
+If you want to do training on something more powerful than a GH200 or multiple GPUs, you would also need to switch up the training commands and likely have to change the code. 
+
+The training was not CPU bound in any sense so it will scale up to multiple GPUs nicely. 
 
 ```bash
-# ============================================================
 # FROM YOUR LOCAL MACHINE - Upload code
-# ============================================================
-scp -r C:\Users\rhnm0\Documents\GitHub\Sequence ubuntu@<SERVER_IP>:~/Sequence-Filesystem/
+scp -r <YOUR_PATH_TO_SEQUENCE> ubuntu@<SERVER_IP>:~/<Name of your directory on the server>/
 
-# ============================================================
 # ON THE GH200 SERVER after you ssh into it
-# ============================================================
-
 # 1. (One-time) Add user to docker group
 sudo usermod -aG docker $USER
 newgrp docker
@@ -36,15 +34,12 @@ docker pull nvcr.io/nvidia/pytorch:24.12-py3
 
 # 3. Run container with your code mounted
 docker run --gpus all -it --rm \
-  -v ~/Sequence-Filesystem/Sequence:/workspace/Sequence \
+  -v ~/<Name of your directory on the server>/Sequence:/workspace/Sequence \
   -w /workspace/Sequence \
   -p 6006:6006 \
   nvcr.io/nvidia/pytorch:24.12-py3
 
-# ============================================================
 # INSIDE THE CONTAINER
-# ============================================================
-
 # 4. Install deps and build C extension
 pip install flask tensorboard
 python setup.py build_ext --inplace
@@ -55,7 +50,7 @@ python -c "import torch; print(f'CUDA: {torch.cuda.is_available()} | Device: {to
 
 ---
 
-## 🏋️ Training Commands
+## Training Commands
 
 ### Quick Test (5 minutes)
 Verify the pipeline works:
@@ -69,8 +64,7 @@ python -m src.train train \
   --verbose
 ```
 
-### Standard Training (Sweet Spot)
-Optimal settings for GH200 (~0.5-0.7 games/s, 70% GPU):
+### Standard Training 
 ```bash
 python -m src.train train \
   --epochs 100 \
@@ -83,8 +77,7 @@ python -m src.train train \
   --verbose
 ```
 
-### Long Training (Overnight)
-Maximum quality:
+### Long Training 
 ```bash
 python -m src.train train \
   --epochs 1000 \
@@ -97,77 +90,25 @@ python -m src.train train \
   --verbose
 ```
 
-### Performance Tuning
-
-| Workers | Games/Worker | Total Games | GPU Usage | Games/s |
-|---------|--------------|-------------|-----------|---------|
-| 8       | 64           | 512         | 40-50%    | ~0.35   |
-| 16      | 32           | 512         | 60%       | ~0.49   |
-| 32      | 16           | 512         | 70%       | ~0.55   |
-| 64      | 8            | 512         | 70%       | ~0.46   |
-
-**Sweet spot: 32 workers × 16 games** - best balance of GPU utilization and throughput.
-
-### Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--workers` | 8 | Number of worker processes |
-| `--games-per-worker` | 64 | Games per worker |
-| `--simulations` | 50 | MCTS simulations per move |
-| `--batch-size` | 256 | Training batch size |
-| `--no-compile` | false | Disable torch.compile() |
-| `--fresh` | false | Start training from scratch |
-
----
-
-## 📊 Monitoring
-
-View real-time loss curves:
+## Monitoring
+View cool loss curves you can post on linkedin:
 
 1.  **In Container:**
     ```bash
     tensorboard --logdir runs --port 6006 --bind_all &
     ```
-2.  **On Laptop (SSH Tunnel):**
+2.  **On your device (SSH Tunnel):**
     ```powershell
     ssh -N -L 6006:localhost:6006 ubuntu@<SERVER_IP>
     ```
 3.  **Browser:** Go to `http://localhost:6006`
 
----
-
-## 🎮 Play Against AI (Web Interface)
-
-The web interface runs **entirely in your browser** - no server required!
-
-### Local Play
-```bash
-# Serve static files
-python -m http.server 8080 --directory web/static
-# Open http://localhost:8080
-```
-
-### Deploy to GitHub Pages
-1. Push the `web/static/` folder to your `gh-pages` branch
-2. Enable GitHub Pages in repository settings
-3. Play at `https://yourusername.github.io/Sequence/`
-
-### Features
-- **Client-Side AI:** Neural network runs in browser via ONNX.js (zero latency, privacy-first).
-- **Analysis Mode:** Interactive board editor with "Show Best Move" helper (Gold Highlights).
-- **Review Tools:** "Watch AI vs AI" mode to observe self-play strategies.
-- **Dynamic UI:** Live win probability bar, extensive move history, and polished dark-mode aesthetics.
-- **Adjustable Difficulty:** Depth slider (1-500 MCTS simulations) for both Red and Blue AI.
-
----
-
 ## Project Structure
 
 *   `src/`: Core Python logic for training and MCTS.
-*   `src/c_game/`: C engine for deterministic, high-performance game logic.
-*   `tests/`: Core game logic unit tests.
-*   `web/static/`: **Static web app** (HTML/CSS/JS) - deployable to any static host.
+*   `src/c_game/`: C engine for game logic.
+*   `tests/`:  Game logic unit tests.
+*   `web/static/`: Static web app (HTML/CSS/JS) - deployable to any static host.
     - `game_engine.js`: Client-side game logic
     - `mcts.js`: JavaScript MCTS with ONNX.js inference
     - `model.onnx`: Trained neural network (exported from PyTorch)
