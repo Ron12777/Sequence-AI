@@ -26,6 +26,16 @@
 
     --border-radius: 8px;
     --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
+
+    /* Responsive sizing variables - defaults for desktop */
+    --cell-width: 54px;
+    --cell-height: 74px;
+    --chip-size: 42px;
+    --card-width: 80px;
+    --card-height: 110px;
+    --board-gap: 4px;
+    --board-padding: 15px;
+    --board-border: 8px;
 }
 
 * {
@@ -218,24 +228,28 @@ body {
 /* Board */
 .board-container {
     flex: 0 0 auto;
+    position: relative;
 }
 
 .board {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 4px;
-    padding: 15px;
+    grid-template-columns: repeat(10, var(--cell-width));
+    gap: var(--board-gap);
+    padding: var(--board-padding);
     background: var(--bg-board);
     border-radius: 16px;
     box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.2);
-    border: 8px solid #3e2723;
+    border: var(--board-border) solid #3e2723;
     /* Wood trim */
+    max-width: 100%;
+    position: relative;
+    /* For eval bar positioning */
 }
 
 /* Board Cell (Card look) */
 .cell {
-    width: 54px;
-    height: 74px;
+    width: var(--cell-width);
+    height: var(--cell-height);
     background: var(--card-white);
     border-radius: 4px;
     position: relative;
@@ -296,8 +310,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    width: 42px;
-    height: 42px;
+    width: var(--chip-size);
+    height: var(--chip-size);
     border-radius: 50%;
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4),
@@ -322,9 +336,8 @@ body {
 }
 
 .cell.free-chip::after {
-    background: radial-gradient(circle at 30% 30%, #ffff8d, #f9a825);
-    border: 3px solid #c67100;
-    transform: translate(-50%, -50%) scale(0.7);
+    /* Hide the gold chip circle - just show the gold card */
+    transform: translate(-50%, -50%) scale(0);
 }
 
 
@@ -391,8 +404,8 @@ body {
 
 /* Hand Cards */
 .card {
-    width: 80px;
-    height: 110px;
+    width: var(--card-width);
+    height: var(--card-height);
     background: var(--card-white);
     border-radius: 6px;
     display: flex;
@@ -1028,4 +1041,490 @@ input:checked+.slider:before {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     pointer-events: none;
     white-space: nowrap;
+}
+
+/* ================================
+   RESPONSIVE / MOBILE STYLES
+   ================================ */
+
+/* Mobile Drawer Toggle Button */
+.mobile-drawer-toggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.mobile-drawer-toggle:hover {
+    background: var(--accent-hover);
+    transform: scale(1.1);
+}
+
+.mobile-drawer-toggle.open {
+    background: #ef4444;
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .cell:hover {
+        transform: none;
+    }
+
+    .card:hover {
+        transform: none;
+        margin-right: 0;
+    }
+
+    .card-stack .card:hover {
+        transform: none !important;
+        outline: none;
+    }
+}
+
+/* ================================
+   TABLET BREAKPOINT (768px - 1023px)
+   ================================ */
+@media screen and (max-width: 1023px) {
+    :root {
+        --cell-width: 45px;
+        --cell-height: 62px;
+        --chip-size: 35px;
+        --card-width: 65px;
+        --card-height: 90px;
+        --board-gap: 3px;
+        --board-padding: 12px;
+        --board-border: 6px;
+    }
+
+    .app-container {
+        padding: 10px;
+    }
+
+    .game-container {
+        gap: 15px;
+    }
+
+    .side-panel {
+        flex: 0 0 220px;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .game-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .game-area {
+        gap: 20px;
+    }
+
+    .hand-vertical {
+        min-width: 100px;
+        padding: 10px;
+    }
+
+    .card-stack .card {
+        margin-bottom: -50px;
+    }
+
+    .cell-rank {
+        font-size: 1.2rem;
+    }
+
+    .cell-suit {
+        font-size: 1.4rem;
+    }
+}
+
+/* ================================
+   MOBILE BREAKPOINT (<768px)
+   ================================ */
+@media screen and (max-width: 767px) {
+    :root {
+        /* Calculate cell size to fit 10 cells + gaps + padding + border in viewport width */
+        --cell-width: calc((100vw - 60px) / 10);
+        --cell-height: calc(var(--cell-width) * 1.37);
+        --chip-size: calc(var(--cell-width) * 0.75);
+        --card-width: 55px;
+        --card-height: 76px;
+        --board-gap: 2px;
+        --board-padding: 8px;
+        --board-border: 4px;
+    }
+
+    .app-container {
+        padding: 10px 5px;
+        padding-bottom: 70px;
+        /* Space for FAB */
+    }
+
+    .game-title {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    /* Stack layout vertically */
+    .game-container {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* Side panel becomes bottom drawer */
+    .side-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 70vh;
+        overflow-y: auto;
+        border-radius: 20px 20px 0 0;
+        padding: 20px;
+        padding-top: 30px;
+        z-index: 10050;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .side-panel::before {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+    }
+
+    .side-panel.drawer-open {
+        transform: translateY(0);
+    }
+
+    .mobile-drawer-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Game area takes full width */
+    .game-area {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        align-items: center;
+    }
+
+    /* Hands become horizontal on mobile */
+    .hand-vertical {
+        flex-direction: row;
+        min-width: auto;
+        width: 100%;
+        max-width: 100%;
+        justify-content: center;
+        padding: 8px;
+        overflow-x: auto;
+    }
+
+    .hand-vertical h3 {
+        writing-mode: horizontal-tb;
+        margin-bottom: 0;
+        margin-right: 10px;
+        white-space: nowrap;
+    }
+
+    .card-stack {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: auto;
+    }
+
+    .card-stack .card {
+        margin-bottom: 0;
+        margin-left: -15px;
+    }
+
+    .card-stack .card:first-child {
+        margin-left: 0;
+    }
+
+    /* Board container */
+    .board-container {
+        width: 100%;
+        max-width: 100vw;
+        overflow: visible !important;
+        /* Allow eval bar to show outside */
+    }
+
+    .board {
+        border-radius: 10px;
+    }
+
+    /* Smaller text on cells */
+    .cell-rank {
+        font-size: 0.9rem;
+    }
+
+    .cell-suit {
+        font-size: 1.1rem;
+        margin-top: -2px;
+    }
+
+    /* Card styling adjustments */
+    .card-top,
+    .card-bottom {
+        font-size: 0.9rem;
+    }
+
+    .card-center {
+        font-size: 1.8rem;
+    }
+
+    /* Controls fit better on mobile */
+    .controls {
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 12px;
+        font-size: 1rem;
+        min-height: 44px;
+        /* Touch-friendly */
+    }
+
+    .depth-control {
+        padding: 8px 0;
+    }
+
+    .depth-control input[type="range"] {
+        height: 8px;
+    }
+
+    .depth-control input[type="range"]::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+    }
+
+    .depth-control input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Move history smaller */
+    .move-history {
+        height: 120px;
+        min-height: 120px;
+        max-height: 120px;
+    }
+
+    /* Modals responsive */
+    .overlay-content {
+        width: 95%;
+        max-width: 400px;
+        padding: 25px;
+    }
+
+    .overlay-content h2 {
+        font-size: 1.8rem;
+    }
+
+    /* Card picker responsive */
+    .card-picker-content {
+        width: 95%;
+        max-height: 85vh;
+        padding: 20px;
+    }
+
+    .card-picker-grid {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 6px;
+    }
+
+    .card-picker-grid .card {
+        width: 55px;
+        height: 76px;
+    }
+
+    .card-picker-grid .card .card-top,
+    .card-picker-grid .card .card-bottom {
+        font-size: 0.8rem;
+    }
+
+    .card-picker-grid .card .card-center {
+        font-size: 1.5rem;
+    }
+
+    /* Panel sections */
+    .panel-section h3 {
+        font-size: 0.85rem;
+    }
+
+    /* Scores section */
+    .scores {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    /* Turn indicator */
+    .turn-indicator {
+        padding: 10px;
+    }
+
+    /* Progress bar */
+    .ai-progress-container {
+        height: 30px;
+    }
+
+    /* Eval bar - Vertical on mobile, positioned relative to .board */
+    .eval-bar-container {
+        position: absolute !important;
+        left: 4px !important;
+        /* Inside board padding */
+        top: 44px !important;
+        /* Aligned with top card edge */
+        bottom: 12px !important;
+        /* Aligned with bottom card edge */
+        right: auto !important;
+        transform: none !important;
+        width: 6px !important;
+        height: auto !important;
+        /* Use top/bottom instead */
+        max-height: none !important;
+        border-radius: 3px !important;
+        z-index: 100 !important;
+        /* Above board cells */
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+    }
+
+    .eval-bar-container.visible {
+        display: block !important;
+    }
+
+    .eval-bar-container .eval-bar-bg {
+        position: relative !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: #3b82f6 !important;
+        border-radius: 3px !important;
+        overflow: hidden !important;
+        border: none !important;
+    }
+
+    .eval-bar-container .eval-bar-fill {
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: auto !important;
+        width: 100% !important;
+        background: #ef4444 !important;
+        transition: height 0.3s ease !important;
+        border-radius: 0 0 3px 3px !important;
+    }
+
+    /* Hide text completely on mobile */
+    .eval-bar-container .eval-text {
+        display: none !important;
+    }
+}
+
+/* ================================
+   VERY SMALL PHONES (<400px)
+   ================================ */
+@media screen and (max-width: 400px) {
+    :root {
+        --cell-width: calc((100vw - 50px) / 10);
+        --card-width: 45px;
+        --card-height: 62px;
+    }
+
+    .game-title {
+        font-size: 1rem;
+    }
+
+    .cell-rank {
+        font-size: 0.7rem;
+    }
+
+    .cell-suit {
+        font-size: 0.9rem;
+    }
+
+    .card-top,
+    .card-bottom {
+        font-size: 0.7rem;
+    }
+
+    .card-center {
+        font-size: 1.4rem;
+    }
+
+    .hand-vertical h3 {
+        font-size: 0.75rem;
+    }
+
+    .btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Landscape mode adjustments for mobile */
+@media screen and (max-width: 900px) and (orientation: landscape) {
+    :root {
+        --cell-width: calc((100vh - 100px) / 10);
+        --cell-height: calc(var(--cell-width) * 1.37);
+    }
+
+    .app-container {
+        padding-bottom: 10px;
+    }
+
+    .game-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .game-area {
+        flex-direction: row;
+    }
+
+    .hand-vertical {
+        flex-direction: column;
+        min-width: 70px;
+        max-height: calc(100vh - 60px);
+        overflow-y: auto;
+    }
+
+    .card-stack {
+        flex-direction: column;
+    }
+
+    .card-stack .card {
+        margin-left: 0;
+        margin-bottom: -45px;
+    }
+
+    .side-panel {
+        max-height: 90vh;
+    }
 }

@@ -434,7 +434,11 @@ function updateEvalBar(value) {
     const redPercent = ((p1Advantage + 1) / 2) * 100;
     const clamped = Math.max(0, Math.min(100, redPercent));
 
-    if (evalBarFill) evalBarFill.style.width = `${clamped}%`;
+    // Set both width (desktop) and height (mobile vertical bar)
+    if (evalBarFill) {
+        evalBarFill.style.width = `${clamped}%`;
+        evalBarFill.style.height = `${clamped}%`;
+    }
 
     // Text: "Red 60%" or "Blue 60%"
     if (evalText) {
@@ -517,9 +521,11 @@ async function triggerAiTurn() {
             if (game.gameOver && evalBarContainer && evalBarFill && evalText) {
                 if (game.winner === 1) {
                     evalBarFill.style.width = '100%';
+                    evalBarFill.style.height = '100%';
                     evalText.textContent = 'Red 100%';
                 } else if (game.winner === 2) {
                     evalBarFill.style.width = '0%';
+                    evalBarFill.style.height = '0%';
                     evalText.textContent = 'Blue 100%';
                 }
             }
@@ -569,7 +575,7 @@ function renderBoard() {
 
             if (cardLabel === 'FREE') {
                 cell.classList.add('free-space');
-                cell.innerHTML = `<span style="font-size:2rem">★</span>`;
+                cell.innerHTML = `<span style="font-size:2rem;color:white">★</span>`;
             } else {
                 const suitChar = cardLabel.slice(-1);
                 const rankChar = cardLabel.slice(0, -1);
@@ -1349,3 +1355,61 @@ async function showBestMove() {
         aiProgressContainer.classList.remove('visible');
     }
 }
+
+/**
+ * Mobile Drawer Toggle
+ * Controls the visibility of the side panel on mobile devices
+ */
+function toggleMobileDrawer() {
+    const sidePanel = document.querySelector('.side-panel');
+    const toggleBtn = document.getElementById('mobileDrawerToggle');
+
+    if (!sidePanel) return;
+
+    const isOpen = sidePanel.classList.toggle('drawer-open');
+
+    if (toggleBtn) {
+        toggleBtn.classList.toggle('open', isOpen);
+        toggleBtn.textContent = isOpen ? '✕' : '⚙️';
+    }
+}
+
+/**
+ * Close the mobile drawer
+ */
+function closeMobileDrawer() {
+    const sidePanel = document.querySelector('.side-panel');
+    const toggleBtn = document.getElementById('mobileDrawerToggle');
+
+    if (sidePanel) {
+        sidePanel.classList.remove('drawer-open');
+    }
+    if (toggleBtn) {
+        toggleBtn.classList.remove('open');
+        toggleBtn.textContent = '⚙️';
+    }
+}
+
+// Close drawer when clicking outside on mobile
+document.addEventListener('click', (e) => {
+    const sidePanel = document.querySelector('.side-panel');
+    const toggleBtn = document.getElementById('mobileDrawerToggle');
+
+    if (!sidePanel || !toggleBtn) return;
+
+    // Only on mobile when drawer is open
+    if (window.innerWidth > 767) return;
+    if (!sidePanel.classList.contains('drawer-open')) return;
+
+    // Check if click was outside panel and toggle button
+    if (!sidePanel.contains(e.target) && !toggleBtn.contains(e.target)) {
+        closeMobileDrawer();
+    }
+});
+
+// Close drawer after making a game action (like Reset Board)
+const originalNewGame = newGame;
+newGame = function () {
+    closeMobileDrawer();
+    originalNewGame();
+};
