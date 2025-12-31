@@ -61,6 +61,25 @@ body {
     font-weight: 600;
 }
 
+.header h1 {
+    display: none;
+    /* In case cached html */
+}
+
+.board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
 .game-container {
     display: flex;
     gap: 30px;
@@ -429,6 +448,12 @@ body {
 .btn.primary {
     background: var(--accent-primary);
     color: white;
+}
+
+.btn.gold {
+    background: #FFD700;
+    color: #3e2723;
+    /* Dark brown text for contrast */
 }
 
 .btn.primary:hover {
@@ -933,6 +958,29 @@ input:checked+.slider:before {
     transition: background 0.3s ease;
 }
 
+/* Analysis Controls */
+.analysis-controls {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 15px;
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.analysis-controls h4 {
+    color: var(--accent-primary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.analysis-controls .instruction-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
 
 .eval-bar-fill {
     height: 100%;

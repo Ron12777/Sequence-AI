@@ -35,8 +35,6 @@ const evalBarContainer = document.getElementById('evalBarContainer');
 const evalBarFill = document.getElementById('evalBarFill');
 const evalText = document.getElementById('evalText');
 const showEvalBar = document.getElementById('showEvalBar');
-const labelP1 = document.getElementById('labelP1');
-const labelP2 = document.getElementById('labelP2');
 
 // Suit symbols
 const SUIT_SYMBOLS = {
@@ -58,8 +56,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Analysis Mode
     const analysisBtn = document.getElementById('analysisBtn');
     const toggleTurnBtn = document.getElementById('toggleTurnBtn');
+    const bestMoveBtn = document.getElementById('bestMoveBtn');
+
     if (analysisBtn) analysisBtn.addEventListener('click', toggleAnalysisMode);
     if (toggleTurnBtn) toggleTurnBtn.addEventListener('click', toggleTurn);
+    if (bestMoveBtn) bestMoveBtn.addEventListener('click', showBestMove);
 
 
     // Win Prob Toggle
@@ -212,8 +213,15 @@ function newGame() {
     if (historyEl) historyEl.innerHTML = '';
 
     // Reset Labels (User vs AI)
-    if (labelP1) labelP1.textContent = "YOU";
-    if (labelP2) labelP2.textContent = "AI";
+    const lblP1 = document.getElementById('labelP1');
+    const lblP2 = document.getElementById('labelP2');
+    const headerP1 = document.getElementById('handHeaderP1');
+    const headerP2 = document.getElementById('handHeaderP2');
+
+    if (lblP1) lblP1.textContent = "YOU";
+    if (lblP2) lblP2.textContent = "AI";
+    if (headerP1) headerP1.textContent = "YOU";
+    if (headerP2) headerP2.textContent = "AI";
 
     // Hide P1 Slider (User plays P1)
     const depthP1Container = document.getElementById('depthP1Container');
@@ -273,8 +281,15 @@ async function watchAiVsAi() {
     updateStatus();
 
     // Set Labels (AI vs AI)
-    if (labelP1) labelP1.textContent = "AI 1 (Red)";
-    if (labelP2) labelP2.textContent = "AI 2 (Blue)";
+    const lblP1 = document.getElementById('labelP1');
+    const lblP2 = document.getElementById('labelP2');
+    const headerP1 = document.getElementById('handHeaderP1');
+    const headerP2 = document.getElementById('handHeaderP2');
+
+    if (lblP1) lblP1.textContent = "AI 1 (Red)";
+    if (lblP2) lblP2.textContent = "AI 2 (Blue)";
+    if (headerP1) headerP1.textContent = "AI 1 (Red)";
+    if (headerP2) headerP2.textContent = "AI 2 (Blue)";
 
     // Show P1 Slider
     const depthP1Container = document.getElementById('depthP1Container');
@@ -838,7 +853,7 @@ function renderTopMoves(policy) {
         document.querySelectorAll('.highlight-orb').forEach(el => el.remove());
 
         // Debug logging for visibility issues
-        if (!watchMode) {
+        if (!watchMode && !analysisMode) {
             return;
         }
 
@@ -1053,6 +1068,10 @@ function toggleAnalysisMode() {
             btn.classList.remove('secondary');
         }
         if (controls) controls.style.display = 'block';
+
+        // Hide global Hint button in Analysis Mode
+        if (hintBtn) hintBtn.style.display = 'none';
+
         document.body.classList.add('analysis-mode');
 
         // Stop any AI thinking
@@ -1066,6 +1085,10 @@ function toggleAnalysisMode() {
             btn.classList.add('secondary');
         }
         if (controls) controls.style.display = 'none';
+
+        // Restore global Hint button
+        if (hintBtn) hintBtn.style.display = 'block';
+
         document.body.classList.remove('analysis-mode');
     }
 
@@ -1248,3 +1271,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+/**
+ * Show Best Move (Analysis Mode)
+ */
+async function showBestMove() {
+    if (game.gameOver || isThinking) return;
+
+    // Use current settings
+    const depthSlider = document.getElementById('depth');
+    mcts.numSimulations = depthSlider ? parseInt(depthSlider.value) : 50;
+
+    isThinking = true;
+    updateStatus(); // Update UI to show "Thinking..."
+
+    if (aiProgressContainer) {
+        aiProgressContainer.classList.add('visible');
+        aiProgressText.textContent = 'Analyzing Best Move...';
+    }
+
+    try {
+        const result = await mcts.search(game, (current, total, policy, value) => {
+            const pct = Math.floor((current / total) * 100);
+            if (aiProgressBar) aiProgressBar.style.width = pct + '%';
+
+            // Show Live Highlights
+            if (policy) renderTopMoves(policy);
+
+            // Show Win Prob if enabled
+            if (value !== undefined) updateEvalBar(value);
+        });
+
+        if (result.move && result.policy) {
+            renderTopMoves(result.policy);
+        }
+    } catch (e) {
+        console.error("Analysis Error:", e);
+    }
+
+    isThinking = false;
+    updateStatus();
+
+    if (aiProgressContainer) {
+        aiProgressContainer.classList.remove('visible');
+    }
+}

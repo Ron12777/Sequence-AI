@@ -154,10 +154,11 @@ python -m http.server 8080 --directory web/static
 3. Play at `https://yourusername.github.io/Sequence/`
 
 ### Features
-- **Client-Side AI:** Neural network runs in browser via ONNX.js
-- **No Server Costs:** Static hosting = free on GitHub Pages
-- **Offline Capable:** Works without internet after initial load
-- **Adjustable Difficulty:** Depth slider (1-500 MCTS simulations)
+- **Client-Side AI:** Neural network runs in browser via ONNX.js (zero latency, privacy-first).
+- **Analysis Mode:** Interactive board editor with "Show Best Move" helper (Gold Highlights).
+- **Review Tools:** "Watch AI vs AI" mode to observe self-play strategies.
+- **Dynamic UI:** Live win probability bar, extensive move history, and polished dark-mode aesthetics.
+- **Adjustable Difficulty:** Depth slider (1-500 MCTS simulations) for both Red and Blue AI.
 
 ---
 
