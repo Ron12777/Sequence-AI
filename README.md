@@ -1,4 +1,4 @@
-#Play at https://ron12777.github.io/Sequence-AI/
+# Play at https://ron12777.github.io/Sequence-AI/
 
 # Sequence AI 
 
