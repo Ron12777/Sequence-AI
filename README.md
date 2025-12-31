@@ -1,3 +1,5 @@
+#Play at https://ron12777.github.io/Sequence-AI/
+
 # Sequence AI 
 
 An AI for the board game Sequence, trained on a NVIDIA GH200
