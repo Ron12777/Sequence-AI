@@ -136,18 +136,14 @@ class MCTS:
         # Reset C tree
         self.cmcts.reset(board_bytes, hand_ints, player)
         
-        # Simulation loop
         for i in range(num_simulations):
-            # Select leaf (traversal in C)
-            # Returns: (capsule, tensor_bytes, value, is_terminal_int)
             capsule, tensor_bytes, value, is_terminal_int = self.cmcts.select_leaf()
             is_terminal = bool(is_terminal_int)
-            
             policy_bytes = b''
             
             if not is_terminal:
                 # Run inference
-                # Note: C returns 800 floats (8x10x10)
+                # C returns 800 floats (8x10x10)
                 tensor = torch.frombuffer(tensor_bytes, dtype=torch.float32).reshape(1, 8, 10, 10).to(self.device)
                 
                 self.model.eval()
@@ -159,44 +155,29 @@ class MCTS:
                 value = val.item()
                 policy_bytes = policy.tobytes()
             
-            # Backpropagate (expansion + backprop in C)
             self.cmcts.backpropagate(capsule, policy_bytes, value)
 
-            # Progress callback
             if progress_callback and (i + 1) % 10 == 0:
                 progress_callback(self, i + 1)
 
         
-        # Get action
-        # Returns: (card_int, row, col, is_removal_int, policy_bytes)
         card_int, row, col, is_rem, policy_bytes = self.cmcts.get_action(self.temperature)
         
         if policy_bytes is None:
-            # Should not happen unless no moves
             return None, np.array([])
             
-        # Convert back to Python objects
+        # Reconstruct policy and build move object
+        policy = np.frombuffer(policy_bytes, dtype=np.float32)
         card = Card.from_int(card_int)
         move = Move(card=card, row=row, col=col, is_removal=bool(is_rem))
-        
-        # Reconstruct full policy array (100)
-        # Note: The C get_action returns a policy over BOARD POSITIONS (100), 
-        # but pure Python returns it over... well, it returns a 100-dim array too.
-        # Wait, Python version returns 'policy' from model which is 100-dim.
-        # C version builds policy from visit counts.
-        policy = np.frombuffer(policy_bytes, dtype=np.float32)
         
         print(f"C-MCTS finished in {time.time() - start_time:.2f}s ({num_simulations} sims)")
         return move, policy
 
     def _search_python(self, game: SequenceGame, player: int, num_simulations: int) -> Tuple[Move, np.ndarray]:
         """Legacy Python implementation of MCTS."""
-        # Determinize once at the start (Single Observer MCTS)
-        # This fixes the opponent's hand to one possible instantiation for the duration of the search
         det_game = self._determinize(game, player)
         root = MCTSNode(game_state=det_game)
-        
-        # Get prior probabilities from neural network
         self._expand_node(root, player)
         
         # Handle no legal moves
@@ -219,18 +200,15 @@ class MCTS:
             node = root
             search_path = [node]
             
-            # Selection - traverse tree using UCB
             while not node.is_leaf() and not node.is_terminal():
                 node = self._select_child(node)
                 search_path.append(node)
             
-            # Expansion and evaluation
             if not node.is_terminal():
                 value = self._expand_node(node, node.game_state.current_player)
             else:
                 value = node.game_state.get_result(player)
             
-            # Backpropagation
             self._backpropagate(search_path, value, player)
             
         print(f"Py-MCTS finished in {time.time() - start_time:.2f}s")
@@ -239,7 +217,6 @@ class MCTS:
         return self._select_move(root)
     
     def _expand_node(self, node: MCTSNode, player: int) -> float:
-        """Expand node by adding children and return value estimate."""
         game = node.game_state
         
         if game.game_over:
@@ -283,10 +260,6 @@ class MCTS:
         return value
     
     def _determinize(self, game: SequenceGame, observer: int) -> SequenceGame:
-        """
-        Create determinized game state by sampling hidden information.
-        The observer's hand is known; opponent's hand is sampled.
-        """
         det_game = game.clone()
         opponent = 3 - observer
         

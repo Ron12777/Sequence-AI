@@ -116,12 +116,6 @@ class MCTS {
         this.numSimulations = numSimulations;
     }
 
-    /**
-     * Run MCTS search and return best move
-     */
-    /**
-     * Run MCTS search and return best move
-     */
     async search(game, progressCallback = null) {
         const root = new MCTSNode(cloneGame(game), null, null, game.currentPlayer);
 
@@ -129,18 +123,11 @@ class MCTS {
             await this.simulate(root);
 
             if (progressCallback) {
-                // Calculate root value (win chance)
-                // Normalize roughly to [-1, 1] -> [0, 1] relative to current player
-                // But typically node.value accumulates +1/-1. 
-                // So average is between -1 and 1.
-                // Root value is inverted (relative to opponent) due to backprop flip, so we negate it.
                 const visits = root.visits || 1;
                 const avgValue = -(root.value / visits);
                 progressCallback(i + 1, this.numSimulations, root.getPolicy(), avgValue);
             }
 
-            // critical: Yield to main thread to allow UI rendering
-            // If we don't do this, the browser freezes and no progress bar/highlights appear
             if (i % 5 === 0) {
                 await new Promise(resolve => setTimeout(resolve, 0));
             }
@@ -163,14 +150,12 @@ class MCTS {
             node = node.selectChild();
         }
 
-        // Check terminal
         if (node.game.gameOver) {
-            // Value from the perspective of the player who made the move (node.player)
             let value = 0;
             if (node.game.winner === node.player) {
-                value = 1; // The move led to a win
+                value = 1;
             } else if (node.game.winner) {
-                value = -1; // The move led to a loss (opponent won)
+                value = -1;
             }
 
             this.backpropagate(node, value);
@@ -184,23 +169,16 @@ class MCTS {
             return;
         }
 
-        // Shuffle moves to ensure random exploration order
-        // This prevents the AI from only exploring the top-left of the board
-        // when simulations are low and priors are flat (e.g. Jacks).
+        // Shuffle moves for exploration
         for (let i = moves.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [moves[i], moves[j]] = [moves[j], moves[i]];
         }
 
-        // Get neural network evaluation
         let priors, value;
         if (this.session) {
             const result = await this.evaluate(node.game);
             priors = result.policy;
-
-            // Result.value is for current_player (the one NEXT to move in child state)
-            // We want value for node.player (the one who just moved)
-            // So we negate it.
             value = -result.value;
         } else {
             // Fallback: uniform priors, random value
@@ -271,16 +249,10 @@ class MCTS {
         return { policy, value };
     }
 
-    /**
-     * Backpropagate value through tree
-     */
     backpropagate(node, value) {
         while (node !== null) {
             node.visits += 1;
             node.value += value;
-
-            // Value is relative to the player at 'node'
-            // When moving to parent (opponent), we must negate the value
             value = -value;
             node = node.parent;
         }

@@ -186,7 +186,6 @@ int check_win(const int8_t* board) {
     int p1_seqs = 0;
     int p2_seqs = 0;
     
-    // Check all lines. Simplified run counting.
     // Horizontal
     for (int r = 0; r < 10; r++) {
         int run1 = 0, run2 = 0;
@@ -257,16 +256,12 @@ int check_win(const int8_t* board) {
 static int check_win_at(const int8_t* board, int row, int col, int player) {
     int seqs = 0;
     
-    // Check 4 directions: horizontal, vertical, diag1 (\), diag2 (/)
-    // For each direction, count consecutive chips including (row,col)
-    
-    // Direction deltas: (dr, dc)
     static const int dirs[4][2] = {{0, 1}, {1, 0}, {1, 1}, {1, -1}};
     
     for (int d = 0; d < 4; d++) {
         int dr = dirs[d][0];
         int dc = dirs[d][1];
-        int count = 1;  // Count the placed chip itself
+        int count = 1;
         
         // Count forward
         int r = row + dr, c = col + dc;
@@ -303,11 +298,6 @@ static int check_win_at(const int8_t* board, int row, int col, int player) {
 int generate_moves(const GameState* state, const int* hand, int hand_size, CMove* moves_out) {
     int count = 0;
     int opponent = 3 - state->current_player;
-    
-    // If hand is provided, iterate cards. 
-    // If hand is NULL (opponent simulation), we iterate all 52 card types?
-    // Optimization: For opponent simulation, we pick 5 random cards logic?
-    // Let's assume hand is always provided (even if random).
     
     for (int i = 0; i < hand_size; i++) {
         int card = hand[i];
@@ -349,7 +339,6 @@ void apply_move_inplace(GameState* state, const CMove* move) {
         state->board[idx] = EMPTY;
     } else {
         state->board[idx] = player;
-        // Use incremental win check - only check lines through this position
         int w = check_win_at(state->board, move->row, move->col, player);
         if (w > 0) {
             state->winner = w;
@@ -366,7 +355,7 @@ void apply_move_inplace(GameState* state, const CMove* move) {
 // Create node using arena allocator (fast path)
 MCTSNode* create_node_arena(NodeArena* arena, const GameState* state, MCTSNode* parent, CMove* move) {
     MCTSNode* node = arena_alloc_node(arena);
-    if (!node) return NULL;  // Arena full
+    if (!node) return NULL;
     
     node->state = *state;
     node->parent = parent;
@@ -378,7 +367,7 @@ MCTSNode* create_node_arena(NodeArena* arena, const GameState* state, MCTSNode* 
     node->num_children = 0;
     
     if (move) {
-        node->move_from_parent = *move;  // Copy inline, no malloc
+        node->move_from_parent = *move;
         node->has_move = true;
     } else {
         node->has_move = false;
@@ -452,24 +441,16 @@ static PyObject* GameState_apply_move(PyGameState* self, PyObject* args) {
     // Convert to CMove
     CMove m = {card, (int8_t)r, (int8_t)c, is_removal_int != 0};
     
-    // Validation (simplified reuse of logic or direct call)
-    // We reuse apply_move_logic (which I need to rename or expose better)
-    // Actually apply_move_logic was in previous version.
-    // I need to implement a simple validator here or inline it.
-    
-    // Simple inline validation/application for wrapper speed
     int idx = r * 10 + c;
     bool valid = false;
-    
-    // Basic checks
     if (!self->state.game_over) {
         if (m.is_removal) {
             if (is_black_jack(card) && self->state.board[idx] == (3 - self->state.current_player)) valid = true;
         } else {
             if (self->state.board[idx] == EMPTY) {
-                if (is_red_jack(card)) valid = true;
-                else if (!is_jack(card)) {
-                    // Assume layout check passed from Python
+                if (is_red_jack(card)) {
+                    valid = true;
+                } else if (!is_jack(card)) {
                     valid = true;
                 }
             }
@@ -559,7 +540,6 @@ static PyObject* CMCTS_reset(CMCTS* self, PyObject* args) {
     
     if (!PyArg_ParseTuple(args, "y*Oi", &board_buf, &py_hand, &player)) return NULL;
     
-    // Reset arena instead of freeing tree - much faster!
     arena_reset(&self->arena);
     
     GameState state;
@@ -570,10 +550,8 @@ static PyObject* CMCTS_reset(CMCTS* self, PyObject* args) {
     int w = check_win(state.board);
     if (w > 0) { state.winner = w; state.game_over = true; }
     
-    // Use arena-based node creation
     self->root = create_node_arena(&self->arena, &state, NULL, NULL);
     
-    // Store root hand
     self->root_hand_size = (int)PyList_Size(py_hand);
     if (self->root_hand_size > 7) self->root_hand_size = 7;
     for(int i=0; i<self->root_hand_size; i++) {
@@ -595,7 +573,7 @@ static PyObject* CMCTS_select_leaf(CMCTS* self, PyObject* Py_UNUSED(ignored)) {
     while (node->is_expanded && !node->state.game_over) {
         float best_score = -1e9;
         MCTSNode* best_child = NULL;
-        float sqrt_visits = sqrtf((float)node->visits + 1e-8); // Avoid 0
+        float sqrt_visits = sqrtf((float)node->visits + 1e-8);
         
         for (int i = 0; i < node->num_children; i++) {
             MCTSNode* child = node->children[i];
@@ -616,7 +594,7 @@ static PyObject* CMCTS_select_leaf(CMCTS* self, PyObject* Py_UNUSED(ignored)) {
             }
         }
         
-        if (!best_child) break; // Should not happen
+        if (!best_child) break;
         node = best_child;
     }
     
@@ -640,9 +618,6 @@ static PyObject* CMCTS_select_leaf(CMCTS* self, PyObject* Py_UNUSED(ignored)) {
     int p = node->state.current_player;
     int opp = 3 - p;
     
-    // This loop is fast, but technically could be in ALLOW_THREADS too.
-    // Keeping it here for safety with accessing node->state which is C-only (safe),
-    // but building the Bytes object must hold GIL.
     for (int i = 0; i < 100; i++) {
         int8_t v = node->state.board[i];
         if (v == p) buffer[i] = 1.0f;
@@ -664,14 +639,9 @@ static PyObject* CMCTS_backpropagate(CMCTS* self, PyObject* args) {
     MCTSNode* node = (MCTSNode*)PyCapsule_GetPointer(capsule, "mcts_node");
     float* policy = (float*)policy_buf.buf;
     
-    // Copy necessary data to local vars/buffers to release GIL safely
-    // policy buffer is locked by PyArg_ParseTuple "y*", safe to read? 
-    // Yes, buffer view holds reference.
-    
     Py_BEGIN_ALLOW_THREADS
     
     if (!node->is_expanded && !node->state.game_over) {
-        // ... (Hand logic omitted for brevity, reusing existing structure) ...
         int hand[7];
         int sz = 0;
         
@@ -687,7 +657,6 @@ static PyObject* CMCTS_backpropagate(CMCTS* self, PyObject* args) {
         int n_moves = generate_moves(&node->state, hand, sz, moves);
         
         if (n_moves > 0) {
-            // Use arena allocation instead of malloc
             node->children = arena_alloc_children(&self->arena, n_moves);
             node->priors = arena_alloc_priors(&self->arena, n_moves);
             
@@ -707,7 +676,6 @@ static PyObject* CMCTS_backpropagate(CMCTS* self, PyObject* args) {
                     
                     GameState next = node->state;
                     apply_move_inplace(&next, &moves[i]);
-                    // Use arena-based node creation
                     node->children[i] = create_node_arena(&self->arena, &next, node, &moves[i]);
                 }
             }
@@ -735,8 +703,7 @@ static PyObject* CMCTS_get_action(CMCTS* self, PyObject* args) {
     MCTSNode* root = self->root;
     if (!root || root->num_children == 0) Py_RETURN_NONE;
     
-    // Temperature logic
-    // Simplified: argmax if temp < 1e-3, else sample
+    // Select move: argmax for low temperature, sample for high temperature
     int chosen = 0;
     
     if (temp < 1e-3) {
@@ -835,27 +802,19 @@ PyMODINIT_FUNC PyInit_c_sequence(void) {
     if (PyType_Ready(&CMCTSType) < 0) return NULL;
 
     if (PyType_Ready(&PyGameStateType) < 0) return NULL;
-
     
-
     m = PyModule_Create(&c_sequencemodule);
 
     if (!m) return NULL;
-
     
-
     Py_INCREF(&CMCTSType);
 
     PyModule_AddObject(m, "CMCTS", (PyObject*)&CMCTSType);
-
     
-
     Py_INCREF(&PyGameStateType);
 
     PyModule_AddObject(m, "GameState", (PyObject*)&PyGameStateType);
-
     
-
     return m;
 
 }

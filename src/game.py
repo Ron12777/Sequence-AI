@@ -40,7 +40,6 @@ class SequenceGame:
     SEQUENCE_LENGTH = 5
     
     def __init__(self, board_csv_path: Optional[str] = None):
-        # Load board layout from CSV
         if board_csv_path is None:
             board_csv_path = Path(__file__).parent.parent / "BoardDesign.csv"
         
@@ -104,7 +103,6 @@ class SequenceGame:
         
         self.id = str(uuid.uuid4())
         
-        # Deal cards
         cards_per_player = get_cards_per_player(num_players)
         self.hands = {
             1: [self.draw_playable_card(1) for _ in range(cards_per_player)],
@@ -115,7 +113,6 @@ class SequenceGame:
         self.hands[2] = [c for c in self.hands[2] if c]
     
     def get_legal_moves(self, player: Optional[int] = None) -> List[Move]:
-        """Get all legal moves for a player."""
         if player is None:
             player = self.current_player
         

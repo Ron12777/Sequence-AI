@@ -42,11 +42,8 @@ class FastSequenceGame:
         }
 
     def make_move(self, move: Move) -> bool:
-        """Execute a move. Syncs Python and C state."""
         player = self.current_player
         
-        # 1. Execute move in C
-        # args: card_int, row, col, is_removal_int
         success = self.c_state.apply_move(
             move.card.to_int(),
             move.row,
@@ -57,7 +54,6 @@ class FastSequenceGame:
         if not success:
             return False
             
-        # 2. Update Python hands
         self.hands[player].remove(move.card)
         new_card = self.deck.draw()
         if new_card:
@@ -66,32 +62,22 @@ class FastSequenceGame:
         return True
 
     def get_state_tensor(self, player: int) -> np.ndarray:
-        """
-        Convert C board to neural network input tensor.
-        Matches the 8-channel format expected by model.py.
-        """
         opponent = 3 - player
-        # C board is a bytes object of 100 int8s
         board_bytes = self.c_state.get_tensor()
         board = np.frombuffer(board_bytes, dtype=np.int8).reshape(10, 10)
         
         tensor = np.zeros((8, 10, 10), dtype=np.float32)
         
-        # Channels 0-3: Board state
         tensor[0] = (board == player).astype(np.float32)
         tensor[1] = (board == opponent).astype(np.float32)
         tensor[2] = (board == -1).astype(np.float32)  # FREE
         tensor[3] = (board == 0).astype(np.float32)   # EMPTY
         
-        # Channels 4-7: Playable positions for first 4 cards in hand
-        hand = self.hands[player]
-        # To match SequenceGame logic, we'd need layout map here.
-        # But for training speed, we can simplify or import it.
-        # Let's import the layout mapping from a dummy SequenceGame
         if not hasattr(self, '_pos_map'):
             dummy = SequenceGame()
             self._pos_map = dummy.card_to_positions
 
+        hand = self.hands[player]
         for i, card in enumerate(hand[:4]):
             if card.is_jack():
                 continue

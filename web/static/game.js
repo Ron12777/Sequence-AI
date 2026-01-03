@@ -68,9 +68,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         showEvalBar.addEventListener('change', () => {
             if (evalBarContainer) {
                 evalBarContainer.style.visibility = showEvalBar.checked ? 'visible' : 'hidden';
-                // Also trigger re-eval if checking and waiting? 
-                // Mostly just visibility is enough, but if it was checking in background it's fine.
-                // The container visibility class handling might be elsewhere, let's force style.
                 if (showEvalBar.checked) {
                     evalBarContainer.classList.add('visible');
                 } else {
@@ -139,7 +136,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         inputEl.addEventListener('input', () => {
             let val = parseInt(inputEl.value);
             if (!isNaN(val)) {
-                // For live input, we allow partial typing but clamp for the slider
                 const clamped = clamp(val);
                 sliderEl.value = clamped;
                 if (labelEl) labelEl.textContent = getDifficultyLabel(clamped);
@@ -280,19 +276,13 @@ async function watchAiVsAi() {
     // Resume if Paused
     if (isPaused) {
         isPaused = false;
-        // The previous loop was cancelled, so we just fall through to start a new loop below.
     }
 
-    // newGame(); // REMOVE: Continue from current state
-
-    // If game over, THEN reset? Or just stay? 
-    // User wants "continue from current position".
-    // If game is over, we probably can't continue unless we reset.
     if (!game || game.gameOver) {
-        newGame(); // Must reset if nothing to watch
+        newGame();
     } else {
-        cancelAiLoop = true; // Stop any existing loop first
-        await sleep(100); // Give it a moment to stop
+        cancelAiLoop = true;
+        await sleep(100);
     }
 
     // Setup for this new match
@@ -375,11 +365,6 @@ async function runJudgeEval() {
     const judgeSlider = document.getElementById('judgeDepth');
     let judgeSims = judgeSlider ? parseInt(judgeSlider.value) : 50;
 
-    // Apply "Min Judge Depth" Logic:
-    // "Make the judge depth only kick in if its higher than the depth of the ai it just came from"
-    // I.e. Judge Sim Count = Max(Judge Slider, Previous Player Depth)
-
-    // Determine Previous Player
     const prevPlayer = (game.currentPlayer === 1) ? 2 : 1;
     let prevPlayerDepth = 0;
 
@@ -496,18 +481,9 @@ async function triggerAiTurn() {
 
     try {
         const result = await mcts.search(game, (current, total, policy, value) => {
-            const pct = Math.floor((current / total) * 100);
-            if (aiProgressBar) aiProgressBar.style.width = pct + '%';
+            if (aiProgressBar) aiProgressBar.style.width = Math.floor((current / total) * 100) + '%';
+            if (aiProgressText) aiProgressText.textContent = `${current}/${total}`;
 
-            // Debug info in UI
-            let debugText = `${current}/${total}`;
-            if (aiProgressText) aiProgressText.textContent = debugText;
-
-            // Update Eval Bar (REMOVED - now handled by Judge)
-            // if (evalBarContainer && value !== undefined) { ... }
-
-            // Render live highlights
-            // Update frequently to ensure visibility
             if (policy) {
                 renderTopMoves(policy);
             }
