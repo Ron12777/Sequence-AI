@@ -57,11 +57,11 @@
                     <div class="controls">
                         <div class="control-group">
                             <div class="toggle-wrapper">
+                                <span class="toggle-label">Show Win Prob</span>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="showEvalBar">
                                     <span class="slider"></span>
                                 </label>
-                                <span class="toggle-label">Show Win Prob</span>
                             </div>
                         </div>
                         <button id="newGameBtn" class="btn primary">Reset Board</button>
@@ -77,25 +77,39 @@
                         <button id="watchAiBtn" class="btn secondary">Watch AI vs AI</button>
                         <!-- P1 Depth (Red AI) - Hidden by default -->
                         <div id="depthP1Container" class="control-group depth-control" style="display: none;">
-                            <label for="depthP1"><span id="depthP1Title">Red Depth</span>: <input type="number"
-                                    id="depthP1Value" class="depth-number-input" min="1" max="500" value="50"> <span
-                                    id="difficultyLabelP1" class="difficulty-label">Medium</span></label>
+                            <div class="control-row">
+                                <span id="depthP1Title" class="control-title">Red Depth</span>
+                                <div class="control-meta">
+                                    <input type="number" id="depthP1Value" class="depth-number-input" min="1" max="500"
+                                        value="50">
+                                    <span id="difficultyLabelP1" class="difficulty-label">Medium</span>
+                                </div>
+                            </div>
                             <input type="range" id="depthP1" min="1" max="500" step="1" value="50">
                         </div>
 
                         <!-- P2 Depth (Blue AI / Default AI) -->
                         <div class="control-group depth-control">
-                            <label for="depth"><span id="depthTitle">Depth</span>: <input type="number" id="depthValue"
-                                    class="depth-number-input" min="1" max="500" value="50"> <span id="difficultyLabel"
-                                    class="difficulty-label">Medium</span></label>
+                            <div class="control-row">
+                                <span id="depthTitle" class="control-title">Depth</span>
+                                <div class="control-meta">
+                                    <input type="number" id="depthValue" class="depth-number-input" min="1" max="500"
+                                        value="50">
+                                    <span id="difficultyLabel" class="difficulty-label">Medium</span>
+                                </div>
+                            </div>
                             <input type="range" id="depth" min="1" max="500" step="1" value="50">
                         </div>
 
                         <!-- Judge Depth (Eval Bar) -->
                         <div class="control-group depth-control">
-                            <label for="judgeDepth"><span id="judgeDepthTitle">Win Prob Calc Min Depth</span>: <input
-                                    type="number" id="judgeDepthValue" class="depth-number-input" min="1" max="500"
-                                    value="50"></label>
+                            <div class="control-row">
+                                <span id="judgeDepthTitle" class="control-title">Win Prob Calc Min Depth</span>
+                                <div class="control-meta">
+                                    <input type="number" id="judgeDepthValue" class="depth-number-input" min="1"
+                                        max="500" value="50">
+                                </div>
+                            </div>
                             <input type="range" id="judgeDepth" min="1" max="500" step="1" value="50">
                         </div>
                         <button id="hintBtn" class="btn secondary">Get Hint</button>

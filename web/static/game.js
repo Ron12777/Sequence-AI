@@ -35,20 +35,23 @@ const evalBarContainer = document.getElementById('evalBarContainer');
 const evalBarFill = document.getElementById('evalBarFill');
 const evalText = document.getElementById('evalText');
 const showEvalBar = document.getElementById('showEvalBar');
+let hasEvalValue = false;
 
 function setEvalBarVisible(visible) {
     if (!evalBarContainer) return;
     evalBarContainer.classList.toggle('visible', visible);
+    evalBarContainer.style.display = visible ? 'block' : 'none';
     evalBarContainer.style.visibility = visible ? 'visible' : 'hidden';
 }
 
 function resetEvalBar() {
+    hasEvalValue = false;
     if (evalBarFill) {
         evalBarFill.style.width = '50%';
         evalBarFill.style.height = '50%';
     }
     if (evalText) {
-        evalText.textContent = '50%';
+        evalText.textContent = 'Win Prob';
     }
 }
 
@@ -82,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Win Prob Toggle
     if (showEvalBar) {
         showEvalBar.addEventListener('change', () => {
-            setEvalBarVisible(showEvalBar.checked);
+            setEvalBarVisible(showEvalBar.checked && hasEvalValue);
         });
     }
 
@@ -241,7 +244,7 @@ function newGame() {
 
     // Hide eval bar
     resetEvalBar();
-    setEvalBarVisible(!!(showEvalBar && showEvalBar.checked));
+    setEvalBarVisible(!!(showEvalBar && showEvalBar.checked && hasEvalValue));
 
     // Clear history
     const historyEl = document.getElementById('moveHistory');
@@ -367,7 +370,6 @@ async function runJudgeEval() {
         return;
     }
 
-    setEvalBarVisible(true);
     // if (evalText) evalText.textContent = "Judging...";
 
     const judgeSlider = document.getElementById('judgeDepth');
@@ -414,6 +416,10 @@ async function runJudgeEval() {
 
 function updateEvalBar(value) {
     if (!evalBarContainer || value === undefined) return;
+    hasEvalValue = true;
+    if (showEvalBar && showEvalBar.checked) {
+        setEvalBarVisible(true);
+    }
 
     let p1Advantage = 0; // -1 to 1 scale where 1 is P1 winning
 
@@ -429,8 +435,9 @@ function updateEvalBar(value) {
 
     // Set both width (desktop) and height (mobile vertical bar)
     if (evalBarFill) {
-        evalBarFill.style.width = `${clamped}%`;
-        evalBarFill.style.height = `${clamped}%`;
+        const isMobile = window.matchMedia('(max-width: 1023px)').matches;
+        evalBarFill.style.width = isMobile ? '100%' : `${clamped}%`;
+        evalBarFill.style.height = isMobile ? `${clamped}%` : '100%';
     }
 
     // Text: "Red 60%" or "Blue 60%"
@@ -482,7 +489,7 @@ async function triggerAiTurn() {
     // But usually only interesting in Watch Mode or if user wants to see their own winning chance?
     // User requested: "checkable show eval bar you can enable in ai vs ai and human vs ai mode"
     if (showEvalBar && showEvalBar.checked && evalBarContainer) {
-        setEvalBarVisible(true);
+        setEvalBarVisible(hasEvalValue);
     } else {
         setEvalBarVisible(false);
     }
@@ -507,10 +514,12 @@ async function triggerAiTurn() {
                     evalBarFill.style.width = '100%';
                     evalBarFill.style.height = '100%';
                     evalText.textContent = 'Red 100%';
+                    hasEvalValue = true;
                 } else if (game.winner === 2) {
                     evalBarFill.style.width = '0%';
                     evalBarFill.style.height = '0%';
                     evalText.textContent = 'Blue 100%';
+                    hasEvalValue = true;
                 }
             }
         }
