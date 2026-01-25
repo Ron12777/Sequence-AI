@@ -36,6 +36,22 @@ const evalBarFill = document.getElementById('evalBarFill');
 const evalText = document.getElementById('evalText');
 const showEvalBar = document.getElementById('showEvalBar');
 
+function setEvalBarVisible(visible) {
+    if (!evalBarContainer) return;
+    evalBarContainer.classList.toggle('visible', visible);
+    evalBarContainer.style.visibility = visible ? 'visible' : 'hidden';
+}
+
+function resetEvalBar() {
+    if (evalBarFill) {
+        evalBarFill.style.width = '50%';
+        evalBarFill.style.height = '50%';
+    }
+    if (evalText) {
+        evalText.textContent = '50%';
+    }
+}
+
 // Suit symbols - using text variation selector to prevent emoji rendering on iOS
 const SUIT_SYMBOLS = {
     'C': '♣\uFE0E',
@@ -66,14 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Win Prob Toggle
     if (showEvalBar) {
         showEvalBar.addEventListener('change', () => {
-            if (evalBarContainer) {
-                evalBarContainer.style.visibility = showEvalBar.checked ? 'visible' : 'hidden';
-                if (showEvalBar.checked) {
-                    evalBarContainer.classList.add('visible');
-                } else {
-                    evalBarContainer.classList.remove('visible');
-                }
-            }
+            setEvalBarVisible(showEvalBar.checked);
         });
     }
 
@@ -231,9 +240,8 @@ function newGame() {
     }
 
     // Hide eval bar
-    if (evalBarContainer) {
-        evalBarContainer.classList.remove('visible');
-    }
+    resetEvalBar();
+    setEvalBarVisible(!!(showEvalBar && showEvalBar.checked));
 
     // Clear history
     const historyEl = document.getElementById('moveHistory');
@@ -355,11 +363,11 @@ async function runJudgeEval() {
 
     // Only run if eval bar is enabled
     if (!showEvalBar || !showEvalBar.checked) {
-        if (evalBarContainer) evalBarContainer.classList.remove('visible');
+        setEvalBarVisible(false);
         return;
     }
 
-    if (evalBarContainer) evalBarContainer.classList.add('visible');
+    setEvalBarVisible(true);
     // if (evalText) evalText.textContent = "Judging...";
 
     const judgeSlider = document.getElementById('judgeDepth');
@@ -474,9 +482,9 @@ async function triggerAiTurn() {
     // But usually only interesting in Watch Mode or if user wants to see their own winning chance?
     // User requested: "checkable show eval bar you can enable in ai vs ai and human vs ai mode"
     if (showEvalBar && showEvalBar.checked && evalBarContainer) {
-        evalBarContainer.classList.add('visible');
-    } else if (evalBarContainer) {
-        evalBarContainer.classList.remove('visible');
+        setEvalBarVisible(true);
+    } else {
+        setEvalBarVisible(false);
     }
 
     try {

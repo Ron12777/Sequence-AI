@@ -153,6 +153,11 @@ body {
 }
 
 .depth-control label {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 6px;
+    row-gap: 4px;
     font-size: 0.9rem;
     color: var(--text-secondary);
 }
@@ -167,7 +172,7 @@ body {
     border-radius: 4px;
     font-size: 0.8rem;
     color: var(--text-secondary);
-    margin-left: 8px;
+    margin-left: 0;
 }
 
 .depth-number-input {
@@ -475,6 +480,17 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+}
+
+.controls .btn {
+    width: 100%;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .btn {
