@@ -1,0 +1,23 @@
+{
+  "deployed_utc": "2026-10-18T14:28:52.891258+00:00",
+  "scope": "Local static deployment; GitHub publication pending",
+  "authorization": "User explicitly requested uploading the newCNN after being informed that heldoutconfirmation was incomplete; this supersedes prior promotion restriction.",
+  "checkpoint_sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e",
+  "onnx_sha256": "83823d396895aa97bc8c52d494b655625c3cc0b806868492c33b4c81711365ed",
+  "model": "model-exact-83823d396895aa97.onnx",
+  "previous_model_retained": "model-exact-0bd3130842892f06.onnx",
+  "rollback_directory": "artifacts/rollback/overnight-2026-10-18",
+  "native_validation": "artifacts/exact-cnn-overnight.validation.json",
+  "wasm_validation": "experiments/2026-10-18/exact-cnn-overnight-web-validation.json",
+  "rendered_validation": "experiments/2026-10-18/staged-browser-validation.json",
+  "head_to_head": {
+    "games": 8192,
+    "score": 0.5430908203125,
+    "paired95ci": [
+      0.5347103823979744,
+      0.5514712582270256
+    ]
+  },
+  "heldout_confirmation": "Incomplete; not represented as passed",
+  "public_deployment": false
+}

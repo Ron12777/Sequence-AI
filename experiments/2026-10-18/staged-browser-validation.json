@@ -1,0 +1,30 @@
+{
+  "utc": "2026-10-18T14:07:24.269279+00:00",
+  "passed": true,
+  "scope": "Rendered Codex in-app browser at localhost staging, UI interactions through CUA; no deployment or public publication",
+  "url": "http://127.0.0.1:8766/",
+  "model": "model-exact-83823d396895aa97.onnx",
+  "model_sha256": "83823d396895aa97bc8c52d494b655625c3cc0b806868492c33b4c81711365ed",
+  "manifest": {
+    "model": "model-exact-83823d396895aa97.onnx",
+    "policyKind": "exact_sequence_policy",
+    "playMode": "direct",
+    "actionEncoding": "card_id * 100 + row * 10 + col",
+    "variant": "cnn",
+    "valueMode": "bounded",
+    "historyArchitecture": "board",
+    "observationMode": "board_hand"
+  },
+  "checks": [
+    "Server observed browser GET model.json200 and selected hashed ONNX200",
+    "Browser console ONNX model loaded",
+    "Hint selected5H at row5column6; human move followed byAI2H at row5column5",
+    "Evaluation enabled without needing another move",
+    "Watch AI advanced move history; Pause/Resume/New game controls worked",
+    "Edited board AC square, Best move for Red and Blue; no displayed inference error",
+    "EditedBlueJDhand slot toAS and Best move; no displayed inference error"
+  ],
+  "browser_console_warnings_or_errors": [],
+  "screenshot": "staged-browser-validation.png",
+  "limits": "No instrumented zero-MCTS assertion or browser response-body checksum. Selected file SHA verified on server filesystem; URL load observed in server log. Native and actualORTWeb numerical parity in separate reports."
+}

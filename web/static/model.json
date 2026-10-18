@@ -1,5 +1,5 @@
 {
-  "model": "model-exact-0bd3130842892f06.onnx",
+  "model": "model-exact-83823d396895aa97.onnx",
   "policyKind": "exact_sequence_policy",
   "playMode": "direct",
   "actionEncoding": "card_id * 100 + row * 10 + col",
