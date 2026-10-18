@@ -515,7 +515,6 @@ function highlightSequences(cell, row, col) {
         cell.classList.add('in-sequence');
         const mark = document.createElement('div');
         mark.className = 'sequence-mark';
-        mark.textContent = '✕';
         cell.appendChild(mark);
     }
 }

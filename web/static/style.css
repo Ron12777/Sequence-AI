@@ -53,7 +53,9 @@ button:disabled { opacity: .5; cursor: wait; }
 .cell.valid-move { outline: 2px solid var(--blue); outline-offset: -2px; background: #dcebf0; }
 .cell.removal-target { outline: 2px solid var(--red); outline-offset: -2px; }
 .cell.best-move { outline: 3px solid #b99322; outline-offset: -3px; background: #f4e6a9; }
-.sequence-mark { position: absolute; inset: 0; display: grid; place-items: center; z-index: 3; color: #fff; font-size: clamp(18px, 2.5vw, 27px); font-weight: 700; pointer-events: none; }
+.sequence-mark { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.sequence-mark::before, .sequence-mark::after { content: ''; position: absolute; left: 50%; top: 50%; width: 38%; height: clamp(2px, .3vw, 3px); background: #fff; transform: translate(-50%, -50%) rotate(45deg); }
+.sequence-mark::after { transform: translate(-50%, -50%) rotate(-45deg); }
 .highlight-orb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 88%; max-height: 88%; border: 2px solid var(--blue); border-radius: 50%; z-index: 4; pointer-events: none; }
 .highlight-orb.p1 { border-color: var(--red); }
 .highlight-orb.p2 { border-color: var(--blue); }
