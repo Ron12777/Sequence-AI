@@ -1,213 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Triggering initial deployment -->
-    <title>Sequence AI</title>
-    <link rel="stylesheet" href="style.css?v=7cfcb63081261844">
+    <title>Sequence</title>
+    <link rel="stylesheet" href="style.css?v=ab01b5cb0d788541">
 </head>
-
 <body>
-    <div class="app-container">
-
-        <div class="game-container">
-            <!-- Left Panel: Controls & Info -->
-            <div class="side-panel">
-                <div class="panel-section">
-                    <h3>Game Status</h3>
-                    <div id="turnIndicator" class="turn-indicator">
-                        <div class="turn-dot"></div>
-                        <span class="text">Your Turn</span>
-                    </div>
-                    <!-- AI Progress Bar -->
-                    <div id="aiProgressContainer" class="ai-progress-container">
-                        <div class="progress-bar-bg">
-                            <div id="aiProgressBar" class="progress-bar-fill"></div>
-                        </div>
-                        <span id="aiProgressText" class="progress-text">0% Thinking...</span>
-                    </div>
-
-                </div>
-
-                <div class="panel-section">
-                    <h3>Sequences</h3>
-                    <div class="scores">
-                        <div class="score player-score">
-                            <span id="labelP1" class="label">YOU</span>
-                            <span id="playerSequences" class="value">0</span>
-                        </div>
-                        <div class="score ai-score">
-                            <span id="labelP2" class="label">AI</span>
-                            <span id="aiSequences" class="value">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel-section">
-                    <h3>History</h3>
-                    <div id="moveHistory" class="move-history">
-                        <!-- Moves -->
-                    </div>
-                </div>
-
-                <div class="panel-section">
-                    <h3>Controls</h3>
-                    <div class="controls">
-                        <div class="control-group">
-                            <div class="toggle-wrapper">
-                                <span class="toggle-label">Show model estimate</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="showEvalBar">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <button id="newGameBtn" class="btn primary">Reset Board</button>
-
-                        <!-- Inline Pause Controls (Hidden by default) -->
-                        <div id="pauseControls"
-                            style="display:none; margin-top: 10px; gap: 10px; flex-direction: column;">
-                            <button onclick="resumeGame()" class="btn primary" style="width: 100%;">Resume Game</button>
-                            <button onclick="resetFromPause()" class="btn secondary" style="width: 100%;">Reset
-                                Board</button>
-                        </div>
-
-                        <button id="watchAiBtn" class="btn secondary">Watch AI vs AI</button>
-                        <!-- P1 Depth (Red AI) - Hidden by default -->
-                        <div id="depthP1Container" class="control-group depth-control" style="display: none;">
-                            <div class="control-row">
-                                <span id="depthP1Title" class="control-title">Red simulations</span>
-                                <div class="control-meta">
-                                    <input type="number" id="depthP1Value" class="depth-number-input" min="1" max="500"
-                                        value="128">
-                                    <span id="difficultyLabelP1" class="difficulty-label">Standard search</span>
-                                </div>
-                            </div>
-                            <input type="range" id="depthP1" min="1" max="500" step="1" value="128">
-                        </div>
-
-                        <!-- P2 Depth (Blue AI / Default AI) -->
-                        <div class="control-group depth-control">
-                            <div class="control-row">
-                                <span id="depthTitle" class="control-title">Search simulations</span>
-                                <div class="control-meta">
-                                    <input type="number" id="depthValue" class="depth-number-input" min="1" max="500"
-                                        value="128">
-                                    <span id="difficultyLabel" class="difficulty-label">Standard search</span>
-                                </div>
-                            </div>
-                            <input type="range" id="depth" min="1" max="500" step="1" value="128">
-                        </div>
-
-                        <!-- Judge Depth (Eval Bar) -->
-                        <div class="control-group depth-control">
-                            <div class="control-row">
-                                <span id="judgeDepthTitle" class="control-title">Evaluation simulations</span>
-                                <div class="control-meta">
-                                    <input type="number" id="judgeDepthValue" class="depth-number-input" min="1"
-                                        max="500" value="128">
-                                </div>
-                            </div>
-                            <input type="range" id="judgeDepth" min="1" max="500" step="1" value="128">
-                        </div>
-                        <p id="aiError" role="alert" hidden></p>
-                        <button id="hintBtn" class="btn secondary">Get Hint</button>
-                        <button id="analysisBtn" class="btn secondary">Analysis Board</button>
-
-                        <!-- Analysis Controls (Hidden by default) -->
-
-                        <div id="analysisControls" class="analysis-controls content" style="display: none;">
-                            <h4>Analysis Controls</h4>
-                            <p class="instruction-text">
-                                <strong>Edit Board:</strong> Click cells to cycle (Empty -> P1 -> P2).<br>
-                                <strong>Edit Hands:</strong> Click cards in any hand (even facedown) to change
-                                them.<br>
-                                <strong>Game State:</strong> Use "Toggle Turn" to switch active player.
-                            </p>
-                            <button id="toggleTurnBtn" class="btn secondary">Toggle Turn</button>
-                            <button id="bestMoveBtn" class="btn gold">Show Best Move</button>
-                        </div>
-                    </div>
-                </div>
+    <main class="app-container">
+        <header class="app-header">
+            <h1 class="game-title">Sequence</h1>
+            <div id="turnIndicator" class="turn-indicator">
+                <span class="turn-dot" aria-hidden="true"></span>
+                <span class="text">Your turn</span>
             </div>
-
-            <!-- Game Area -->
-            <div class="game-area">
-                <!-- Player 1 Hand (Left) -->
-                <div class="hand-vertical p1-hand">
-                    <h3 id="handHeaderP1">YOU</h3>
-                    <div id="handP1" class="card-stack"></div>
-                </div>
-
-                <!-- Center: Board -->
-                <div class="board-container">
-                    <h1 class="game-title">SEQUENCE AI</h1>
-                    <div id="board" class="board">
-                        <!-- Grid generated by JS -->
-                    </div>
-                    <!-- Mobile Eval Bar (sibling of board, inside board-container) -->
-                    <div id="evalBarContainer" class="eval-bar-container">
-                        <div class="eval-bar-bg">
-                            <div id="evalBarFill" class="eval-bar-fill"></div>
-                            <div id="evalText" class="eval-text">50%</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Player 2 Hand (Right) -->
+            <div class="scores" aria-label="Completed sequences">
+                <div class="score player-score"><span id="labelP1" class="label">You</span><span id="playerSequences" class="value">0</span></div>
+                <div class="score ai-score"><span id="labelP2" class="label">AI</span><span id="aiSequences" class="value">0</span></div>
+            </div>
+        </header>
+        <div class="game-container">
+            <section class="game-area" aria-label="Game board and hands">
                 <div class="hand-vertical p2-hand">
-                    <h3 id="handHeaderP2">AI</h3>
+                    <span id="handHeaderP2" class="hand-label">AI</span>
                     <div id="handP2" class="card-stack"></div>
                 </div>
-            </div>
+                <div class="board-container">
+                    <div id="board" class="board" aria-label="Sequence board"></div>
+                    <div id="evalBarContainer" class="eval-bar-container">
+                        <div class="eval-labels"><span id="evalText" class="eval-text">50%</span></div>
+                        <div class="eval-bar-bg"><div id="evalBarFill" class="eval-bar-fill"></div></div>
+                    </div>
+                </div>
+                <div class="hand-vertical p1-hand">
+                    <span id="handHeaderP1" class="hand-label">You</span>
+                    <div id="handP1" class="card-stack"></div>
+                </div>
+            </section>
+            <aside class="side-panel" aria-label="Game controls">
+                <div class="controls">
+                    <button id="newGameBtn" class="btn primary">New game</button>
+                    <div id="pauseControls" style="display:none;">
+                        <button onclick="resumeGame()" class="btn primary">Resume</button>
+                        <button onclick="resetFromPause()" class="btn secondary">New game</button>
+                    </div>
+                    <button id="hintBtn" class="btn secondary">Hint</button>
+                    <button id="watchAiBtn" class="btn secondary">Watch AI</button>
+                    <button id="analysisBtn" class="btn secondary">Edit board</button>
+                    <div class="toggle-wrapper">
+                        <span class="toggle-label">Evaluation</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showEvalBar" aria-label="Show evaluation">
+                            <span class="slider" aria-hidden="true"></span>
+                        </label>
+                    </div>
+                    <div id="aiProgressContainer" class="ai-progress-container">
+                        <div class="progress-bar-bg"><div id="aiProgressBar" class="progress-bar-fill"></div></div>
+                        <span id="aiProgressText" class="progress-text">Thinking…</span>
+                    </div>
+                    <p id="aiError" role="alert" hidden></p>
+                    <div id="analysisControls" class="analysis-controls" style="display:none;">
+                        <p class="instruction-text">Tap a square or card to edit.</p>
+                        <button id="toggleTurnBtn" class="btn secondary">Switch turn</button>
+                        <button id="bestMoveBtn" class="btn secondary">Best move</button>
+                    </div>
+                    <div id="depthP1Container" class="control-group depth-control" style="display:none;">
+                        <div class="control-row"><label id="depthP1Title" for="depthP1">Red simulations</label><input type="number" id="depthP1Value" class="depth-number-input" aria-label="Red simulations" min="1" max="500" value="128"></div>
+                        <input type="range" id="depthP1" min="1" max="500" step="1" value="128">
+                        <span id="difficultyLabelP1" class="difficulty-label">Standard search</span>
+                    </div>
+                    <div class="control-group depth-control">
+                        <div class="control-row"><label id="depthTitle" for="depth">Search simulations</label><input type="number" id="depthValue" class="depth-number-input" aria-label="Search simulations" min="1" max="500" value="128"></div>
+                        <input type="range" id="depth" min="1" max="500" step="1" value="128">
+                        <span id="difficultyLabel" class="difficulty-label">Standard search</span>
+                    </div>
+                    <div class="control-group depth-control">
+                        <div class="control-row"><label id="judgeDepthTitle" for="judgeDepth">Evaluation simulations</label><input type="number" id="judgeDepthValue" class="depth-number-input" aria-label="Evaluation simulations" min="1" max="500" value="128"></div>
+                        <input type="range" id="judgeDepth" min="1" max="500" step="1" value="128">
+                    </div>
+                </div>
+                <details class="history-panel">
+                    <summary>Moves</summary>
+                    <div id="moveHistory" class="move-history" aria-label="Move history"></div>
+                </details>
+            </aside>
         </div>
-
-        <!-- Removed bottom hand-container -->
-
-        <!-- Mobile Drawer Toggle (FAB) -->
-        <button id="mobileDrawerToggle" class="mobile-drawer-toggle" onclick="toggleMobileDrawer()"
-            aria-label="Toggle Controls">
-            ⚙️
-        </button>
-
-
-    </div>
-
-    <!-- Game Over Overlay -->
+        <button id="mobileDrawerToggle" class="mobile-drawer-toggle" onclick="toggleMobileDrawer()" aria-label="Toggle controls" hidden>Controls</button>
+    </main>
     <div id="gameOverOverlay" class="overlay">
         <div class="overlay-content">
-            <button class="overlay-close" onclick="dismissGameOver()">&times;</button>
-            <h2 id="gameOverText">Game Over</h2>
-            <button onclick="newGame()" class="btn primary">Play Again</button>
+            <button class="overlay-close" onclick="dismissGameOver()" aria-label="Close">&times;</button>
+            <h2 id="gameOverText">Game over</h2>
+            <button onclick="newGame()" class="btn primary">Play again</button>
         </div>
     </div>
-
-    <!-- Pause Menu Modal Removed -->
-
-    <!-- Card Picker Modal -->
     <div id="cardPickerOverlay" class="overlay">
         <div class="overlay-content card-picker-content">
-            <button class="overlay-close" onclick="closeCardPicker()">&times;</button>
-            <h2>Select Card</h2>
-            <div id="cardPickerGrid" class="card-picker-grid">
-                <!-- Cards generated significantly by JS -->
-            </div>
+            <button class="overlay-close" onclick="closeCardPicker()" aria-label="Close card picker">&times;</button>
+            <h2>Choose card</h2>
+            <div id="cardPickerGrid" class="card-picker-grid"></div>
         </div>
     </div>
-
-    <!-- ONNX Runtime Web for neural network inference -->
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js"></script>
-
-    <!-- Game Engine & MCTS -->
     <script src="game_engine.js?v=324f370d5a5a1062"></script>
     <script src="mcts.js"></script>
     <script src="direct_player.js?v=7a3bc458213c3683"></script>
-
-    <!-- Main Game UI -->
-    <script src="game.js?v=0fcbc0e0fee63ad5"></script>
-
+    <script src="game.js?v=111e5a3d04268ea0"></script>
 </body>
-
 </html>

@@ -37,6 +37,7 @@ const evalBarFill = document.getElementById('evalBarFill');
 const evalText = document.getElementById('evalText');
 const showEvalBar = document.getElementById('showEvalBar');
 let hasEvalValue = false;
+let evaluationRequest = 0;
 
 function setEvalBarVisible(visible) {
     if (!evalBarContainer) return;
@@ -46,10 +47,11 @@ function setEvalBarVisible(visible) {
 }
 
 function resetEvalBar() {
+    evaluationRequest++;
     hasEvalValue = false;
     if (evalBarFill) {
         evalBarFill.style.width = '50%';
-        evalBarFill.style.height = '50%';
+        evalBarFill.style.height = '100%';
     }
     if (evalText) {
         evalText.textContent = 'Model estimate';
@@ -86,7 +88,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Win Prob Toggle
     if (showEvalBar) {
         showEvalBar.addEventListener('change', () => {
-            setEvalBarVisible(showEvalBar.checked && hasEvalValue);
+            if (showEvalBar.checked) void runJudgeEval();
+            else { evaluationRequest++; setEvalBarVisible(false); }
         });
     }
 
@@ -260,7 +263,7 @@ function newGame() {
         gameOverOverlay.classList.remove('visible');
     }
 
-    // Ensure "Reset Board" button is reset to default state
+    // Ensure "New game" button is reset to default state
     updateResetButtonState(false);
 
     renderBoard();
@@ -304,6 +307,7 @@ function newGame() {
     // Show Watch AI button again
     const watchAiBtn = document.getElementById('watchAiBtn');
     if (watchAiBtn) watchAiBtn.style.display = 'block';
+    void runJudgeEval();
 }
 
 
@@ -350,10 +354,10 @@ async function watchAiVsAi() {
     const headerP1 = document.getElementById('handHeaderP1');
     const headerP2 = document.getElementById('handHeaderP2');
 
-    if (lblP1) lblP1.textContent = "AI 1 (Red)";
-    if (lblP2) lblP2.textContent = "AI 2 (Blue)";
-    if (headerP1) headerP1.textContent = "AI 1 (Red)";
-    if (headerP2) headerP2.textContent = "AI 2 (Blue)";
+    if (lblP1) lblP1.textContent = "Red";
+    if (lblP2) lblP2.textContent = "Blue";
+    if (headerP1) headerP1.textContent = "Red";
+    if (headerP2) headerP2.textContent = "Blue";
 
     // Show P1 Slider
     const depthP1Container = document.getElementById('depthP1Container');
@@ -366,9 +370,6 @@ async function watchAiVsAi() {
 
     while (!game.gameOver && !cancelAiLoop) {
         // AI 1 Turn
-        await runJudgeEval();
-        if (cancelAiLoop) break;
-
         await triggerAiTurn();
         if (cancelAiLoop) break;
         if (game.gameOver) break;
@@ -376,9 +377,6 @@ async function watchAiVsAi() {
 
         // AI 2 Turn (same function, just called again)
         if (!game.gameOver && !cancelAiLoop) {
-            await runJudgeEval();
-            if (cancelAiLoop) break;
-
             await triggerAiTurn();
             if (cancelAiLoop) break;
             await sleep(500);
@@ -390,103 +388,70 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/**
- * Run Judge Evaluation (Pre-Move)
- */
-async function runJudgeEval() {
-    if (!aiPlayer || !game || game.gameOver) return;
+/** Evaluate a snapshot, never reinterpret a pending result using a later turn. */
+function capturePosition() {
+    const original = game;
+    const fingerprint = JSON.stringify(original);
+    return {
+        position: cloneGame(original),
+        isCurrent: () => game === original && JSON.stringify(game) === fingerprint
+    };
+}
 
-    // Only run if eval bar is enabled
-    if (!showEvalBar || !showEvalBar.checked) {
+async function runJudgeEval() {
+    const request = ++evaluationRequest;
+    if (!game || !showEvalBar || !showEvalBar.checked) {
         setEvalBarVisible(false);
         return;
     }
-
-    if (aiPlayer instanceof DirectPlayer) {
-        try { updateEvalBar((await chooseAiMove(game)).value); }
-        catch (error) { showAiError(error); }
+    if (game.gameOver) {
+        updateEvalBar(game.winner === 1 ? 1 : game.winner === 2 ? -1 : 0, 1, true);
         return;
     }
-
-    const judgeSlider = document.getElementById('judgeDepth');
-    let judgeSims = judgeSlider ? parseInt(judgeSlider.value) : 128;
-
-    const prevPlayer = (game.currentPlayer === 1) ? 2 : 1;
-    let prevPlayerDepth = 0;
-
-    const depthSlider = document.getElementById('depth'); // P2 (Blue)
-    const depthP1Slider = document.getElementById('depthP1'); // P1 (Red) - Visible in Watch Mode
-
-    if (prevPlayer === 2) {
-        // Previous was P2 (Always AI)
-        if (depthSlider) prevPlayerDepth = parseInt(depthSlider.value);
-    } else {
-        // Previous was P1
-        if (watchMode && depthP1Slider) {
-            // P1 is AI in Watch Mode
-            prevPlayerDepth = parseInt(depthP1Slider.value);
-        } else {
-            // P1 is Human
-            prevPlayerDepth = 0;
-        }
+    if (!aiPlayer) return;
+    const {position, isCurrent} = capturePosition();
+    const actor = aiPlayer;
+    const current = () => request === evaluationRequest && isCurrent() && aiPlayer === actor;
+    const oldSims = actor.numSimulations;
+    if (!(actor instanceof DirectPlayer)) {
+        const slider = document.getElementById('judgeDepth');
+        actor.numSimulations = slider ? Number(slider.value) : 128;
     }
-
-    if (prevPlayerDepth > judgeSims) {
-        judgeSims = prevPlayerDepth;
-    }
-
-    // Save old sims
-    const oldSims = aiPlayer.numSimulations;
-    aiPlayer.numSimulations = judgeSims;
-
+    if (evalText) evalText.textContent = 'Evaluating…';
     try {
-        await chooseAiMove(game, (current, total, policy, value) => {
-            updateEvalBar(value);
+        await chooseAiMove(position, (step, total, policy, value) => {
+            if (current()) updateEvalBar(value, position.currentPlayer);
         });
-    } catch (e) {
-        console.error("Judge error:", e);
+    } catch (error) {
+        if (current()) { resetEvalBar(); setEvalBarVisible(false); showAiError(error); }
     } finally {
-        aiPlayer.numSimulations = oldSims;
+        if (!(actor instanceof DirectPlayer)) actor.numSimulations = oldSims;
     }
 }
 
-function updateEvalBar(value) {
-    if (!evalBarContainer || value === undefined) return;
+function updateEvalBar(value, evaluatedPlayer, terminal = false) {
+    if (!evalBarContainer || !Number.isFinite(value) || ![1, 2].includes(evaluatedPlayer)) return;
     hasEvalValue = true;
-    if (showEvalBar && showEvalBar.checked) {
-        setEvalBarVisible(true);
-    }
+    if (showEvalBar && showEvalBar.checked) setEvalBarVisible(true);
 
-    let p1Advantage = 0; // -1 to 1 scale where 1 is P1 winning
-
-    if (game.currentPlayer === 1) {
-        p1Advantage = value;
-    } else {
-        p1Advantage = -value;
-    }
-
-    // Regularized critics can exceed [-1,1] and are not win probabilities.
-    const unboundedValue = aiPlayer instanceof DirectPlayer && aiPlayer.valueMode === 'unbounded';
-    const displayAdvantage = unboundedValue ? Math.tanh(p1Advantage) : p1Advantage;
-    const redPercent = ((displayAdvantage + 1) / 2) * 100;
-    const clamped = Math.max(0, Math.min(100, redPercent));
-
-    // Set both width (desktop) and height (mobile vertical bar)
+    // The critic predicts the outcome for the player whose observation was
+    // encoded. Red always occupies the left side, independently of whose turn
+    // it is now. This does not assume that the two private-hand estimates agree.
+    const redValue = evaluatedPlayer === 1 ? value : -value;
+    const unbounded = !terminal && aiPlayer instanceof DirectPlayer && aiPlayer.valueMode === 'unbounded';
+    const advantage = unbounded ? Math.tanh(redValue) : redValue;
+    const redPercent = Math.max(0, Math.min(100, (advantage + 1) * 50));
     if (evalBarFill) {
-        const isMobile = window.matchMedia('(max-width: 1023px)').matches;
-        evalBarFill.style.width = isMobile ? '100%' : `${clamped}%`;
-        evalBarFill.style.height = isMobile ? `${clamped}%` : '100%';
+        evalBarFill.style.width = `${redPercent}%`;
+        evalBarFill.style.height = '100%';
     }
-
-    // Text: "Red 60%" or "Blue 60%"
     if (evalText) {
-        if (unboundedValue) {
-            evalText.textContent = `${p1Advantage >= 0 ? 'Red' : 'Blue'} +${Math.abs(p1Advantage).toFixed(2)} value`;
-        } else if (clamped > 50) {
-            evalText.textContent = `Red ${Math.round(clamped)}%`;
-        } else {
-            evalText.textContent = `Blue ${Math.round(100 - clamped)}%`;
-        }
+        evalText.textContent = terminal
+            ? (redValue > 0 ? 'Red wins' : redValue < 0 ? 'Blue wins' : 'Draw')
+            : unbounded
+                ? `${redValue >= 0 ? 'Red' : 'Blue'} +${Math.abs(redValue).toFixed(2)} value`
+                : `${redPercent > 50 ? 'Red' : 'Blue'} ${Math.round(Math.max(redPercent, 100 - redPercent))}%`;
+        evalText.title = terminal ? 'Final result' : 'Model estimate for the current position and side to move; not a calibrated win probability.';
     }
 }
 
@@ -496,6 +461,7 @@ function updateEvalBar(value) {
 async function triggerAiTurn() {
     if (game.gameOver || isThinking) return;
 
+    const {position, isCurrent} = capturePosition();
     isThinking = true;
     updateStatus();
 
@@ -535,7 +501,8 @@ async function triggerAiTurn() {
     }
 
     try {
-        const result = await chooseAiMove(game, (current, total, policy, value) => {
+        const result = await chooseAiMove(position, (current, total, policy, value) => {
+            if (!isCurrent()) return;
             if (aiProgressBar) aiProgressBar.style.width = Math.floor((current / total) * 100) + '%';
             if (aiProgressText) aiProgressText.textContent = `${current}/${total}`;
 
@@ -544,24 +511,12 @@ async function triggerAiTurn() {
             }
         });
 
+        if (!isCurrent()) return;
         if (result.move) {
             updateHistory(result.move, game.currentPlayer);
             game.makeMove(result.move);
 
-            // Force Eval Bar to 100% if Game Over
-            if (game.gameOver && evalBarContainer && evalBarFill && evalText) {
-                if (game.winner === 1) {
-                    evalBarFill.style.width = '100%';
-                    evalBarFill.style.height = '100%';
-                    evalText.textContent = 'Red 100%';
-                    hasEvalValue = true;
-                } else if (game.winner === 2) {
-                    evalBarFill.style.width = '0%';
-                    evalBarFill.style.height = '0%';
-                    evalText.textContent = 'Blue 100%';
-                    hasEvalValue = true;
-                }
-            }
+
         }
 
         // Show AI thinking highlights
@@ -585,6 +540,7 @@ async function triggerAiTurn() {
     renderP2Hand();
     updateStatus();
     renderScores();
+    await runJudgeEval();
 
     if (game.gameOver) {
         showGameOver();
@@ -835,6 +791,7 @@ async function handleCellClick(row, col) {
     renderScores();
 
     if (game.gameOver) {
+        await runJudgeEval();
         showGameOver();
         return;
     }
@@ -1026,12 +983,12 @@ function showGameOver() {
         if (watchMode) {
             message = game.winner === 1 ? 'AI 1 Wins!' : 'AI 2 Wins!';
         } else {
-            message = game.winner === 1 ? '🎉 You Win!' : '🤖 AI Wins!';
+            message = game.winner === 1 ? 'You win' : 'AI wins';
         }
 
         gameOverText.textContent = message;
     }
-    // Ensure "Reset Board" button is restored when game ends
+    // Ensure "New game" button is restored when game ends
     updateResetButtonState(false);
 }
 
@@ -1141,7 +1098,7 @@ function toggleAnalysisMode() {
         }
 
         if (btn) {
-            btn.textContent = "Exit Analysis";
+            btn.textContent = "Done editing";
             btn.classList.add('primary');
             btn.classList.remove('secondary');
         }
@@ -1158,7 +1115,7 @@ function toggleAnalysisMode() {
 
     } else {
         if (btn) {
-            btn.textContent = "Analysis Board";
+            btn.textContent = "Edit board";
             btn.classList.remove('primary');
             btn.classList.add('secondary');
         }
@@ -1183,6 +1140,7 @@ function toggleTurn() {
     updateStatus();
     renderBoard(); // Update valid moves highlight
     renderP1Hand();
+    void runJudgeEval();
 }
 
 function handleAnalysisCellClick(row, col) {
@@ -1209,6 +1167,7 @@ function handleAnalysisCellClick(row, col) {
     // A full re-scan is hard without a helper. 
     // Let's at least update the visual.
     renderBoard();
+    void runJudgeEval();
 }
 
 /**
@@ -1262,6 +1221,7 @@ function selectCard(cardStr) {
     renderP1Hand();
     renderP2Hand();
     renderBoard(); // Valid moves updates
+    void runJudgeEval();
 }
 
 // Global scope for HTML onclick
@@ -1324,9 +1284,9 @@ function updateResetButtonState(isWatchMode) {
         btn.textContent = "Pause";
         btn.classList.add('secondary');
         btn.classList.remove('primary');
-        btn.style.background = '#e67e22'; // Orange
+        btn.style.background = '';
     } else {
-        btn.textContent = "Reset Board";
+        btn.textContent = "New game";
         btn.classList.add('primary');
         btn.classList.remove('secondary');
         btn.style.background = ''; // Default
@@ -1358,6 +1318,7 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function showBestMove() {
     if (game.gameOver || isThinking) return;
+    const {position, isCurrent} = capturePosition();
 
     // Use current settings
     const depthSlider = document.getElementById('depth');
@@ -1372,7 +1333,8 @@ async function showBestMove() {
     }
 
     try {
-        const result = await chooseAiMove(game, (current, total, policy, value) => {
+        const result = await chooseAiMove(position, (current, total, policy, value) => {
+            if (!isCurrent()) return;
             const pct = Math.floor((current / total) * 100);
             if (aiProgressBar) aiProgressBar.style.width = pct + '%';
 
@@ -1380,10 +1342,10 @@ async function showBestMove() {
             if (policy) renderTopMoves(policy);
 
             // Show Win Prob if enabled
-            if (value !== undefined) updateEvalBar(value);
+            if (value !== undefined) updateEvalBar(value, position.currentPlayer);
         });
 
-        if (result.move && result.policy) {
+        if (isCurrent() && result.move && result.policy) {
             renderTopMoves(result.policy);
         }
     } catch (e) {

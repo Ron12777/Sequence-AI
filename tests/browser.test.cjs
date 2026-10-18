@@ -186,19 +186,19 @@ test('exact policy requires explicit compatible manifest and validates predictio
 
 test('unbounded regularized values are displayed as scores rather than win percentages', () => {
   const source=fs.readFileSync('web/static/game.js','utf8');
-  const start=source.indexOf('function updateEvalBar(value)');
+  const start=source.indexOf('function updateEvalBar(value,');
   const end=source.indexOf('\n}\n',start)+2;
   Object.assign(context,{game:{currentPlayer:1},evalBarContainer:{},hasEvalValue:false,
     showEvalBar:{checked:false},evalBarFill:{style:{}},evalText:{},
     window:{matchMedia:()=>({matches:false})},
     aiPlayer:new DirectPlayer({inputNames:exactInputNames},runtime,{...exactConfig,valueMode:'unbounded'})});
   vm.runInContext(source.slice(start,end),context);
-  context.updateEvalBar(2.5);
+  context.updateEvalBar(2.5, 1);
   assert.equal(context.evalText.textContent,'Red +2.50 value');
   assert.ok(parseFloat(context.evalBarFill.style.width)<100);
-  context.game.currentPlayer=2;context.updateEvalBar(2.5);
+  context.game.currentPlayer=2;context.updateEvalBar(2.5, 2);
   assert.equal(context.evalText.textContent,'Blue +2.50 value');
-  context.aiPlayer.valueMode='bounded';context.updateEvalBar(.4);
+  context.aiPlayer.valueMode='bounded';context.updateEvalBar(.4, 2);
   assert.equal(context.evalText.textContent,'Blue 70%');
 });
 
@@ -247,4 +247,95 @@ test('edited positions fail closed without explicit board-only export capability
     assert.throws(()=>new DirectPlayer(session,runtime,{...exactConfig,variant,historyArchitecture,observationMode:'board_hand'}),/board-only CNN/);
   }
   assert.throws(()=>new DirectPlayer(session,runtime,{...exactConfig,observationMode:'unknown'}),/Unsupported observation/);
+});
+
+
+function evaluationHarness() {
+  const el = () => ({style:{},textContent:'',classList:{toggle(){},add(){},remove(){}}});
+  const ui=vm.createContext({console,setTimeout,SequenceGame,DirectPlayer,cloneGame,
+    game:new SequenceGame(),aiPlayer:new DirectPlayer({inputNames:['input']},runtime),
+    evaluationRequest:0,hasEvalValue:false,evalBarContainer:el(),evalBarFill:el(),evalText:el(),
+    showEvalBar:{checked:true},document:{getElementById:()=>null},
+    showAiError:error=>{throw error;}});
+  const source=fs.readFileSync('web/static/game.js','utf8');
+  for(const name of ['setEvalBarVisible','resetEvalBar','capturePosition','runJudgeEval','updateEvalBar']) {
+    const start=source.indexOf((name==='runJudgeEval'?'async ':'')+'function '+name+'(');
+    const end=source.indexOf('\n}\n',start)+2;
+    vm.runInContext(source.slice(start,end),ui);
+  }
+  return ui;
+}
+
+test('evaluation stays in fixed red perspective across turns and viewport sizes', () => {
+  const ui=evaluationHarness();
+  ui.updateEvalBar(.4,1);
+  assert.equal(ui.evalBarFill.style.width,'70%');
+  ui.game.currentPlayer=2;
+  ui.updateEvalBar(-.4,2);
+  assert.equal(ui.evalBarFill.style.width,'70%');
+  assert.equal(ui.evalBarFill.style.height,'100%');
+  assert.equal(ui.evalText.textContent,'Red 70%');
+  // The evaluated side, not the current mutable turn, owns the value.
+  ui.updateEvalBar(.4,1);
+  assert.equal(ui.evalBarFill.style.width,'70%');
+  ui.updateEvalBar(NaN,1);ui.updateEvalBar(.4,undefined);
+  assert.equal(ui.evalBarFill.style.width,'70%');
+});
+
+test('late evaluations cannot overwrite a new position, turn, or reset game', async () => {
+  const ui=evaluationHarness(),pending=[];
+  ui.chooseAiMove=(position,callback)=>new Promise(resolve=>pending.push({position,finish:value=>{
+    callback(1,1,null,value);resolve({value});
+  }}));
+  const old=ui.runJudgeEval();
+  ui.game.currentPlayer=2;
+  const next=ui.runJudgeEval();
+  pending[1].finish(-.4);await next;
+  assert.equal(ui.evalText.textContent,'Red 70%');
+  pending[0].finish(-.9);await old;
+  assert.equal(ui.evalText.textContent,'Red 70%');
+  const edited=ui.runJudgeEval();ui.game.board[4][4]=1;
+  pending[2].finish(.9);await edited;
+  assert.equal(ui.evalText.textContent,'Evaluating…');
+  const reset=ui.runJudgeEval();ui.game=new SequenceGame();ui.resetEvalBar();
+  pending[3].finish(.9);await reset;
+  assert.equal(ui.hasEvalValue,false);
+  assert.equal(ui.evalBarFill.style.width,'50%');
+});
+
+test('evaluation uses a snapshot and terminal results have consistent horizontal fills', async () => {
+  const ui=evaluationHarness();let calls=0;
+  ui.game.currentPlayer=2;
+  ui.chooseAiMove=async(position,callback)=>{
+    calls++;assert.notEqual(position,ui.game);assert.equal(position.currentPlayer,2);
+    callback(1,1,null,.6);
+  };
+  await ui.runJudgeEval();assert.equal(ui.evalBarFill.style.width,'20%');
+  ui.game.gameOver=true;ui.game.winner=2;await ui.runJudgeEval();
+  assert.equal(ui.evalBarFill.style.width,'0%');assert.equal(ui.evalBarFill.style.height,'100%');
+  assert.equal(ui.evalText.textContent,'Blue wins');assert.equal(calls,1);
+  ui.game.winner=1;await ui.runJudgeEval();assert.equal(ui.evalBarFill.style.width,'100%');
+  ui.game.winner=0;await ui.runJudgeEval();assert.equal(ui.evalText.textContent,'Draw');
+});
+
+test('AI move refreshes evaluation for the resulting position and next player', async () => {
+  const ui=evaluationHarness();
+  Object.assign(ui,{isThinking:false,watchMode:false,aiProgressContainer:null,
+    aiProgressBar:null,aiProgressText:null,renderTopMoves(){},updateHistory(){},
+    renderBoard(){},renderP1Hand(){},renderP2Hand(){},updateStatus(){},renderScores(){},showGameOver(){}});
+  ui.game.hands[1]=['AC'];
+  const observed=[];
+  ui.chooseAiMove=async(position,callback)=>{
+    observed.push({player:position.currentPlayer,chip:position.board[0][1]});
+    const value=.4;callback?.(1,1,null,value);
+    return {move:position.getLegalMoves()[0],value};
+  };
+  const source=fs.readFileSync('web/static/game.js','utf8');
+  const start=source.indexOf('async function triggerAiTurn()'),end=source.indexOf('\n}\n',start)+2;
+  vm.runInContext(source.slice(start,end),ui);
+  await ui.triggerAiTurn();
+  assert.equal(observed.length,2);
+  assert.equal(observed[0].player,1);assert.equal(observed[0].chip,0);
+  assert.equal(observed[1].player,2);assert.equal(observed[1].chip,1);
+  assert.equal(ui.evalText.textContent,'Blue 70%');
 });
