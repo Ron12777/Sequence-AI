@@ -226,7 +226,13 @@ function syncControls() {
 }
 
 function renderPosition() {
+    const newDraw = game && !analysisMode && game.finishIfNoLegalMoves();
     renderBoard(); renderP1Hand(); renderP2Hand(); renderScores(); updateStatus();
+    if (newDraw) {
+        showAiError(null);
+        showGameOver();
+        void runJudgeEval();
+    }
 }
 
 /**
@@ -388,6 +394,13 @@ function updateEvalBar(value, evaluatedPlayer, terminal = false) {
  */
 async function triggerAiTurn() {
     if (!game || game.gameOver || isThinking || analysisMode || isPaused || !aiPlayer) return false;
+    if (game.finishIfNoLegalMoves()) {
+        showAiError(null);
+        renderPosition();
+        showGameOver();
+        await runJudgeEval();
+        return false;
+    }
     const {position, isCurrent} = capturePosition();
     const generation = uiGeneration;
     isThinking = true;

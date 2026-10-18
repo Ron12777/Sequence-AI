@@ -290,7 +290,15 @@ class SequenceGame {
 
         // Switch player
         this.currentPlayer = 3 - player;
+        this.finishIfNoLegalMoves();
 
+        return true;
+    }
+
+    finishIfNoLegalMoves() {
+        if (this.gameOver || this.getLegalMoves().length) return false;
+        this.gameOver = true;
+        this.winner = null;
         return true;
     }
 

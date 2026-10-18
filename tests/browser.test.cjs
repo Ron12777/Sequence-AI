@@ -25,6 +25,21 @@ test('illegal browser moves cannot mutate hand or board', () => {
   assert.equal(game.makeMove({card:'AC',row:-1,col:0,is_removal:false}), false);
 });
 
+for (const actor of [1, 2]) {
+  test(`player ${actor}'s move ends in a draw when the next player has no moves`, () => {
+    const game=new SequenceGame();game.currentPlayer=actor;
+    game.hands[actor]=['AC'];game.hands[3-actor]=[];game.deck=[];
+    assert.equal(game.makeMove({card:'AC',row:0,col:1,is_removal:false}),true);
+    assert.equal(game.gameOver,true);assert.equal(game.winner,null);
+    assert.equal(game.finishIfNoLegalMoves(),false);
+  });
+}
+
+test('no-move draw cannot replace an existing win', () => {
+  const game=new SequenceGame();game.gameOver=true;game.winner=1;game.hands[2]=[];
+  assert.equal(game.finishIfNoLegalMoves(),false);assert.equal(game.winner,1);
+});
+
 for (const player of [1, 2]) {
   test(`player ${player} replaces the chosen duplicate slot without reordering the engine hand`, () => {
     const game=new SequenceGame(), layout=new HandLayout();
@@ -416,13 +431,13 @@ function modeHarness() {
     turnIndicatorEl:get('turnIndicator'),gameOverOverlay:get('gameOverOverlay'),gameOverText:get('gameOverText'),
     document:{getElementById:get,body:element(),createElement:element,querySelector:()=>null},
     renderBoard(){},renderP1Hand(){},renderP2Hand(){},renderScores(){},updateHistory(){},
-    showAiError(error){ui.error=error;},sleep:()=>new Promise(resolve=>{ui.wake=resolve;})});
+    showAiError(error){ui.error=error;},focusDialog(){},restoreDialogFocus(){},sleep:()=>new Promise(resolve=>{ui.wake=resolve;})});
   ui.showEvalBar.checked=false;
   vm.runInContext(fs.readFileSync('web/static/game_engine.js','utf8')+'\nglobalThis.BOARD_LAYOUT=BOARD_LAYOUT;',ui);
   const source=fs.readFileSync('web/static/game.js','utf8');
   for(const name of ['cancelPendingWork','syncControls','renderPosition','resultMessage','updateStatus',
     'newGame','closeCardPicker','dismissGameOver','pauseGame','resumeGame','watchAiVsAi','triggerAiTurn',
-    'getHint','toggleAnalysisMode','toggleTurn','handleAnalysisCellClick','highlightSequences','selectCard']) {
+    'getHint','toggleAnalysisMode','toggleTurn','handleAnalysisCellClick','highlightSequences','selectCard','showGameOver']) {
     const start=source.search(new RegExp('(?:async )?function '+name+'\\('));
     vm.runInContext(source.slice(start,source.indexOf('\n}\n',start)+2),ui);
   }
@@ -506,9 +521,14 @@ test('leaving editor on AI turn schedules a reply; editing cards restores cancel
   assert.equal(get('bestMoveBtn').disabled,false);assert.equal(ui.game.hands[1][0],'AC');
 });
 
-test('Watch pauses on no legal move instead of repeatedly evaluating forever; draws are labelled correctly', async () => {
-  const {ui}=modeHarness();let calls=0;
+test('Watch ends no-move positions as a draw without inference or an error', async () => {
+  const {ui,get}=modeHarness();let calls=0;ui.game.hands[1]=['JS'];
   ui.chooseAiMove=async()=>{calls++;return {move:null};};
-  await ui.watchAiVsAi();assert.equal(calls,1);assert.equal(ui.isPaused,true);assert.match(ui.error.message,/No legal move/);
-  ui.game.gameOver=true;ui.game.winner=null;assert.equal(ui.resultMessage(),'Draw');
+  await ui.watchAiVsAi();assert.equal(calls,0);assert.equal(ui.game.gameOver,true);
+  assert.equal(ui.game.winner,null);assert.equal(ui.error,null);assert.equal(ui.resultMessage(),'Draw');
+  assert.equal(get('gameOverText').textContent,'Draw');
+  assert.equal(get('gameOverOverlay').classList.contains('visible'),true);
+  assert.equal(ui.hintBtn.hidden,true);
+  ui.newGame();assert.equal(ui.game.gameOver,false);
+  assert.equal(get('gameOverOverlay').classList.contains('visible'),false);
 });

@@ -42,6 +42,28 @@ async function noHorizontalOverflow(page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 }
 
+test('leaving an unplayable edited hand ends as a draw and Play again resets it', async ({page}) => {
+  await openGame(page);
+  await page.getByRole('checkbox', {name: 'Show evaluation'}).check();
+  await page.getByRole('button', {name: 'Edit board', exact: true}).click();
+  // Removal Jacks cannot move on an empty board. Use the editor to reach
+  // this edge case without waiting for a particular shuffled game.
+  for (let index = 0; index < 7; index++) {
+    await page.locator('#handP1 .card').nth(index).click();
+    await page.getByRole('dialog', {name: 'Choose card', exact: true})
+      .getByRole('button', {name: /^J of spades/}).click();
+  }
+  await page.getByRole('button', {name: 'Done editing', exact: true}).click();
+  await expect(page.getByRole('dialog', {name: 'Draw', exact: true})).toBeVisible();
+  await expect(page.locator('#evalText')).toHaveText('Draw');
+  await expect(page.locator('#aiError')).toBeHidden();
+  await expect(page.locator('#hintBtn')).toBeHidden();
+  await page.getByRole('button', {name: 'Play again', exact: true}).click();
+  await expect(page.locator('#gameOverOverlay')).not.toBeVisible();
+  await expect(page.locator('#hintBtn')).toBeEnabled();
+  await expect(page.locator('#handP1 .card')).toHaveCount(7);
+});
+
 test('evaluation before any move, Hint, human move and real AI reply', async ({page}) => {
   await openGame(page);
   await page.getByRole('checkbox', {name: 'Show evaluation'}).check();
