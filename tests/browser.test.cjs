@@ -175,6 +175,30 @@ test('direct board policy works without public history and never invokes search'
 const exactConfig={policyKind:'exact_sequence_policy',actionEncoding:'card_id * 100 + row * 10 + col'};
 const exactInputNames=['board','context','history','actions'];
 
+for (const actor of [1, 2]) {
+  test(`exact player ${actor} cannot read hidden cards or draw pile`, async () => {
+    const game=new SequenceGame();game.currentPlayer=actor;
+    game.hands[actor]=['AC','JC','JS'];game.board[4][4]=3-actor;
+    let inputs;
+    const player=new DirectPlayer({inputNames:exactInputNames,run:async feeds=>{
+      inputs=Object.fromEntries(Object.entries(feeds).map(([name,tensor])=>[name,Array.from(tensor.data,Number)]));
+      return {logits:{data:new Float32Array(feeds.actions.data.length)},value:{data:[.25]}};
+    }},runtime,{...exactConfig,variant:'cnn',historyArchitecture:'board',observationMode:'board_hand'});
+    const expected=await player.chooseMove(game),originalInputs=inputs;
+    game.hands[3-actor]=new Proxy(game.hands[3-actor],{get(target,key){
+      if(key==='length') return target.length;
+      throw Error('Read opponent private card: '+String(key));
+    }});
+    Object.defineProperty(game,'deck',{get(){throw Error('Read draw pile');}});
+    const actual=await player.chooseMove(game);
+    assert.deepEqual(inputs,originalInputs);
+    assert.deepEqual(actual,expected);
+    // Positive control: own cards must affect the observation.
+    game.hands[actor]=['KD'];await player.chooseMove(game);
+    assert.notDeepEqual(inputs.context,originalInputs.context);
+  });
+}
+
 test('exact policy spends its chosen Jack even when a normal card reaches the same square', async () => {
   const game=new SequenceGame();game.hands[1]=['JC','AC','AC'];game.deck=[];
   const player=new DirectPlayer({inputNames:exactInputNames,run:async feeds=>{

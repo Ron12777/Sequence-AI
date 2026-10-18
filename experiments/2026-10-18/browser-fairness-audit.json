@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "timestamp_utc": "2026-10-18T16:49:29.621Z",
+  "model": "artifacts/exact-cnn-overnight.onnx",
+  "onnx_sha256": "83823d396895aa97bc8c52d494b655625c3cc0b806868492c33b4c81711365ed",
+  "checkpoint_sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e",
+  "fixtures_sha256": "933a9292de8ff808f4220a02c3c8ce222df3afc963dd54735d1b87bd8e6e5f2f",
+  "runtime": "onnxruntime-web@1.18.0 WASM single thread in isolated Node VM",
+  "execution": "Actual browser WASM runtime and production DirectPlayer; not a rendered browser UI test",
+  "runtime_sha256": "74945866728300a05746a37387ac48863a8be5cdc3760304b47d0136d7d0dc5b",
+  "wasm_sha256": "f533b5f21790563d7556c611c3835ac65848ee326da2689aac54ed7d9cc8c6a4",
+  "engine_sha256": "324f370d5a5a10626cd2eb5e3ed3838c38a631bd2fb20d5ac04fd0e4d91b1006",
+  "player_sha256": "7a3bc458213c36836290fd2873f8a00b49a3c8af84fcb21b2d6e7d14ccda8656",
+  "validator_sha256": "c176b2ffbffdfd5e5c370179b353c296acb4283d341c1228bc21085dc317151b",
+  "capabilities": {
+    "policyKind": "exact_sequence_policy",
+    "playMode": "direct",
+    "actionEncoding": "card_id * 100 + row * 10 + col",
+    "variant": "cnn",
+    "valueMode": "bounded",
+    "historyArchitecture": "board",
+    "observationMode": "board_hand"
+  },
+  "cpu": "Intel(R) Core(TM) 7 240H",
+  "node": "v24.19.0",
+  "states": 1016,
+  "games": 12,
+  "max_public_events": 101,
+  "exact_move_matches": 1016,
+  "normal_versus_jack_same_square": {
+    "states": 43,
+    "selected_normal": 43,
+    "selected_jack": 0
+  },
+  "total_selected_jack_moves": 13,
+  "event_kinds": [
+    0,
+    1,
+    2
+  ],
+  "max_absolute_error": {
+    "logits": 0.000030517578125,
+    "value": 0.000001475214958190918,
+    "display_policy": 0.000005245208740234375
+  },
+  "canonical_inputs_match_python": true,
+  "hidden_identity_invariance": true,
+  "hidden_access_traps_passed": true,
+  "interleaved_other_player_queries_invariant": true,
+  "inference_did_not_mutate_game": true,
+  "selected_card_spend_verified": true,
+  "milliseconds": {
+    "samples": 1014,
+    "median": 1.665599999999813,
+    "p95": 1.8058540000001813,
+    "scope": "Observed full-game decisions with input parity assertions, excludes first two calls, UI/network/loading"
+  },
+  "deployment_changed": false
+}
