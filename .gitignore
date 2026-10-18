@@ -81,3 +81,8 @@ experiments/**/*.tar.gz
 /experiments/2026-10-17/twohour-heldout-replication/cnn_ppo.json
 /experiments/2026-10-17/twohour-heldout-replication/cpu-attempt/cnn_ppo.json
 /experiments/2026-10-17/twohour-heldout-replication/incumbent_control.json
+
+# Browser test dependencies and reports
+node_modules/
+playwright-report/
+test-results/

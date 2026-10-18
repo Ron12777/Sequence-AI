@@ -8,8 +8,7 @@ import numpy as np
 import pytest
 import torch
 
-pytest.importorskip("onnx")
-ort = pytest.importorskip("onnxruntime")
+import onnxruntime as ort
 
 from scripts.export_exact_onnx import export_exact, position_batch, sample_positions
 from src.exact_policy import ExactPolicy, save_exact_policy

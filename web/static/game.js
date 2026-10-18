@@ -940,18 +940,22 @@ function openCardPicker(player, index) {
     if (!analysisMode || !game.hands[player]?.[index]) return;
     cardPickerTarget = { player, index };
     const overlay = document.getElementById('cardPickerOverlay');
-    const suits = document.getElementById('cardPickerSuits');
     const grid = document.getElementById('cardPickerGrid');
     const current = game.hands[player][index];
     const suitNames = { C: 'Clubs', D: 'Diamonds', H: 'Hearts', S: 'Spades' };
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    suits.replaceChildren();
-
-    function showSuit(suit) {
-        suits.querySelectorAll('button').forEach(button => {
-            button.setAttribute('aria-pressed', String(button.dataset.suit === suit));
-        });
-        grid.replaceChildren();
+    grid.replaceChildren();
+    for (const suit of ['C', 'D', 'H', 'S']) {
+        const group = document.createElement('div');
+        group.className = 'picker-suit-group';
+        group.setAttribute('role', 'group');
+        group.setAttribute('aria-label', suitNames[suit]);
+        const label = document.createElement('div');
+        label.className = 'picker-suit-label' + (suit === 'D' || suit === 'H' ? ' red-suit' : '');
+        label.innerHTML = `<span aria-hidden="true">${SUIT_SYMBOLS[suit]}</span> ${suitNames[suit]}`;
+        group.appendChild(label);
+        const cards = document.createElement('div');
+        cards.className = 'picker-ranks';
         for (const rank of ranks) {
             const card = rank + suit;
             const button = document.createElement('button');
@@ -959,22 +963,13 @@ function openCardPicker(player, index) {
             button.className = 'picker-card ' + (suit === 'D' || suit === 'H' ? 'suit-red' : 'suit-black');
             button.classList.toggle('current-card', card === current);
             button.setAttribute('aria-label', `${rank} of ${suitNames[suit].toLowerCase()}${card === current ? ', current card' : ''}`);
-            button.innerHTML = `<span class="picker-rank">${rank}</span><span class="picker-symbol" aria-hidden="true">${SUIT_SYMBOLS[suit]}</span>`;
+            button.textContent = rank;
             button.addEventListener('click', () => selectCard(card));
-            grid.appendChild(button);
+            cards.appendChild(button);
         }
+        group.appendChild(cards);
+        grid.appendChild(group);
     }
-    for (const suit of ['C', 'D', 'H', 'S']) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'picker-suit' + (suit === 'D' || suit === 'H' ? ' red-suit' : '');
-        button.dataset.suit = suit;
-        button.setAttribute('aria-label', suitNames[suit]);
-        button.innerHTML = `<span aria-hidden="true">${SUIT_SYMBOLS[suit]}</span><span class="picker-suit-name">${suitNames[suit]}</span>`;
-        button.addEventListener('click', () => showSuit(suit));
-        suits.appendChild(button);
-    }
-    showSuit(current.slice(-1));
     overlay.classList.add('visible');
     focusDialog(overlay);
 }

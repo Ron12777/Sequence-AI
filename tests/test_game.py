@@ -198,27 +198,39 @@ class TestGame:
 class TestIntegration:
     """Integration tests."""
 
-    def test_full_game_random(self):
-        """Play a random game to completion."""
+    @pytest.mark.parametrize("seed", [7, 19, 31, 43])
+    def test_full_game_random(self, seed):
+        """Every accepted move consumes a card; finish by win or no legal move."""
         import random
 
-        game = SequenceGame()
-        game.reset()
-
-        max_moves = 200
-        moves_made = 0
-
-        while not game.game_over and moves_made < max_moves:
-            legal_moves = game.get_legal_moves()
-            if not legal_moves:
-                break
-
-            move = random.choice(legal_moves)
-            game.make_move(move)
-            moves_made += 1
-
-        # Game should have finished or reached move limit
-        assert moves_made > 0
+        prior_rng = random.getstate()
+        try:
+            random.seed(seed)
+            game = SequenceGame()
+            game.reset()
+            moves_made = 0
+            # Two 52-card decks bound the number of plays, including removals.
+            for _ in range(104):
+                if game.game_over or not game.get_legal_moves():
+                    break
+                player = game.current_player
+                move = random.choice(game.get_legal_moves())
+                assert game.make_move(move), f"legal move rejected at ply {moves_made}"
+                assert game.current_player == 3 - player
+                expected = 0 if move.is_removal else player
+                assert game.board[move.row, move.col] == expected
+                assert all(game.board[r, c] == -1 for r, c in [(0, 0), (0, 9), (9, 0), (9, 9)])
+                moves_made += 1
+            assert moves_made > 0
+            assert game.game_over or not game.get_legal_moves(), "game failed to finish"
+            if game.game_over:
+                assert game.winner in (1, 2)
+                assert len(game.completed_sequences[game.winner]) >= 2
+                assert game.get_legal_moves() == []
+            else:
+                assert game.winner is None
+        finally:
+            random.setstate(prior_rng)
 
 
 if __name__ == "__main__":

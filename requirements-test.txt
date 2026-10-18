@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest>=8,<10
+ruff
+# Required: export parity must fail collection if these are missing, not skip.
+onnx>=1.16,<2
+onnxruntime>=1.18,<2

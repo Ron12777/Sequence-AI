@@ -1,0 +1,12 @@
+{
+  "name": "sequence-ai-browser-tests",
+  "private": true,
+  "scripts": {
+    "test": "node tests/browser.test.cjs",
+    "test:ui": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "onnxruntime-web": "1.18.0"
+  }
+}

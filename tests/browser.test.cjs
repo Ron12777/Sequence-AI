@@ -275,7 +275,7 @@ function evaluationHarness() {
   return ui;
 }
 
-test('evaluation stays in fixed red perspective across turns and viewport sizes', () => {
+test('evaluation stays in fixed red perspective across turns', () => {
   const ui=evaluationHarness();
   ui.updateEvalBar(.4,1);
   assert.equal(ui.evalBarFill.style.width,'70%');
@@ -387,7 +387,7 @@ test('controls match play, Watch, paused Watch, editing, and game over', () => {
   ui.newGame();assert.equal(ui.hintBtn.hidden,false);assert.equal(ui.watchMode,false);assert.equal(ui.analysisMode,false);
 });
 
-test('pause discards an already pending AI move and rapid resume never revives the old loop', async () => {
+test('pause discards pending AI moves and duplicate Watch starts are ignored', async () => {
   const {ui}=modeHarness(),pending=[];
   ui.chooseAiMove=position=>new Promise(resolve=>pending.push(()=>resolve({move:position.getLegalMoves()[0]})));
   const before=JSON.stringify(ui.game),old=ui.watchAiVsAi();
@@ -398,6 +398,21 @@ test('pause discards an already pending AI move and rapid resume never revives t
   await ui.watchAiVsAi();assert.equal(pending.length,1); // Duplicate start is ignored.
   ui.pauseGame();pending.shift()();await resumed;
   assert.equal(JSON.stringify(ui.game),before);
+});
+
+test('a sleeping Watch loop cannot wake into a newly resumed game loop', async () => {
+  const {ui}=modeHarness(),sleeps=[];let calls=0;
+  ui.sleep=()=>new Promise(resolve=>sleeps.push(resolve));
+  ui.chooseAiMove=async position=>{calls++;return {move:position.getLegalMoves()[0]};};
+  const old=ui.watchAiVsAi();await new Promise(setImmediate);
+  assert.equal(calls,1);assert.equal(sleeps.length,1);
+  ui.pauseGame();
+  const resumed=ui.watchAiVsAi();await new Promise(setImmediate);
+  assert.equal(calls,2);assert.equal(sleeps.length,2);
+  sleeps[0]();await old;
+  assert.equal(calls,2,'old sleeping loop must not make another move');
+  ui.pauseGame();sleeps[1]();await resumed;
+  assert.equal(calls,2);
 });
 
 test('hint is rejected outside human play and pending hints cannot survive reset', async () => {
