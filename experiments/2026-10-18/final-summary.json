@@ -1,0 +1,185 @@
+{
+  "completed_utc": "2026-10-18T14:10:50.309696+00:00",
+  "campaign_status": "Complete; deployed by explicit user instruction after incomplete retention checks",
+  "production_decision": "Deploy October 18 final CNN at explicit user request; statistical retention gates remain incomplete",
+  "production_checkpoint_sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e",
+  "candidate": {
+    "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/cnn_ppo-final.pt",
+    "sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e"
+  },
+  "candidate_local": "artifacts/checkpoints/overnight-2026-10-18/final/cnn_ppo-final.pt",
+  "candidate_promoted": true,
+  "training": {
+    "models": {
+      "cnn_ppo": {
+        "inherited_training_hours": 6.319546915423101,
+        "overnight_training_hours": 10.844179435888226,
+        "overnight_games": 11634688,
+        "total_training_hours_after_shared_distillation": 17.163726351311325,
+        "total_games_after_shared_distillation": 22480896,
+        "optimizer_and_rng_preserved": true
+      },
+      "transformer_ppo": {
+        "inherited_training_hours": 3.2314904621129408,
+        "overnight_training_hours": 10.846045058554374,
+        "overnight_games": 5228544,
+        "total_training_hours_after_shared_distillation": 14.077535520667313,
+        "total_games_after_shared_distillation": 6717440,
+        "optimizer_and_rng_preserved": true
+      }
+    },
+    "accounting": "Overnight one RTX5090 per model. Inherited budgets differ and include mixed prior hardware. Common retained CNN7.48-hour pretraining and distillation are separate from these counters. Wall time is not equal FLOPs; allocated GPU time is not measured GPU busy time."
+  },
+  "development_results": [
+    {
+      "name": "cnn_ppo_final",
+      "candidate": {
+        "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/cnn_ppo-final.pt",
+        "sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e"
+      },
+      "games": 4096,
+      "score": 0.54052734375,
+      "paired_score_95ci": [
+        0.5288763540455252,
+        0.5521783334544748
+      ],
+      "elapsed_seconds": 10.04647021740675
+    },
+    {
+      "name": "cnn_ppo_5h",
+      "candidate": {
+        "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/cnn_ppo-additional-5h.pt",
+        "sha256": "3f259e9f44fe7ba5887a1c0cc87963374c2d76db847c37db3ba70824a71ffcf7"
+      },
+      "games": 4096,
+      "score": 0.5203857421875,
+      "paired_score_95ci": [
+        0.5087613208413072,
+        0.5320101635336928
+      ],
+      "elapsed_seconds": 9.657765900716186
+    },
+    {
+      "name": "cnn_ppo_8h",
+      "candidate": {
+        "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/cnn_ppo-additional-8h.pt",
+        "sha256": "da1be90d94659d38341ff118e53cf19fe2a1231f92ba1f9cde195edd666e7816"
+      },
+      "games": 4096,
+      "score": 0.52197265625,
+      "paired_score_95ci": [
+        0.5101557160720499,
+        0.5337895964279501
+      ],
+      "elapsed_seconds": 10.125277762301266
+    },
+    {
+      "name": "transformer_ppo_final",
+      "candidate": {
+        "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/transformer_ppo-final.pt",
+        "sha256": "2e021985b7373af970d4a141e75632da5249103711e46b19bc6468a40138c440"
+      },
+      "games": 4096,
+      "score": 0.47998046875,
+      "paired_score_95ci": [
+        0.4679410128525328,
+        0.4920199246474672
+      ],
+      "elapsed_seconds": 11.153819147497416
+    },
+    {
+      "name": "transformer_ppo_5h",
+      "candidate": {
+        "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/transformer_ppo-additional-5h.pt",
+        "sha256": "0fa84e02b6b337e6589d040442c96a2d889405b4f6e8b8afab36c2e53cb5c8a8"
+      },
+      "games": 4096,
+      "score": 0.4652099609375,
+      "paired_score_95ci": [
+        0.45307934320642484,
+        0.47734057866857516
+      ],
+      "elapsed_seconds": 12.652723296545446
+    },
+    {
+      "name": "transformer_ppo_8h",
+      "candidate": {
+        "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/transformer_ppo-additional-8h.pt",
+        "sha256": "5c2c185a82744a0d3ec0919a3f1b3785ad6aa29814a9cc2cb95eea53aec3e91f"
+      },
+      "games": 4096,
+      "score": 0.4688720703125,
+      "paired_score_95ci": [
+        0.4565078490445056,
+        0.4812362915804944
+      ],
+      "elapsed_seconds": 11.68658976815641
+    }
+  ],
+  "confirmation": {
+    "status": "incomplete_timeout",
+    "runtime_limit_seconds": 360,
+    "completed_head_to_head": {
+      "games": 8192,
+      "wins": 4449,
+      "losses": 3743,
+      "draws": 0,
+      "score": 0.5430908203125,
+      "paired95ci": [
+        0.5347103823979744,
+        0.5514712582270256
+      ],
+      "independent_deals": 4096,
+      "complete_game_records_and_swapped_seat_pairs_checked": true,
+      "all_chunk_model_mutation_checks_passed": true
+    },
+    "completed_original_search128": {
+      "games": 2048,
+      "score": 0.673095703125,
+      "paired_score_95ci": [
+        0.6549909929400999,
+        0.6912004133099001
+      ]
+    },
+    "baseline32_candidate_games_finished": 6656,
+    "baseline32_required": 8192,
+    "incumbent_controls_started": false,
+    "heldout_retention_gates": "Not established: paired incumbent controls missing and baseline candidate incomplete",
+    "reason": "Predeclared360second suite bound expired. Search opposition slower on this EPYC host than estimated. No rerun, sample expansion or candidate reselection.",
+    "promotion_eligible": false
+  },
+  "artifact_validation": {
+    "native_report": "artifacts/exact-cnn-overnight.validation.json",
+    "wasm_report": "experiments/2026-10-18/exact-cnn-overnight-web-validation.json",
+    "rendered_staging_report": "experiments/2026-10-18/staged-browser-validation.json",
+    "onnx": "artifacts/exact-cnn-overnight.onnx",
+    "onnx_sha256": "83823d396895aa97bc8c52d494b655625c3cc0b806868492c33b4c81711365ed",
+    "production_changed": true
+  },
+  "retrieval": {
+    "checkpoints_and_pools": 12,
+    "source_and_evidence_files": 85,
+    "checksum_verified": true
+  },
+  "rental": {
+    "verified_utc": "2026-10-18T14:09:35.184720+00:00",
+    "instance_id": 56487252,
+    "task_rental_present": false,
+    "remaining_instances": [],
+    "destroy_command": "vastai destroy instance56487252 --yes --raw",
+    "destroy_cli_exit_code": 0,
+    "retrieval_verified_before_destroy": true
+  },
+  "provider_charges_usd_provisional": 11.454,
+  "estimated_compute_storage_usd": 11.582353076407202,
+  "billing_final_invoice": false,
+  "heartbeat_deleted": true,
+  "limitations": [
+    "Developmental results selected one candidate; they are not independent promotion evidence.",
+    "CNN and transformer inherited different prior training budgets and architectures; this is not an equalFLOP ceiling comparison.",
+    "Head-to-head improvement is supported; heldout retention remains unverified. Deployment was explicitly requested after disclosure.",
+    "Common7.48hCNNpretraining/distillation excluded from incremental training counters."
+  ],
+  "initial_production_decision": "Retain independently validated October17CNN; local and public deployment unchanged",
+  "publication": "experiments/2026-10-18/publication.json"
+}

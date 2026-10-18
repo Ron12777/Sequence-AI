@@ -1,0 +1,17 @@
+{
+  "verified_utc": "2026-10-18T14:36:36.555828+00:00",
+  "main_commit": "65b26a8112c97e8077752424493bd07785e5556a",
+  "test_and_deploy_run": 39136402993,
+  "test_and_deploy_conclusion": "success",
+  "pages_commit": "6797cb28074d69122419ad56a4e21c00b017d7e0",
+  "pages_run": 39136661479,
+  "pages_conclusion": "success",
+  "model": "model-exact-83823d396895aa97.onnx",
+  "model_git_blob": "d72d3bd87c06a27a280217cc7162d499249676b4",
+  "pages_manifest_verified": true,
+  "pages_model_blob_verified": true,
+  "url": "https://ron12777.github.io/Sequence-AI/",
+  "rendered_validation": "staged-browser-validation.json",
+  "live_browser_visit_performed": false,
+  "heldout_confirmation": "Incomplete; user explicitly requested deployment after disclosure."
+}

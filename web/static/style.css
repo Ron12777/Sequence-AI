@@ -14,7 +14,7 @@
 }
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100dvh; background: radial-gradient(ellipse at 35% 0%, #293d33 0%, #1c2521 48%, #171d1a 100%); }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button, summary, input[type="range"] { cursor: pointer; }
 button { color: inherit; }
 button:disabled { opacity: .5; cursor: wait; }
@@ -75,6 +75,9 @@ button:disabled { opacity: .5; cursor: wait; }
 .card.back > div { overflow: hidden; font-size: 20px !important; }
 .side-panel { min-width: 0; padding: 12px; border: 1px solid #ffffff12; border-radius: 12px; background: #ffffff04; }
 .controls { display: flex; flex-direction: column; gap: 8px; }
+.watch-speed { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; }
+.watch-speed label { color: var(--muted); font-size: 14px; }
+.watch-speed select { min-height: 40px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; }
 .btn { display: block; width: 100%; min-height: 42px; padding: 10px 12px; background: #303c34; border: 1px solid #506052; border-radius: 8px; box-shadow: 0 1px 2px #0002; text-align: center; font-size: 14px; font-weight: 500; }
 .btn.primary { background: #e0d9b6; color: #293326; border-color: #e9e2c6; }
 .btn.gold { border-color: #b8a661; }
@@ -169,7 +172,7 @@ button:disabled { opacity: .5; cursor: wait; }
     .controls { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; }
     .controls > .btn, #pauseControls > .btn { flex: 1 1 calc(25% - 6px); width: auto; min-width: 0; height: 44px; min-height: 44px; padding: 0 5px; font-size: 12px; }
     #pauseControls { display: contents; }
-    .toggle-wrapper, #aiError, .analysis-controls, .depth-control { flex-basis: 100%; width: 100%; }
+    .toggle-wrapper, .watch-speed, #aiError, .analysis-controls, .depth-control { flex-basis: 100%; width: 100%; }
     .toggle-wrapper { justify-content: flex-start; gap: 12px; min-height: 42px; }
     .btn { min-height: 44px; }
     .analysis-controls .btn { display: inline-block; width: calc(50% - 4px); }

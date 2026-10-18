@@ -1,0 +1,8 @@
+{
+  "candidate": {
+    "checkpoint": "/workspace/sequence/campaign/overnight/final-development/checkpoints/cnn_ppo-final.pt",
+    "sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e"
+  },
+  "reason": "Highest score among six predeclared final/+5h/+8h CNN and transformer candidates on4096 shared fresh development games seed4200400000001: finalCNN54.052734375%; chosen before any reserved final outcomes.",
+  "development_summary": "final-development/suite-complete.json"
+}

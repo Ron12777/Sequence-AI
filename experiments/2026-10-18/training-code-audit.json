@@ -1,0 +1,38 @@
+{
+  "scope": "CNN/PPO and transformer/PPO rollout, optimization, observations, native rules, resume and evaluation code. Training continues.",
+  "findings": [],
+  "reviewed": [
+    "scripts/train_exact_policy.py",
+    "scripts/train_exact_multigpu.py",
+    "src/exact_policy.py",
+    "tests/test_train_exact_policy.py",
+    "tests/test_batch_env.py",
+    "tests/test_exact_policy.py",
+    "tests/test_evaluate_exact_policy.py",
+    "tests/test_ppo_staging.py"
+  ],
+  "verified_semantics": [
+    "Rollouts finish games; +/-1 outcome assigned separately to every acting player, draws zero. No cross-player sign error.",
+    "Exact card+square categorical policy masks illegal/padded actions in rollout and update; padding does not reorder chosen action indices.",
+    "Fresh frozen-policy rollouts; old log probabilities detached; no replay. Clipped PPO ratio uses correct sign for positive and negative advantages.",
+    "Actor uses eval mode; training freezes BatchNorm stats; transformer dropout=0, avoiding dropout-induced old/new policy mismatch.",
+    "Balanced learner seats with 50% current selfplay,25% frozenGRU,25% historical; frozen opponents are not trained.",
+    "Native full games and observations covered against Python including Jack removal, completed sequences, dead-card skipping and hidden-information invariance.",
+    "Checkpoint restored Adam slots, counters, Python/NumPy/CPU RNG and mapped activeCUDA RNG. Original checkpoint retained. No schedule/optimizer reset.",
+    "Loss and gradient nonfinite checks stop invalid updates; live entropy,KL,value error finite; both continuations advancing.",
+    "Independent final paired seeds disjoint from training/development; promotion uses incumbent and heldout gates, not monitor winner selection."
+  ],
+  "tests": {
+    "remote_setup_passed": 47,
+    "remote_cold_start_timeout_then_pass": "CPU lifecycle progress timeout during initial image loading; targeted warm bounded-thread retry passed.",
+    "additional_local_passed": 36,
+    "additional_local_skipped": 2,
+    "skips": "CUDA-only staging tests on CPU local environment; not counted as CUDA validation.",
+    "final_protocol_tests_included": 11
+  },
+  "recipe_limits": [
+    "Monte Carlo terminal returns rather than GAE; higher variance is a recipe choice, not a sign/bootstrapping bug.",
+    "Warm-start and inherited training time differ between CNN and transformer; overnight wall budgets equal, not total training/FLOPs.",
+    "No claim that additional training guarantees improvement; preserve currently validated model unless fixed fresh confirmation passes."
+  ]
+}

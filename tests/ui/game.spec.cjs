@@ -104,11 +104,16 @@ test('evaluation before any move, Hint, human move and real AI reply', async ({p
 
 test('Watch button starts play, pause freezes it, resume and editing preserve modes', async ({page}) => {
   await openGame(page);
+  await expect(page.getByLabel('Watch speed')).toBeHidden();
   await page.getByRole('button', {name: 'Watch AI', exact: true}).click();
   await expect.poll(() => page.locator('.history-item').count()).toBeGreaterThan(0);
   await expect(page.locator('#hintBtn')).toBeHidden();
   await page.getByRole('button', {name: 'Pause', exact: true}).click();
   await expect(page.getByRole('button', {name: 'Resume', exact: true})).toBeVisible();
+  await expect(page.getByLabel('Watch speed')).toBeVisible();
+  await page.getByLabel('Watch speed').selectOption('0');
+  await expect(page.getByLabel('Watch speed')).toHaveValue('0');
+  await page.getByLabel('Watch speed').selectOption('1000');
   const pausedCount = await page.locator('.history-item').count();
   // Cross several real 500ms inter-move sleeps: no old loop may wake and move.
   await page.waitForTimeout(1200);

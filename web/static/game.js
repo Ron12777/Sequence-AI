@@ -209,6 +209,7 @@ function syncControls() {
     hintBtn.disabled = !aiPlayer || isThinking || game?.currentPlayer !== 1;
     watchAiBtn.hidden = watchMode || analysisMode;
     watchAiBtn.disabled = !aiPlayer || isThinking;
+    document.getElementById('watchSpeedControl').hidden = !watchMode || analysisMode || ended;
     watchAiBtn.textContent = ended ? 'Watch AI again' : 'Watch AI';
     newGameBtn.hidden = watchMode && isPaused && !analysisMode && !ended;
     newGameBtn.textContent = watchMode && !isPaused && !analysisMode && !ended ? 'Pause' : 'New game';
@@ -320,7 +321,9 @@ async function watchAiVsAi() {
     renderPosition();
     while (run === watchRun && !game.gameOver && !isPaused && !analysisMode) {
         if (!await triggerAiTurn()) break;
-        await sleep(500);
+        // Yield even at Max so Pause and other controls stay responsive.
+        const delay = Number(document.getElementById('watchSpeed').value ?? 500);
+        await sleep([0, 100, 250, 500, 1000].includes(delay) ? delay : 500);
     }
 }
 

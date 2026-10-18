@@ -1,7 +1,7 @@
 {
   "deployed_utc": "2026-10-18T14:28:52.891258+00:00",
-  "scope": "Local static deployment; GitHub publication pending",
-  "authorization": "User explicitly requested uploading the newCNN after being informed that heldoutconfirmation was incomplete; this supersedes prior promotion restriction.",
+  "scope": "Local static app and GitHub Pages",
+  "authorization": "User explicitly requested deploying the new CNN after disclosure that held-out confirmation was incomplete.",
   "checkpoint_sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e",
   "onnx_sha256": "83823d396895aa97bc8c52d494b655625c3cc0b806868492c33b4c81711365ed",
   "model": "model-exact-83823d396895aa97.onnx",
@@ -19,5 +19,6 @@
     ]
   },
   "heldout_confirmation": "Incomplete; not represented as passed",
-  "public_deployment": false
+  "public_deployment": true,
+  "publication_record": "experiments/2026-10-18/publication.json"
 }

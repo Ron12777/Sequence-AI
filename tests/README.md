@@ -13,7 +13,7 @@ npm run test:ui
 
 `tests/ui/` opens the shipped page in Chromium at desktop and phone sizes. It
 loads the actual ONNX model and ORT Web WASM, clicks the page's real handlers,
-and checks play, evaluation before a move, Watch/pause/resume, editing, the
+and checks play, evaluation before a move, Watch speed/pause/resume, no-move draws, editing, the
 52-card picker, keyboard focus, corner markers, layout bounds and load failure.
 The pinned npm runtime substitutes for CDN transport only; model outputs and
 application scripts are not mocked. Test screenshots and failure traces appear
@@ -31,3 +31,5 @@ tip. The previous independent deployment workflow has been removed.
 
 These are functional/layout checks, not proof of visual quality, model strength,
 or calibrated win probabilities. Real-game training evaluations are separate.
+
+Hidden-information regression tests trap access to opposing card identities and the draw pile for both seats. `experiments/2026-10-18/audit-browser-fairness.cjs` additionally exercises the actual WASM model and intervening other-player queries; its JSON report identifies the exact audited engine/model hashes.

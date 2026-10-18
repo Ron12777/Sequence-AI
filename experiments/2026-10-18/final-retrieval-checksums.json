@@ -1,0 +1,65 @@
+{
+  "verified": true,
+  "files": [
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/cnn_ppo-final.pt",
+      "sha256": "e7b1d988b7e4959f848d1d053814e4550ee4841697901a0e4f7779019ff2af3e",
+      "bytes": 9255003
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/cnn_ppo-additional-5h.pt",
+      "sha256": "3f259e9f44fe7ba5887a1c0cc87963374c2d76db847c37db3ba70824a71ffcf7",
+      "bytes": 9249307
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/cnn_ppo-additional-8h.pt",
+      "sha256": "da1be90d94659d38341ff118e53cf19fe2a1231f92ba1f9cde195edd666e7816",
+      "bytes": 9252123
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/transformer_ppo-final.pt",
+      "sha256": "2e021985b7373af970d4a141e75632da5249103711e46b19bc6468a40138c440",
+      "bytes": 10641811
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/transformer_ppo-additional-5h.pt",
+      "sha256": "0fa84e02b6b337e6589d040442c96a2d889405b4f6e8b8afab36c2e53cb5c8a8",
+      "bytes": 10641875
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/transformer_ppo-additional-8h.pt",
+      "sha256": "5c2c185a82744a0d3ec0919a3f1b3785ad6aa29814a9cc2cb95eea53aec3e91f",
+      "bytes": 10641875
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/cnn_ppo-history/historical_0.pt",
+      "sha256": "1fd4e57a9aa6cf9228cf0948ac075dc4ab378476a3a8779a1b2a8535f6eb2fee",
+      "bytes": 3080413
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/cnn_ppo-history/historical_1.pt",
+      "sha256": "119a236672fa15c4fd9b21c7758311caa83108535cfd1784043c90d099446e05",
+      "bytes": 3080413
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/cnn_ppo-history/historical_2.pt",
+      "sha256": "2602cc16c4d5160b166cbe94840617a94c7c20cfafdadb334c4525bcc0127092",
+      "bytes": 3080413
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/transformer_ppo-history/historical_0.pt",
+      "sha256": "636043996c0b0c8dfc3c492b7594fff7961a9cab33f587af209f9ba6eabed27d",
+      "bytes": 3547953
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/transformer_ppo-history/historical_1.pt",
+      "sha256": "ee765b16fd41a2b1d7de064670f26ab574a2bbf4d2d80cadca82526d24d76fba",
+      "bytes": 3547953
+    },
+    {
+      "path": "artifacts/checkpoints/overnight-2026-10-18/final/transformer_ppo-history/historical_2.pt",
+      "sha256": "fdfa99ae67470785672f12363bc415c83e775d51dad39db719292af5df9b1960",
+      "bytes": 3547953
+    }
+  ]
+}

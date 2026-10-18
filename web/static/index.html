@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sequence</title>
-    <link rel="stylesheet" href="style.css?v=gold-hint-20261018">
+    <link rel="stylesheet" href="style.css?v=watch-speed-20261018">
 </head>
 <body>
     <main class="app-container">
@@ -46,6 +46,16 @@
                     </div>
                     <button id="hintBtn" class="btn secondary">Hint</button>
                     <button id="watchAiBtn" class="btn secondary">Watch AI</button>
+                    <div id="watchSpeedControl" class="watch-speed" hidden>
+                        <label for="watchSpeed">Speed</label>
+                        <select id="watchSpeed" aria-label="Watch speed">
+                            <option value="1000">0.5×</option>
+                            <option value="500" selected>1×</option>
+                            <option value="250">2×</option>
+                            <option value="100">5×</option>
+                            <option value="0">Max</option>
+                        </select>
+                    </div>
                     <button id="analysisBtn" class="btn secondary">Edit board</button>
                     <div class="toggle-wrapper">
                         <span class="toggle-label">Evaluation</span>
@@ -102,6 +112,6 @@
     <script src="mcts.js"></script>
     <script src="direct_player.js?v=7a3bc458213c3683"></script>
     <script src="hand_layout.js?v=a0cfbe67b0b35125"></script>
-    <script src="game.js?v=no-move-draw-20261018"></script>
+    <script src="game.js?v=watch-speed-20261018"></script>
 </body>
 </html>

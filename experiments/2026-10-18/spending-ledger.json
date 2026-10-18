@@ -1,0 +1,54 @@
+{
+  "queried_utc": "2026-10-18T14:09:35.210823+00:00",
+  "instance_id": 56487252,
+  "provider_reported_charges_usd": 11.454,
+  "provider_rows": [
+    {
+      "type": "instance",
+      "source": "instance-56487252",
+      "amount": 11.454,
+      "start": 1792281600,
+      "end": 1792281600,
+      "items": [
+        {
+          "type": "gpu",
+          "amount": 11.297,
+          "start": 1792281600,
+          "end": 1792281600
+        },
+        {
+          "type": "disk",
+          "amount": 0.155,
+          "start": 1792281600,
+          "end": 1792281600
+        },
+        {
+          "type": "bwd",
+          "amount": 0.001,
+          "start": 1792281600,
+          "end": 1792281600
+        },
+        {
+          "type": "bwu",
+          "amount": 0.001,
+          "start": 1792281600,
+          "end": 1792281600
+        }
+      ]
+    }
+  ],
+  "rental_facts": {
+    "id": 56487252,
+    "start_date": 1792291983.7039547,
+    "actual_status": "running",
+    "dph_total": 1.027222222222222,
+    "gpu_name": "RTX 5090",
+    "num_gpus": 2
+  },
+  "verified_destruction_utc": "2026-10-18T14:09:35.184720+00:00",
+  "rental_present": false,
+  "final_invoice": false,
+  "billing_limitation": "Provider rounded charges may lag settlement; charges only, not net account cash spend. Timestamp estimate excludes transfers.",
+  "estimated_gpu_plus_storage_usd": 11.582353076407202,
+  "rental_hours": 11.27541132370631
+}

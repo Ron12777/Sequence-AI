@@ -1,2 +1,13 @@
-# Auto detect text files and perform LF normalization
+# Source stays readable; generated evidence does not count as application code.
 * text=auto
+*.pt binary
+*.onnx binary
+*.gz binary
+/artifacts/** linguist-generated=true
+/models/** linguist-generated=true
+/experiments/**/*.json linguist-generated=true
+/experiments/**/*.jsonl linguist-generated=true
+/experiments/**/*.gz linguist-generated=true
+/experiments/**/*.png linguist-generated=true
+/experiments/**/*.txt linguist-generated=true
+/experiments/2026-10-17/rebel-reference/** linguist-vendored=true

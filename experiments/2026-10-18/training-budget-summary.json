@@ -1,0 +1,21 @@
+{
+  "models": {
+    "cnn_ppo": {
+      "inherited_training_hours": 6.319546915423101,
+      "overnight_training_hours": 10.844179435888226,
+      "overnight_games": 11634688,
+      "total_training_hours_after_shared_distillation": 17.163726351311325,
+      "total_games_after_shared_distillation": 22480896,
+      "optimizer_and_rng_preserved": true
+    },
+    "transformer_ppo": {
+      "inherited_training_hours": 3.2314904621129408,
+      "overnight_training_hours": 10.846045058554374,
+      "overnight_games": 5228544,
+      "total_training_hours_after_shared_distillation": 14.077535520667313,
+      "total_games_after_shared_distillation": 6717440,
+      "optimizer_and_rng_preserved": true
+    }
+  },
+  "accounting": "Overnight one RTX5090 per model. Inherited budgets differ and include mixed prior hardware. Common retained CNN7.48-hour pretraining and distillation are separate from these counters. Wall time is not equal FLOPs; allocated GPU time is not measured GPU busy time."
+}

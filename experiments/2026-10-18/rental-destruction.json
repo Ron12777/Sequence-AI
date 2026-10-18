@@ -1,0 +1,9 @@
+{
+  "verified_utc": "2026-10-18T14:09:35.184720+00:00",
+  "instance_id": 56487252,
+  "task_rental_present": false,
+  "remaining_instances": [],
+  "destroy_command": "vastai destroy instance56487252 --yes --raw",
+  "destroy_cli_exit_code": 0,
+  "retrieval_verified_before_destroy": true
+}

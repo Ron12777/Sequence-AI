@@ -1,4 +1,4 @@
-"""Experimental information-respecting direct policies, separate from production search."""
+"""Experimental public-history direct policies; production uses the exact-action CNN."""
 
 import copy
 

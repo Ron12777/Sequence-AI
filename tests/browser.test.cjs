@@ -484,6 +484,21 @@ test('a sleeping Watch loop cannot wake into a newly resumed game loop', async (
   assert.equal(calls,2);
 });
 
+test('Watch speed changes the next delay and Max still yields to Pause', async () => {
+  const {ui,get}=modeHarness(), sleeps=[];
+  ui.sleep=ms=>new Promise(resolve=>sleeps.push({ms,resolve}));
+  ui.chooseAiMove=async position=>({move:position.getLegalMoves()[0]});
+  get('watchSpeed').value='500';
+  const running=ui.watchAiVsAi();await new Promise(setImmediate);
+  assert.equal(sleeps[0].ms,500);
+  get('watchSpeed').value='0';sleeps[0].resolve();await new Promise(setImmediate);
+  assert.equal(sleeps[1].ms,0);
+  get('watchSpeed').value='1000';sleeps[1].resolve();await new Promise(setImmediate);
+  assert.equal(sleeps[2].ms,1000);
+  ui.pauseGame();sleeps[2].resolve();await running;
+  assert.equal(sleeps.length,3);assert.equal(ui.isPaused,true);
+});
+
 test('hint is rejected outside human play and pending hints cannot survive reset', async () => {
   const {ui}=modeHarness();let calls=0,finish;
   ui.chooseAiMove=position=>{calls++;return new Promise(resolve=>{finish=()=>resolve({move:position.getLegalMoves()[0]});});};
