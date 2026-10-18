@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sequence</title>
-    <link rel="stylesheet" href="style.css?v=9317a6f330781ede">
+    <link rel="stylesheet" href="style.css?v=2108f83e1c2ece8f">
 </head>
 <body>
     <main class="app-container">
         <header class="app-header">
             <h1 class="game-title">Sequence</h1>
-            <div id="turnIndicator" class="turn-indicator">
+            <div id="turnIndicator" role="status" aria-live="polite" class="turn-indicator">
                 <span class="turn-dot" aria-hidden="true"></span>
                 <span class="text">Your turn</span>
             </div>
@@ -54,10 +54,6 @@
                             <span class="slider" aria-hidden="true"></span>
                         </label>
                     </div>
-                    <div id="aiProgressContainer" class="ai-progress-container">
-                        <div class="progress-bar-bg"><div id="aiProgressBar" class="progress-bar-fill"></div></div>
-                        <span id="aiProgressText" class="progress-text">Thinking…</span>
-                    </div>
                     <p id="aiError" role="alert" hidden></p>
                     <div id="analysisControls" class="analysis-controls" style="display:none;">
                         <p class="instruction-text">Tap a square or card to edit.</p>
@@ -86,19 +82,18 @@
                 </section>
             </aside>
         </div>
-        <button id="mobileDrawerToggle" class="mobile-drawer-toggle" onclick="toggleMobileDrawer()" aria-label="Toggle controls" hidden>Controls</button>
     </main>
-    <div id="gameOverOverlay" class="overlay">
+    <div id="gameOverOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="gameOverText">
         <div class="overlay-content">
             <button class="overlay-close" onclick="dismissGameOver()" aria-label="Close">&times;</button>
             <h2 id="gameOverText">Game over</h2>
             <button onclick="newGame()" class="btn primary">Play again</button>
         </div>
     </div>
-    <div id="cardPickerOverlay" class="overlay">
+    <div id="cardPickerOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="cardPickerTitle">
         <div class="overlay-content card-picker-content">
             <button class="overlay-close" onclick="closeCardPicker()" aria-label="Close card picker">&times;</button>
-            <h2>Choose card</h2>
+            <h2 id="cardPickerTitle">Choose card</h2>
             <div id="cardPickerGrid" class="card-picker-grid"></div>
         </div>
     </div>
@@ -106,6 +101,6 @@
     <script src="game_engine.js?v=324f370d5a5a1062"></script>
     <script src="mcts.js"></script>
     <script src="direct_player.js?v=7a3bc458213c3683"></script>
-    <script src="game.js?v=8cd09ca8b0f4ca89"></script>
+    <script src="game.js?v=8c63db7481da2a78"></script>
 </body>
 </html>

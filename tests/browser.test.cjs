@@ -226,7 +226,8 @@ test('explicit board-hand CNN analyzes edited positions and hint retains exact c
   const source=fs.readFileSync('web/static/game.js','utf8');
   const start=source.indexOf('async function getHint()'),end=source.indexOf('\n}\n',start)+2;
   let highlighted=false;
-  Object.assign(context,{game,aiPlayer:player,selectedCard:null,aiProgressContainer:null,
+  Object.assign(context,{game,aiPlayer:player,selectedCard:null,watchMode:false,analysisMode:false,isThinking:false,uiGeneration:0,
+    capturePosition:()=>({position:cloneGame(game),isCurrent:()=>true}),updateStatus(){},
     document:{getElementById:()=>null,querySelector:()=>({classList:{add:()=>{highlighted=true;}}})},
     chooseAiMove:()=>player.chooseMove(game),renderP1Hand:()=>{},renderBoard:()=>{},showAiError:e=>{throw e;}});
   vm.runInContext(source.slice(start,end),context);
@@ -254,7 +255,7 @@ function evaluationHarness() {
   const el = () => ({style:{},textContent:'',classList:{toggle(){},add(){},remove(){}}});
   const ui=vm.createContext({console,setTimeout,SequenceGame,DirectPlayer,cloneGame,
     game:new SequenceGame(),aiPlayer:new DirectPlayer({inputNames:['input']},runtime),
-    evaluationRequest:0,hasEvalValue:false,evalBarContainer:el(),evalBarFill:el(),evalText:el(),
+    uiGeneration:0,evaluationRequest:0,hasEvalValue:false,evalBarContainer:el(),evalBarFill:el(),evalText:el(),
     showEvalBar:{checked:true},document:{getElementById:()=>null},
     showAiError:error=>{throw error;}});
   const source=fs.readFileSync('web/static/game.js','utf8');
@@ -320,7 +321,7 @@ test('evaluation uses a snapshot and terminal results have consistent horizontal
 
 test('AI move refreshes evaluation for the resulting position and next player', async () => {
   const ui=evaluationHarness();
-  Object.assign(ui,{isThinking:false,watchMode:false,aiProgressContainer:null,
+  Object.assign(ui,{isThinking:false,watchMode:false,analysisMode:false,isPaused:false,renderPosition(){},aiProgressContainer:null,
     aiProgressBar:null,aiProgressText:null,renderTopMoves(){},updateHistory(){},
     renderBoard(){},renderP1Hand(){},renderP2Hand(){},updateStatus(){},renderScores(){},showGameOver(){}});
   ui.game.hands[1]=['AC'];
@@ -338,4 +339,99 @@ test('AI move refreshes evaluation for the resulting position and next player', 
   assert.equal(observed[0].player,1);assert.equal(observed[0].chip,0);
   assert.equal(observed[1].player,2);assert.equal(observed[1].chip,1);
   assert.equal(ui.evalText.textContent,'Blue 70%');
+});
+
+function modeHarness() {
+  const elements = new Map();
+  const element = () => ({hidden:false,disabled:false,style:{},textContent:'',children:[],
+    classList:{values:new Set(),contains(v){return this.values.has(v);},add(...v){v.forEach(x=>this.values.add(x));},remove(...v){v.forEach(x=>this.values.delete(x));},toggle(v,on){on?this.values.add(v):this.values.delete(v);}},
+    appendChild(child){this.children.push(child);},querySelector(){return element();},focus(){}});
+  const get = id => {if(!elements.has(id))elements.set(id,element());return elements.get(id);};
+  const ui=evaluationHarness();
+  Object.assign(ui,{watchMode:false,analysisMode:false,isPaused:false,isThinking:false,watchRun:0,
+    selectedCard:null,hoveredCard:null,modelError:null,cardPickerTarget:null,
+    hintBtn:get('hintBtn'),watchAiBtn:get('watchAiBtn'),newGameBtn:get('newGameBtn'),
+    turnIndicatorEl:get('turnIndicator'),gameOverOverlay:get('gameOverOverlay'),gameOverText:get('gameOverText'),
+    document:{getElementById:get,body:element(),createElement:element,querySelector:()=>null},
+    renderBoard(){},renderP1Hand(){},renderP2Hand(){},renderScores(){},updateHistory(){},
+    showAiError(error){ui.error=error;},sleep:()=>new Promise(resolve=>{ui.wake=resolve;})});
+  ui.showEvalBar.checked=false;
+  vm.runInContext(fs.readFileSync('web/static/game_engine.js','utf8')+'\nglobalThis.BOARD_LAYOUT=BOARD_LAYOUT;',ui);
+  const source=fs.readFileSync('web/static/game.js','utf8');
+  for(const name of ['cancelPendingWork','syncControls','renderPosition','resultMessage','updateStatus',
+    'newGame','closeCardPicker','dismissGameOver','pauseGame','resumeGame','watchAiVsAi','triggerAiTurn',
+    'getHint','toggleAnalysisMode','toggleTurn','handleAnalysisCellClick','highlightSequences','selectCard']) {
+    const start=source.search(new RegExp('(?:async )?function '+name+'\\('));
+    vm.runInContext(source.slice(start,source.indexOf('\n}\n',start)+2),ui);
+  }
+  return {ui,get,element};
+}
+
+test('controls match play, Watch, paused Watch, editing, and game over', () => {
+  const {ui,get}=modeHarness();ui.syncControls();
+  assert.equal(ui.hintBtn.hidden,false);assert.equal(ui.hintBtn.disabled,false);
+  ui.watchMode=true;ui.syncControls();
+  assert.equal(ui.hintBtn.hidden,true);assert.equal(ui.watchAiBtn.hidden,true);assert.equal(ui.newGameBtn.textContent,'Pause');
+  ui.pauseGame();assert.equal(get('pauseControls').hidden,false);assert.equal(ui.hintBtn.hidden,true);
+  ui.toggleAnalysisMode();assert.equal(get('pauseControls').hidden,true);assert.equal(ui.hintBtn.hidden,true);
+  ui.toggleAnalysisMode();assert.equal(get('pauseControls').hidden,false);assert.equal(ui.hintBtn.hidden,true);
+  ui.game.gameOver=true;ui.syncControls();assert.equal(get('pauseControls').hidden,true);assert.equal(ui.newGameBtn.textContent,'New game');
+  ui.newGame();assert.equal(ui.hintBtn.hidden,false);assert.equal(ui.watchMode,false);assert.equal(ui.analysisMode,false);
+});
+
+test('pause discards an already pending AI move and rapid resume never revives the old loop', async () => {
+  const {ui}=modeHarness(),pending=[];
+  ui.chooseAiMove=position=>new Promise(resolve=>pending.push(()=>resolve({move:position.getLegalMoves()[0]})));
+  const before=JSON.stringify(ui.game),old=ui.watchAiVsAi();
+  assert.equal(pending.length,1);
+  ui.pauseGame();pending.shift()();await old;
+  assert.equal(JSON.stringify(ui.game),before);
+  const resumed=ui.watchAiVsAi();assert.equal(pending.length,1);
+  await ui.watchAiVsAi();assert.equal(pending.length,1); // Duplicate start is ignored.
+  ui.pauseGame();pending.shift()();await resumed;
+  assert.equal(JSON.stringify(ui.game),before);
+});
+
+test('hint is rejected outside human play and pending hints cannot survive reset', async () => {
+  const {ui}=modeHarness();let calls=0,finish;
+  ui.chooseAiMove=position=>{calls++;return new Promise(resolve=>{finish=()=>resolve({move:position.getLegalMoves()[0]});});};
+  ui.watchMode=true;await ui.getHint();assert.equal(calls,0);
+  ui.watchMode=false;ui.analysisMode=true;await ui.getHint();assert.equal(calls,0);
+  ui.analysisMode=false;const old=ui.getHint();assert.equal(calls,1);
+  ui.newGame();finish();await old;
+  assert.equal(ui.selectedCard,null);assert.equal(ui.isThinking,false);assert.equal(ui.hintBtn.disabled,false);
+});
+
+test('editor preserves free corners, removes broken sequence protection, and recognizes new lines', () => {
+  const {ui}=modeHarness();ui.analysisMode=true;
+  ui.handleAnalysisCellClick(0,0);assert.equal(ui.game.board[0][0],-1);
+  for(let c=0;c<5;c++)ui.game.board[3][c]=1;
+  ui.game.completedSequences[1]=[['3,0','3,1','3,2','3,3','3,4']];
+  ui.game.gameOver=true;ui.game.winner=1;
+  ui.handleAnalysisCellClick(3,2);
+  assert.equal(ui.game.completedSequences[1].length,0);assert.equal(ui.game.gameOver,false);assert.equal(ui.game.winner,null);
+  ui.handleAnalysisCellClick(3,2);ui.handleAnalysisCellClick(3,2);
+  assert.equal(ui.game.completedSequences[1].length,1);
+});
+
+test('completed sequences mark chips but never gold corners', () => {
+  const {ui,element}=modeHarness();ui.game.completedSequences[1]=[['0,0','1,0','2,0','3,0','4,0']];
+  const corner=element(),chip=element();ui.highlightSequences(corner,0,0);ui.highlightSequences(chip,1,0);
+  assert.equal(corner.children.length,0);assert.equal(chip.children.length,1);
+});
+
+test('leaving editor on AI turn schedules a reply; editing cards restores cancelled controls', async () => {
+  const {ui,get}=modeHarness();let calls=0;
+  ui.triggerAiTurn=async()=>{calls++;};ui.analysisMode=true;ui.game.currentPlayer=2;
+  ui.toggleAnalysisMode();assert.equal(calls,1);
+  ui.analysisMode=true;ui.isThinking=true;ui.syncControls();assert.equal(get('bestMoveBtn').disabled,true);
+  ui.cardPickerTarget={player:1,index:0};ui.selectCard('AC');
+  assert.equal(get('bestMoveBtn').disabled,false);assert.equal(ui.game.hands[1][0],'AC');
+});
+
+test('Watch pauses on no legal move instead of repeatedly evaluating forever; draws are labelled correctly', async () => {
+  const {ui}=modeHarness();let calls=0;
+  ui.chooseAiMove=async()=>{calls++;return {move:null};};
+  await ui.watchAiVsAi();assert.equal(calls,1);assert.equal(ui.isPaused,true);assert.match(ui.error.message,/No legal move/);
+  ui.game.gameOver=true;ui.game.winner=null;assert.equal(ui.resultMessage(),'Draw');
 });

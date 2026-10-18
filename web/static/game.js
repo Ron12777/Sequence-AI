@@ -15,6 +15,9 @@ let isThinking = false;
 let analysisMode = false;
 let cardPickerTarget = null; // {type: 'hand', player: 1/2, index: 0}
 let isPaused = false;
+let uiGeneration = 0;
+let watchRun = 0;
+let dialogReturnFocus = null;
 
 
 // DOM Elements
@@ -29,9 +32,6 @@ const gameOverText = document.getElementById('gameOverText');
 const newGameBtn = document.getElementById('newGameBtn');
 const watchAiBtn = document.getElementById('watchAiBtn');
 const hintBtn = document.getElementById('hintBtn');
-const aiProgressContainer = document.getElementById('aiProgressContainer');
-const aiProgressBar = document.getElementById('aiProgressBar');
-const aiProgressText = document.getElementById('aiProgressText');
 const evalBarContainer = document.getElementById('evalBarContainer');
 const evalBarFill = document.getElementById('evalBarFill');
 const evalText = document.getElementById('evalText');
@@ -69,8 +69,8 @@ const SUIT_SYMBOLS = {
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
     newGameBtn.addEventListener('click', () => {
-        watchMode = false;
-        newGame();
+        if (watchMode && !isPaused && !analysisMode && !game.gameOver) pauseGame();
+        else newGame();
     });
     watchAiBtn.addEventListener('click', watchAiVsAi);
     hintBtn.addEventListener('click', getHint);
@@ -182,20 +182,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     updateDepthDisplay();
 
-    // Setup Play Again button
-    const playAgainBtn = document.querySelector('.overlay-content .btn');
-    if (playAgainBtn) {
-        playAgainBtn.addEventListener('click', newGame);
-    }
-
-    // Load ONNX model
-    await loadModel();
-
-    // Start game
     newGame();
+    await loadModel();
+    updateStatus();
+    renderP1Hand();
+    void runJudgeEval();
 });
 
-let cancelAiLoop = false;
+function cancelPendingWork() {
+    uiGeneration++;
+    watchRun++;
+    evaluationRequest++;
+    isThinking = false;
+    selectedCard = null;
+    hoveredCard = null;
+}
+
+function syncControls() {
+    const ended = !game || game.gameOver;
+    hintBtn.hidden = watchMode || analysisMode || ended;
+    hintBtn.disabled = !aiPlayer || isThinking || game?.currentPlayer !== 1;
+    watchAiBtn.hidden = watchMode || analysisMode;
+    watchAiBtn.disabled = !aiPlayer || isThinking;
+    watchAiBtn.textContent = ended ? 'Watch AI again' : 'Watch AI';
+    newGameBtn.hidden = watchMode && isPaused && !analysisMode && !ended;
+    newGameBtn.textContent = watchMode && !isPaused && !analysisMode && !ended ? 'Pause' : 'New game';
+    document.getElementById('pauseControls').hidden = !(watchMode && isPaused && !analysisMode && !ended);
+    const editor = document.getElementById('analysisBtn');
+    editor.textContent = analysisMode ? 'Done editing' : 'Edit board';
+    editor.classList.toggle('primary', analysisMode);
+    document.getElementById('analysisControls').style.display = analysisMode ? 'block' : 'none';
+    document.getElementById('bestMoveBtn').disabled = !aiPlayer || isThinking || ended;
+    document.body.classList.toggle('analysis-mode', analysisMode);
+    for (const id of ['labelP1', 'handHeaderP1']) document.getElementById(id).textContent = watchMode || analysisMode ? 'Red' : 'You';
+    for (const id of ['labelP2', 'handHeaderP2']) document.getElementById(id).textContent = watchMode || analysisMode ? 'Blue' : 'AI';
+    document.getElementById('depthP1Container').style.display = watchMode ? 'block' : 'none';
+    document.getElementById('depthTitle').textContent = watchMode ? 'Blue simulations' : 'Search simulations';
+}
+
+function renderPosition() {
+    renderBoard(); renderP1Hand(); renderP2Hand(); renderScores(); updateStatus();
+}
 
 /**
  * Load ONNX neural network model
@@ -235,7 +262,7 @@ function showAiError(error) {
     }
 }
 
-async function chooseAiMove(position, onProgress = null) {
+async function chooseAiMove(position, onProgress = null, depthId = 'depth') {
     if (!aiPlayer) throw modelError || new Error('AI is not loaded');
     showAiError(null);
     if (aiPlayer instanceof DirectPlayer) {
@@ -243,80 +270,28 @@ async function chooseAiMove(position, onProgress = null) {
         if (onProgress) onProgress(1, 1, result.policy, result.value);
         return result;
     }
-    return aiPlayer.search(position, onProgress);
+    const slider = document.getElementById(depthId);
+    const search = new MCTS(aiPlayer.session, slider ? Number(slider.value) : 128, aiPlayer.numDeals);
+    return search.search(position, onProgress);
 }
 
 /**
  * Start a new game
  */
 function newGame() {
-    showAiError(modelError);
-    cancelAiLoop = true; // Stop any ongoing AI vs AI match
+    cancelPendingWork();
     game = new SequenceGame();
-    // Keep Analysis Mode if active
-    if (!analysisMode) {
-        game.reset();
-    } else {
-        // If in analysis mode, we might want to just reset the board but keep mode?
-        // Usually New Game means New Game. Let's fully reset.
-        toggleAnalysisMode(); // Exit analysis mode
-        game.reset();
-    }
-
-    selectedCard = null;
-    hoveredCard = null;
-    isThinking = false;
-    watchMode = false; // Reset watch mode
+    watchMode = false;
+    analysisMode = false;
     isPaused = false;
-
-    if (gameOverOverlay) {
-        gameOverOverlay.classList.remove('visible');
-    }
-
-    // Ensure "New game" button is reset to default state
-    updateResetButtonState(false);
-
-    renderBoard();
-    renderP1Hand();
-    renderP2Hand();
-    updateStatus();
-    renderScores();
-
-    // Hide progress bar
-    if (aiProgressContainer) {
-        aiProgressContainer.classList.remove('visible');
-    }
-
-    // Hide eval bar
+    closeCardPicker();
+    dismissGameOver();
+    showAiError(modelError);
     resetEvalBar();
-    setEvalBarVisible(!!(showEvalBar && showEvalBar.checked && hasEvalValue));
-
-    // Clear history
-    const historyEl = document.getElementById('moveHistory');
-    if (historyEl) historyEl.innerHTML = '';
-
-    // Reset Labels (User vs AI)
-    const lblP1 = document.getElementById('labelP1');
-    const lblP2 = document.getElementById('labelP2');
-    const headerP1 = document.getElementById('handHeaderP1');
-    const headerP2 = document.getElementById('handHeaderP2');
-
-    if (lblP1) lblP1.textContent = "You";
-    if (lblP2) lblP2.textContent = "AI";
-    if (headerP1) headerP1.textContent = "You";
-    if (headerP2) headerP2.textContent = "AI";
-
-    // Hide P1 Slider (User plays P1)
-    const depthP1Container = document.getElementById('depthP1Container');
-    if (depthP1Container) depthP1Container.style.display = 'none';
-
-    // Rename main slider to just "Depth" or "AI Depth"
-    const depthTitle = document.getElementById('depthTitle');
-    if (depthTitle) depthTitle.textContent = "Search simulations";
-
-    // Show Watch AI button again
-    const watchAiBtn = document.getElementById('watchAiBtn');
-    if (watchAiBtn) watchAiBtn.style.display = 'block';
+    setEvalBarVisible(false);
+    const history = document.getElementById('moveHistory');
+    if (history) history.innerHTML = '';
+    renderPosition();
     void runJudgeEval();
 }
 
@@ -325,72 +300,16 @@ function newGame() {
  * Watch AI vs AI
  */
 async function watchAiVsAi() {
-    // Auto-Exit Analysis Mode
-    if (analysisMode) {
-        toggleAnalysisMode();
-    }
-
-    // Resume if Paused
-    if (isPaused) {
-        isPaused = false;
-    }
-
-    if (!game || game.gameOver) {
-        newGame();
-    } else {
-        cancelAiLoop = true;
-        await sleep(100);
-    }
-
-    // Setup for this new match
-    cancelAiLoop = false;
+    if (!aiPlayer || analysisMode || (watchMode && !isPaused && !game.gameOver)) return;
+    if (!game || game.gameOver) newGame();
+    cancelPendingWork();
     watchMode = true;
-
-    // Update Button to "Pause"
-    updateResetButtonState(true);
-
-    // Hide the separate Watch AI button to avoid confusion
-    const watchAiBtn = document.getElementById('watchAiBtn');
-    if (watchAiBtn) watchAiBtn.style.display = 'none';
-
-    // Re-render to show hidden info (P2 hand)
-    renderP1Hand();
-    renderP2Hand();
-    updateStatus();
-
-    // Set Labels (AI vs AI)
-    const lblP1 = document.getElementById('labelP1');
-    const lblP2 = document.getElementById('labelP2');
-    const headerP1 = document.getElementById('handHeaderP1');
-    const headerP2 = document.getElementById('handHeaderP2');
-
-    if (lblP1) lblP1.textContent = "Red";
-    if (lblP2) lblP2.textContent = "Blue";
-    if (headerP1) headerP1.textContent = "Red";
-    if (headerP2) headerP2.textContent = "Blue";
-
-    // Show P1 Slider
-    const depthP1Container = document.getElementById('depthP1Container');
-    if (depthP1Container) depthP1Container.style.display = 'block';
-
-
-    // Update Slider Titles
-    const depthTitle = document.getElementById('depthTitle');
-    if (depthTitle) depthTitle.textContent = "Blue simulations";
-
-    while (!game.gameOver && !cancelAiLoop) {
-        // AI 1 Turn
-        await triggerAiTurn();
-        if (cancelAiLoop) break;
-        if (game.gameOver) break;
+    isPaused = false;
+    const run = watchRun;
+    renderPosition();
+    while (run === watchRun && !game.gameOver && !isPaused && !analysisMode) {
+        if (!await triggerAiTurn()) break;
         await sleep(500);
-
-        // AI 2 Turn (same function, just called again)
-        if (!game.gameOver && !cancelAiLoop) {
-            await triggerAiTurn();
-            if (cancelAiLoop) break;
-            await sleep(500);
-        }
     }
 }
 
@@ -402,9 +321,10 @@ function sleep(ms) {
 function capturePosition() {
     const original = game;
     const fingerprint = JSON.stringify(original);
+    const generation = uiGeneration;
     return {
         position: cloneGame(original),
-        isCurrent: () => game === original && JSON.stringify(game) === fingerprint
+        isCurrent: () => generation === uiGeneration && game === original && JSON.stringify(game) === fingerprint
     };
 }
 
@@ -422,20 +342,13 @@ async function runJudgeEval() {
     const {position, isCurrent} = capturePosition();
     const actor = aiPlayer;
     const current = () => request === evaluationRequest && isCurrent() && aiPlayer === actor;
-    const oldSims = actor.numSimulations;
-    if (!(actor instanceof DirectPlayer)) {
-        const slider = document.getElementById('judgeDepth');
-        actor.numSimulations = slider ? Number(slider.value) : 128;
-    }
     if (evalText) evalText.textContent = 'Evaluating…';
     try {
         await chooseAiMove(position, (step, total, policy, value) => {
             if (current()) updateEvalBar(value, position.currentPlayer);
-        });
+        }, 'judgeDepth');
     } catch (error) {
         if (current()) { resetEvalBar(); setEvalBarVisible(false); showAiError(error); }
-    } finally {
-        if (!(actor instanceof DirectPlayer)) actor.numSimulations = oldSims;
     }
 }
 
@@ -469,92 +382,34 @@ function updateEvalBar(value, evaluatedPlayer, terminal = false) {
  * Trigger AI turn
  */
 async function triggerAiTurn() {
-    if (game.gameOver || isThinking) return;
-
+    if (!game || game.gameOver || isThinking || analysisMode || isPaused || !aiPlayer) return false;
     const {position, isCurrent} = capturePosition();
+    const generation = uiGeneration;
     isThinking = true;
     updateStatus();
-
-    // Show progress
-    if (aiProgressContainer) {
-        aiProgressContainer.classList.add('visible');
-        aiProgressBar.style.width = '0%';
-        aiProgressText.textContent = 'Thinking...';
-    }
-
-    // Determine simulations based on current player
-    // If Watch Mode and P1 turn -> use P1 slider
-    // All other cases (P2 or Human vs AI where AI is P2) -> use default slider
-    let simulations = 128;
-
-    const depthSlider = document.getElementById('depth');
-    const depthP1Slider = document.getElementById('depthP1');
-
-    if (game.currentPlayer === 1 && watchMode && depthP1Slider) {
-        simulations = parseInt(depthP1Slider.value);
-    } else if (depthSlider) {
-        simulations = parseInt(depthSlider.value);
-    }
-
-    if (aiPlayer && !(aiPlayer instanceof DirectPlayer)) aiPlayer.numSimulations = simulations;
-
-    // Force paint before starting heavy calculation
-    await new Promise(r => setTimeout(r, 50));
-
-    // Show eval bar if checked (regardless of mode)
-    // But usually only interesting in Watch Mode or if user wants to see their own winning chance?
-    // User requested: "checkable show eval bar you can enable in ai vs ai and human vs ai mode"
-    if (showEvalBar && showEvalBar.checked && evalBarContainer) {
-        setEvalBarVisible(hasEvalValue);
-    } else {
-        setEvalBarVisible(false);
-    }
-
     try {
-        const result = await chooseAiMove(position, (current, total, policy, value) => {
-            if (!isCurrent()) return;
-            if (aiProgressBar) aiProgressBar.style.width = Math.floor((current / total) * 100) + '%';
-            if (aiProgressText) aiProgressText.textContent = `${current}/${total}`;
-
-            if (policy) {
-                renderTopMoves(policy);
-            }
-        });
-
-        if (!isCurrent()) return;
-        if (result.move) {
-            updateHistory(result.move, game.currentPlayer);
-            game.makeMove(result.move);
-
-
+        const result = await chooseAiMove(position, null, watchMode && position.currentPlayer === 1 ? 'depthP1' : 'depth');
+        if (!isCurrent()) return false;
+        if (!result.move) throw new Error('No legal move in this position. Edit the board or start a new game.');
+        const player = game.currentPlayer;
+        if (!game.makeMove(result.move)) throw new Error('The AI returned an invalid move.');
+        updateHistory(result.move, player);
+    } catch (error) {
+        if (generation === uiGeneration) {
+            if (watchMode) isPaused = true;
+            showAiError(error);
         }
-
-        // Show AI thinking highlights
-        if (result.policy) {
-            renderTopMoves(result.policy);
+        return false;
+    } finally {
+        if (generation === uiGeneration) {
+            isThinking = false;
+            renderPosition();
         }
-    } catch (e) {
-        showAiError(e);
-        if (aiProgressText) aiProgressText.textContent = "Error: " + e.message;
     }
-
-    isThinking = false;
-
-    // Hide progress
-    if (aiProgressContainer) {
-        aiProgressContainer.classList.remove('visible');
-    }
-
-    renderBoard();
-    renderP1Hand();
-    renderP2Hand();
-    updateStatus();
-    renderScores();
     await runJudgeEval();
-
-    if (game.gameOver) {
-        showGameOver();
-    }
+    if (generation !== uiGeneration) return false;
+    if (game.gameOver) showGameOver();
+    return true;
 }
 
 /**
@@ -602,7 +457,7 @@ function renderBoard() {
 
             // Highlight valid moves
             const activeCard = hoveredCard || selectedCard;
-            if (activeCard && !game.gameOver && game.currentPlayer === 1) {
+            if (activeCard && !watchMode && !analysisMode && !isThinking && !game.gameOver && game.currentPlayer === 1) {
                 const moves = game.getLegalMoves(1);
                 const validMove = moves.find(m => m.card === activeCard && m.row === row && m.col === col);
                 if (validMove) {
@@ -614,7 +469,9 @@ function renderBoard() {
             highlightSequences(cell, row, col);
 
             // Click handler
-            cell.addEventListener('click', () => handleCellClick(row, col));
+            if (cardLabel !== 'FREE' && (analysisMode || (aiPlayer && !watchMode && !isThinking && !game.gameOver && game.currentPlayer === 1))) {
+                makeInteractive(cell, `${cardLabel}, row ${row + 1}, column ${col + 1}`, () => handleCellClick(row, col));
+            }
 
             boardEl.appendChild(cell);
         }
@@ -622,6 +479,7 @@ function renderBoard() {
 }
 
 function highlightSequences(cell, row, col) {
+    if (BOARD_LAYOUT[row][col] === 'FREE') return;
     const checkSequence = (sequences) => {
         for (const seq of sequences) {
             if (seq.includes(`${row},${col}`)) return true;
@@ -655,10 +513,10 @@ function renderP1Hand() {
         }
 
         // Gameplay or Analysis
-        const isMyTurn = (game.currentPlayer === 1 && !watchMode && !game.gameOver);
+        const isMyTurn = (aiPlayer && game.currentPlayer === 1 && !watchMode && !analysisMode && !isThinking && !game.gameOver);
 
         if (isMyTurn || analysisMode) {
-            card.addEventListener('click', () => handleCardClick(cardStr, index));
+            makeInteractive(card, `${analysisMode ? 'Edit' : 'Select'} ${cardStr}`, () => handleCardClick(cardStr, index));
         }
 
         if (isMyTurn) {
@@ -708,9 +566,7 @@ function renderP2Hand() {
 
             // Allow editing in Analysis Mode
             if (analysisMode) {
-                card.addEventListener('click', () => {
-                    openCardPicker(2, index);
-                });
+                makeInteractive(card, `Edit ${cardStr}`, () => openCardPicker(2, index));
                 // Add valid-move style cues? Not needed for P2 usually.
             }
 
@@ -744,7 +600,7 @@ function createCardElement(cardStr) {
  * Handle card click
  */
 function handleCardClick(cardStr, index = -1) {
-    if (game.gameOver) return;
+    if (!game) return;
 
     // Analysis Mode: Open Card Picker
     // Allow even if watchMode is true
@@ -756,7 +612,7 @@ function handleCardClick(cardStr, index = -1) {
         return;
     }
 
-    if (game.currentPlayer !== 1) return;
+    if (game.gameOver || watchMode || isThinking || !aiPlayer || game.currentPlayer !== 1) return;
     if (watchMode) return;
 
 
@@ -771,7 +627,7 @@ function handleCardClick(cardStr, index = -1) {
  * Handle cell click
  */
 async function handleCellClick(row, col) {
-    if (game.gameOver) return;
+    if (!game) return;
 
     // Analysis Mode: Cycle Cell State
     if (analysisMode) {
@@ -779,7 +635,7 @@ async function handleCellClick(row, col) {
         return;
     }
 
-    if (game.currentPlayer !== 1) return;
+    if (game.gameOver || watchMode || isThinking || !aiPlayer || game.currentPlayer !== 1) return;
 
     if (!selectedCard) return;
 
@@ -809,9 +665,9 @@ async function handleCellClick(row, col) {
     // AI turn
     if (game.currentPlayer === 2) {
         // Force DOM repaint before AI starts thinking
-        await sleep(10);
+        const generation = uiGeneration;
         await runJudgeEval();
-        await triggerAiTurn();
+        if (generation === uiGeneration) await triggerAiTurn();
     }
 }
 
@@ -822,50 +678,21 @@ async function handleCellClick(row, col) {
  * Update turn indicator
  */
 function updateStatus() {
-    if (!turnIndicatorEl) return;
+    syncControls();
+    if (!game || !turnIndicatorEl) return;
+    const text = turnIndicatorEl.querySelector('.text');
+    const player = game.gameOver && game.winner ? game.winner : game.currentPlayer;
+    turnIndicatorEl.className = 'turn-indicator ' + (player === 1 ? 'player-turn' : 'ai-turn');
+    const color = game.currentPlayer === 1 ? 'Red' : 'Blue';
+    if (analysisMode) text.textContent = `Editing · ${color} to move`;
+    else if (game.gameOver) text.textContent = resultMessage();
+    else if (watchMode) text.textContent = isPaused ? `Paused · ${color} to move` : `${color} to move`;
+    else text.textContent = !aiPlayer ? (modelError ? 'AI unavailable' : 'Loading AI…') : game.currentPlayer === 1 ? 'Your turn' : 'AI turn';
+}
 
-    const textEl = turnIndicatorEl.querySelector('.text');
-    const dotEl = turnIndicatorEl.querySelector('.turn-dot');
-
-    // Default classes
-    turnIndicatorEl.className = 'turn-indicator';
-
-    if (game.gameOver) {
-        textEl.textContent = game.winner === 1 ? (watchMode ? 'AI 1 Wins!' : 'You Win!') : (watchMode ? 'AI 2 Wins!' : 'AI Wins!');
-        // Keep the winner's color
-        if (game.winner === 1) {
-            turnIndicatorEl.classList.add('player-turn');
-        } else {
-            turnIndicatorEl.classList.add('ai-turn');
-        }
-    } else {
-        const isP1 = game.currentPlayer === 1;
-
-        // Update Dot Color
-        // P1 = Red (Player/AI1), P2 = Blue (AI/AI2)
-        if (isP1) {
-            turnIndicatorEl.classList.add('player-turn');
-            turnIndicatorEl.classList.remove('ai-turn');
-        } else {
-            turnIndicatorEl.classList.add('ai-turn');
-            turnIndicatorEl.classList.remove('player-turn');
-        }
-
-        // Update Text
-        if (isThinking) {
-            if (watchMode) {
-                textEl.textContent = isP1 ? 'AI 1 Thinking...' : 'AI 2 Thinking...';
-            } else {
-                textEl.textContent = 'AI Thinking...';
-            }
-        } else {
-            if (watchMode) {
-                textEl.textContent = isP1 ? 'AI 1 Turn' : 'AI 2 Turn';
-            } else {
-                textEl.textContent = isP1 ? 'Your Turn' : 'AI Turn';
-            }
-        }
-    }
+function resultMessage() {
+    if (![1, 2].includes(game.winner)) return 'Draw';
+    return watchMode ? (game.winner === 1 ? 'Red wins' : 'Blue wins') : (game.winner === 1 ? 'You win' : 'AI wins');
 }
 
 /**
@@ -985,27 +812,17 @@ function renderTopMoves(policy) {
  * Show game over overlay
  */
 function showGameOver() {
-    if (gameOverOverlay) {
-        gameOverOverlay.classList.add('visible');
-
-        // Check winner correctly
-        let message = '';
-        if (watchMode) {
-            message = game.winner === 1 ? 'AI 1 Wins!' : 'AI 2 Wins!';
-        } else {
-            message = game.winner === 1 ? 'You win' : 'AI wins';
-        }
-
-        gameOverText.textContent = message;
-    }
-    // Ensure "New game" button is restored when game ends
-    updateResetButtonState(false);
+    gameOverText.textContent = resultMessage();
+    gameOverOverlay.classList.add('visible');
+    updateStatus();
+    focusDialog(gameOverOverlay);
 }
 
 
 function dismissGameOver() {
-    if (gameOverOverlay) {
+    if (gameOverOverlay?.classList.contains('visible')) {
         gameOverOverlay.classList.remove('visible');
+        restoreDialogFocus();
     }
 }
 
@@ -1013,41 +830,26 @@ function dismissGameOver() {
  * Get hint from AI
  */
 async function getHint() {
-    if (game.gameOver || game.currentPlayer !== 1) return;
-
-    const depthSlider = document.getElementById('depth');
-    if (aiPlayer && !(aiPlayer instanceof DirectPlayer)) aiPlayer.numSimulations = depthSlider ? parseInt(depthSlider.value) : 128;
-
-    if (aiProgressContainer) {
-        aiProgressContainer.classList.add('visible');
-        aiProgressText.textContent = 'Analyzing...';
-    }
-
+    if (!game || game.gameOver || game.currentPlayer !== 1 || watchMode || analysisMode || isThinking || !aiPlayer) return;
+    const {position, isCurrent} = capturePosition();
+    const generation = uiGeneration;
+    isThinking = true;
+    updateStatus();
     try {
-        const result = await chooseAiMove(game, (current, total) => {
-            const pct = Math.floor((current / total) * 100);
-            if (aiProgressBar) aiProgressBar.style.width = pct + '%';
-        });
-
-        if (aiProgressContainer) {
-            aiProgressContainer.classList.remove('visible');
-        }
-
+        const result = await chooseAiMove(position);
+        if (!isCurrent()) return;
+        if (!result.move) throw new Error('No legal move in this position. Edit the board or start a new game.');
         if (result.move) {
             selectedCard = result.move.card;
+            isThinking = false;
             renderP1Hand();
             renderBoard();
-
-            // Highlight the suggested cell
-            const cell = document.querySelector(`.cell[data-row="${result.move.row}"][data-col="${result.move.col}"]`);
-            if (cell) {
-                cell.classList.add('best-move');
-            }
+            document.querySelector(`.cell[data-row="${result.move.row}"][data-col="${result.move.col}"]`)?.classList.add('best-move');
         }
     } catch (error) {
-        showAiError(error);
+        if (isCurrent()) showAiError(error);
     } finally {
-        if (aiProgressContainer) aiProgressContainer.classList.remove('visible');
+        if (generation === uiGeneration) { isThinking = false; updateStatus(); }
     }
 }
 
@@ -1089,53 +891,20 @@ function updateHistory(move, player) {
  * Analysis Mode Functions
  */
 function toggleAnalysisMode() {
+    if (!game) return;
+    cancelPendingWork();
     analysisMode = !analysisMode;
-    const btn = document.getElementById('analysisBtn');
-    const controls = document.getElementById('analysisControls');
-
-    if (analysisMode) {
-        if (watchMode && !isPaused) {
-            pauseGame();
-        }
-
-        if (btn) {
-            btn.textContent = "Done editing";
-            btn.classList.add('primary');
-            btn.classList.remove('secondary');
-        }
-        if (controls) controls.style.display = 'block';
-
-        // Hide global Hint button in Analysis Mode
-        if (hintBtn) hintBtn.style.display = 'none';
-
-        document.body.classList.add('analysis-mode');
-
-        // Stop any AI thinking
-        cancelAiLoop = true;
-        isThinking = false;
-
-    } else {
-        if (btn) {
-            btn.textContent = "Edit board";
-            btn.classList.remove('primary');
-            btn.classList.add('secondary');
-        }
-        if (controls) controls.style.display = 'none';
-
-        // Restore global Hint button
-        if (hintBtn) hintBtn.style.display = 'block';
-
-        document.body.classList.remove('analysis-mode');
-    }
-
-    updateStatus();
-    renderBoard();
-    renderP1Hand();
-    renderP2Hand(); // Re-render to show/hide backs if needed (though P2 hand click needs handler)
+    if (watchMode) isPaused = true;
+    closeCardPicker();
+    dismissGameOver();
+    renderPosition();
+    void runJudgeEval();
+    if (!analysisMode && !watchMode && !game.gameOver && game.currentPlayer === 2) void triggerAiTurn();
 }
 
 function toggleTurn() {
-    if (!game) return;
+    if (!game || !analysisMode) return;
+    cancelPendingWork();
     game.publicHistoryComplete = false;
     game.currentPlayer = (game.currentPlayer === 1) ? 2 : 1;
     updateStatus();
@@ -1145,29 +914,22 @@ function toggleTurn() {
 }
 
 function handleAnalysisCellClick(row, col) {
+    if (!analysisMode || BOARD_LAYOUT[row][col] === 'FREE') return;
+    cancelPendingWork();
     game.publicHistoryComplete = false;
-    // Cycle: EMPTY -> P1 -> P2 -> FREE -> EMPTY
-    const current = game.board[row][col];
-    let nextState;
-
-    // ChipState: 0=EMPTY, 1=P1, 2=P2
-    if (current === 0) nextState = 1;
-    else if (current === 1) nextState = 2;
-    // else if (current === 2) nextState = -1; // Removed FREE per user request
-    else nextState = 0;
-
-
-    game.board[row][col] = nextState;
-
-    // Re-check sequences (expensive but necessary to be correct)
-    // Actually, we should probably allow manual sequence setting?
-    // For now, let's just update the board array. 
-    // The game engine 'completedSequences' might get out of sync.
-    // Ideally we should re-scan the board for sequences.
-
-    // A full re-scan is hard without a helper. 
-    // Let's at least update the visual.
-    renderBoard();
+    game.board[row][col] = (game.board[row][col] + 1) % 3;
+    // Keep valid existing sequences, then discover lines introduced by edits.
+    for (const player of [1, 2]) {
+        game.completedSequences[player] = game.completedSequences[player].filter(sequence =>
+            sequence.every(pos => { const [r, c] = pos.split(',').map(Number); return game.isPlayerChip(player, r, c); }));
+        for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) {
+            game.completedSequences[player].push(...game.findNewSequences(player, r, c));
+        }
+    }
+    const winners = [1, 2].filter(player => game.completedSequences[player].length >= 2);
+    game.gameOver = winners.length > 0;
+    game.winner = winners.length === 1 ? winners[0] : null;
+    renderPosition();
     void runJudgeEval();
 }
 
@@ -1175,6 +937,7 @@ function handleAnalysisCellClick(row, col) {
  * Card Picker
  */
 function openCardPicker(player, index) {
+    if (!analysisMode) return;
     cardPickerTarget = { player, index };
     const overlay = document.getElementById('cardPickerOverlay');
     const grid = document.getElementById('cardPickerGrid');
@@ -1190,7 +953,7 @@ function openCardPicker(player, index) {
     const addCard = (rank, suit) => {
         const cardStr = rank + suit;
         const el = createCardElement(cardStr);
-        el.addEventListener('click', () => selectCard(cardStr));
+        makeInteractive(el, cardStr, () => selectCard(cardStr));
         grid.appendChild(el);
     };
 
@@ -1201,16 +964,21 @@ function openCardPicker(player, index) {
     });
 
     overlay.classList.add('visible');
+    focusDialog(overlay);
 }
 
 function closeCardPicker() {
     const overlay = document.getElementById('cardPickerOverlay');
-    if (overlay) overlay.classList.remove('visible');
+    if (overlay?.classList.contains('visible')) {
+        overlay.classList.remove('visible');
+        restoreDialogFocus();
+    }
     cardPickerTarget = null;
 }
 
 function selectCard(cardStr) {
-    if (!cardPickerTarget || !game) return;
+    if (!cardPickerTarget || !game || !analysisMode) return;
+    cancelPendingWork();
     game.publicHistoryComplete = false;
 
     const { player, index } = cardPickerTarget;
@@ -1222,199 +990,77 @@ function selectCard(cardStr) {
     renderP1Hand();
     renderP2Hand();
     renderBoard(); // Valid moves updates
+    updateStatus();
+    document.querySelector(`#handP${player} .card[data-card="${cardStr}"]`)?.focus();
     void runJudgeEval();
 }
 
-// Global scope for HTML onclick
-window.closeCardPicker = closeCardPicker;
-window.toggleAnalysisMode = toggleAnalysisMode; // expose if needed
-window.newGame = newGame; // was likely already exposed
-window.dismissGameOver = () => {
-    if (gameOverOverlay) gameOverOverlay.classList.remove('visible');
-};
-
-// Pause Menu Functions
-// Pause Menu Functions
-window.pauseGame = () => {
-    if (!watchMode) return;
-
+function pauseGame() {
+    if (!watchMode || game.gameOver) return;
+    cancelPendingWork();
     isPaused = true;
-    cancelAiLoop = true; // Stop the loop
-
-    // Show inline controls
-    const newGameBtn = document.getElementById('newGameBtn');
-    const pauseControls = document.getElementById('pauseControls');
-
-    if (newGameBtn) newGameBtn.style.display = 'none';
-    if (pauseControls) pauseControls.hidden = false;
-};
-
-window.resumeGame = () => {
-    const newGameBtn = document.getElementById('newGameBtn');
-    const pauseControls = document.getElementById('pauseControls');
-
-    if (newGameBtn) newGameBtn.style.display = 'block';
-    if (pauseControls) pauseControls.hidden = true;
-
-    isPaused = false;
-    // Resume AI loop
-    watchAiVsAi();
-};
-
-window.resetFromPause = () => {
-    const newGameBtn = document.getElementById('newGameBtn');
-    const pauseControls = document.getElementById('pauseControls');
-
-    if (newGameBtn) newGameBtn.style.display = 'block';
-    if (pauseControls) pauseControls.hidden = true;
-
-    isPaused = false;
-    newGame();
-};
-
-function updateResetButtonState(isWatchMode) {
-    const btn = document.getElementById('newGameBtn');
-    if (!btn) return;
-
-    // Ensure button is visible when state changes
-    btn.style.display = 'block';
-    const pauseControls = document.getElementById('pauseControls');
-    if (pauseControls) pauseControls.hidden = true;
-
-    if (isWatchMode && !game.gameOver) {
-        btn.textContent = "Pause";
-        btn.classList.add('secondary');
-        btn.classList.remove('primary');
-        btn.style.background = '';
-    } else {
-        btn.textContent = "New game";
-        btn.classList.add('primary');
-        btn.classList.remove('secondary');
-        btn.style.background = ''; // Default
-    }
+    renderPosition();
 }
-
-// Update the main NewGame listener to handle Pause
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('newGameBtn');
-    if (btn) {
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-
-        newBtn.addEventListener('click', () => {
-            if (watchMode && !game.gameOver) {
-                // Pause action
-                window.pauseGame();
-            } else {
-                // Reset action
-                watchMode = false;
-                newGame();
-            }
-        });
-    }
-});
+function resumeGame() {
+    if (watchMode && isPaused && !analysisMode) void watchAiVsAi();
+}
+function resetFromPause() { newGame(); }
 
 /**
  * Show Best Move (Analysis Mode)
  */
 async function showBestMove() {
-    if (game.gameOver || isThinking) return;
+    if (!analysisMode || !game || game.gameOver || isThinking || !aiPlayer) return;
     const {position, isCurrent} = capturePosition();
-
-    // Use current settings
-    const depthSlider = document.getElementById('depth');
-    if (aiPlayer && !(aiPlayer instanceof DirectPlayer)) aiPlayer.numSimulations = depthSlider ? parseInt(depthSlider.value) : 128;
-
+    const generation = uiGeneration;
     isThinking = true;
-    updateStatus(); // Update UI to show "Thinking..."
-
-    if (aiProgressContainer) {
-        aiProgressContainer.classList.add('visible');
-        aiProgressText.textContent = 'Analyzing Best Move...';
-    }
-
-    try {
-        const result = await chooseAiMove(position, (current, total, policy, value) => {
-            if (!isCurrent()) return;
-            const pct = Math.floor((current / total) * 100);
-            if (aiProgressBar) aiProgressBar.style.width = pct + '%';
-
-            // Show Live Highlights
-            if (policy) renderTopMoves(policy);
-
-            // Show Win Prob if enabled
-            if (value !== undefined) updateEvalBar(value, position.currentPlayer);
-        });
-
-        if (isCurrent() && result.move && result.policy) {
-            renderTopMoves(result.policy);
-        }
-    } catch (e) {
-        showAiError(e);
-    }
-
-    isThinking = false;
     updateStatus();
-
-    if (aiProgressContainer) {
-        aiProgressContainer.classList.remove('visible');
+    try {
+        const result = await chooseAiMove(position);
+        if (isCurrent()) {
+            if (!result.move) throw new Error('No legal move in this position. Edit the board or start a new game.');
+            if (result.policy) renderTopMoves(result.policy);
+            updateEvalBar(result.value, position.currentPlayer);
+        }
+    } catch (error) {
+        if (isCurrent()) showAiError(error);
+    } finally {
+        if (generation === uiGeneration) { isThinking = false; updateStatus(); }
     }
 }
 
-/**
- * Mobile Drawer Toggle
- * Controls the visibility of the side panel on mobile devices
- */
-function toggleMobileDrawer() {
-    const sidePanel = document.querySelector('.side-panel');
-    const toggleBtn = document.getElementById('mobileDrawerToggle');
-
-    if (!sidePanel) return;
-
-    const isOpen = sidePanel.classList.toggle('drawer-open');
-
-    if (toggleBtn) {
-        toggleBtn.classList.toggle('open', isOpen);
-        toggleBtn.textContent = isOpen ? '✕' : '⚙️';
-    }
+// Keyboard activation mirrors the same guarded mouse handlers.
+function makeInteractive(element, label, action) {
+    element.setAttribute('role', 'button');
+    element.setAttribute('tabindex', '0');
+    element.setAttribute('aria-label', label);
+    element.addEventListener('click', action);
+    element.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); action(); }
+    });
 }
 
-/**
- * Close the mobile drawer
- */
-function closeMobileDrawer() {
-    const sidePanel = document.querySelector('.side-panel');
-    const toggleBtn = document.getElementById('mobileDrawerToggle');
-
-    if (sidePanel) {
-        sidePanel.classList.remove('drawer-open');
-    }
-    if (toggleBtn) {
-        toggleBtn.classList.remove('open');
-        toggleBtn.textContent = '⚙️';
-    }
+function focusDialog(overlay) {
+    dialogReturnFocus = document.activeElement;
+    overlay.querySelector('button, [tabindex="0"]')?.focus();
 }
-
-// Close drawer when clicking outside on mobile
-document.addEventListener('click', (e) => {
-    const sidePanel = document.querySelector('.side-panel');
-    const toggleBtn = document.getElementById('mobileDrawerToggle');
-
-    if (!sidePanel || !toggleBtn) return;
-
-    // Only on mobile when drawer is open
-    if (window.innerWidth > 767) return;
-    if (!sidePanel.classList.contains('drawer-open')) return;
-
-    // Check if click was outside panel and toggle button
-    if (!sidePanel.contains(e.target) && !toggleBtn.contains(e.target)) {
-        closeMobileDrawer();
+document.addEventListener('keydown', event => {
+    const overlay = document.querySelector('.overlay.visible');
+    if (!overlay) return;
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        if (overlay.id === 'cardPickerOverlay') closeCardPicker();
+        else dismissGameOver();
+    } else if (event.key === 'Tab') {
+        const items = Array.from(overlay.querySelectorAll('button, [tabindex="0"]'));
+        const first = items[0], last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }
 });
 
-// Close drawer after making a game action (like Reset Board)
-const originalNewGame = newGame;
-newGame = function () {
-    closeMobileDrawer();
-    originalNewGame();
-};
+function restoreDialogFocus() {
+    const target = dialogReturnFocus?.isConnected ? dialogReturnFocus : document.getElementById('analysisBtn');
+    target?.focus();
+    dialogReturnFocus = null;
+}
