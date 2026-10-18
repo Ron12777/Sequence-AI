@@ -23,8 +23,6 @@ The AI is a CNN trained with PPO through self-play. Three residual blocks with 6
 
 Training uses PyTorch and a Rust game engine exposed to Python through PyO3. The browser uses a JavaScript game engine and runs the exported network with ONNX Runtime Web. The AI sees the board and its own hand; your cards and the draw pile stay hidden.
 
-The current model was trained on an RTX 5090 and scored **54.31% against the previous CNN across 8,192 games**. The [model manifest](web/static/model.json) identifies the deployed weights. Checkpoints, training details, and evaluation results are saved under [artifacts](artifacts/) and [experiments](experiments/).
-
 ## Development
 
 Requires Python 3.10+, Rust 1.88+, and Node.js 22+. Install PyTorch for your CPU or CUDA setup, then:
