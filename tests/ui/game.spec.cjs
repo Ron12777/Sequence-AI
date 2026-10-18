@@ -104,7 +104,7 @@ test('evaluation before any move, Hint, human move and real AI reply', async ({p
 
 test('Watch button starts play, pause freezes it, resume and editing preserve modes', async ({page}) => {
   await openGame(page);
-  await expect(page.getByLabel('Watch speed')).toBeHidden();
+  await expect(page.getByLabel('Watch speed')).toBeVisible();
   await page.getByRole('button', {name: 'Watch AI', exact: true}).click();
   await expect.poll(() => page.locator('.history-item').count()).toBeGreaterThan(0);
   await expect(page.locator('#hintBtn')).toBeHidden();
@@ -130,6 +130,28 @@ test('Watch button starts play, pause freezes it, resume and editing preserve mo
   await expect(page.locator('.history-item')).toHaveCount(0);
   await expect(page.locator('#hintBtn')).toBeVisible();
   await expect(page.locator('#watchAiBtn')).toBeVisible();
+});
+
+test('a Max-speed game can finish, slow down, and restart', async ({page}) => {
+  test.setTimeout(120000);
+  await openGame(page);
+  await page.getByLabel('Watch speed').selectOption('0');
+  await page.getByRole('button', {name: 'Watch AI', exact: true}).click();
+  const result = page.locator('#gameOverOverlay');
+  await expect(result).toBeVisible({timeout: 90000});
+  await result.getByRole('button', {name: 'Close', exact: true}).click();
+  await expect(page.getByLabel('Watch speed')).toBeVisible();
+  await page.getByLabel('Watch speed').selectOption('1000');
+  await page.getByRole('button', {name: 'Watch AI again', exact: true}).click();
+  await expect(result).not.toBeVisible();
+  await expect.poll(() => page.locator('.history-item').count()).toBeGreaterThan(0);
+  await page.getByRole('button', {name: 'Pause', exact: true}).click();
+  await expect(page.getByLabel('Watch speed')).toHaveValue('1000');
+  await page.getByRole('button', {name: 'New game', exact: true}).click();
+  await page.getByLabel('Watch speed').selectOption('500');
+  await expect(page.getByRole('button', {name: 'Watch AI', exact: true})).toBeVisible();
+  await expect(page.locator('.history-item')).toHaveCount(0);
+  await noHorizontalOverflow(page);
 });
 
 test('four unlabelled rows show all 52 cards, selection and keyboard focus work', async ({page}, testInfo) => {

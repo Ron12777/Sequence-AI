@@ -456,6 +456,24 @@ test('controls match play, Watch, paused Watch, editing, and game over', () => {
   ui.newGame();assert.equal(ui.hintBtn.hidden,false);assert.equal(ui.watchMode,false);assert.equal(ui.analysisMode,false);
 });
 
+test('Watch speed remains editable after a finished game and before restarting', async () => {
+  const {ui,get}=modeHarness();
+  get('watchSpeed').value='0';
+  ui.watchMode=true;ui.game.gameOver=true;ui.syncControls();
+  assert.equal(get('watchSpeedControl').hidden,false);
+  assert.equal(ui.watchAiBtn.hidden,false);
+  assert.equal(ui.watchAiBtn.textContent,'Watch AI again');
+  ui.newGame();
+  assert.equal(get('watchSpeedControl').hidden,false);
+  get('watchSpeed').value='500';
+  const sleeps=[];
+  ui.sleep=ms=>new Promise(resolve=>sleeps.push({ms,resolve}));
+  ui.chooseAiMove=async position=>({move:position.getLegalMoves()[0]});
+  const running=ui.watchAiVsAi();await new Promise(setImmediate);
+  assert.equal(sleeps[0].ms,500);
+  ui.pauseGame();sleeps[0].resolve();await running;
+});
+
 test('pause discards pending AI moves and duplicate Watch starts are ignored', async () => {
   const {ui}=modeHarness(),pending=[];
   ui.chooseAiMove=position=>new Promise(resolve=>pending.push(()=>resolve({move:position.getLegalMoves()[0]})));

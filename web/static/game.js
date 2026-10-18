@@ -207,9 +207,9 @@ function syncControls() {
     const ended = !game || game.gameOver;
     hintBtn.hidden = watchMode || analysisMode || ended;
     hintBtn.disabled = !aiPlayer || isThinking || game?.currentPlayer !== 1;
-    watchAiBtn.hidden = watchMode || analysisMode;
+    watchAiBtn.hidden = (watchMode && !ended) || analysisMode;
     watchAiBtn.disabled = !aiPlayer || isThinking;
-    document.getElementById('watchSpeedControl').hidden = !watchMode || analysisMode || ended;
+    document.getElementById('watchSpeedControl').hidden = analysisMode;
     watchAiBtn.textContent = ended ? 'Watch AI again' : 'Watch AI';
     newGameBtn.hidden = watchMode && isPaused && !analysisMode && !ended;
     newGameBtn.textContent = watchMode && !isPaused && !analysisMode && !ended ? 'Pause' : 'New game';
