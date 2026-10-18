@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
 const vm = require('node:vm');
+const {HandLayout} = require('../web/static/hand_layout.js');
 const context = vm.createContext({console, setTimeout});
 vm.runInContext(fs.readFileSync('web/static/game_engine.js', 'utf8') + '\n' +
                 fs.readFileSync('web/static/mcts.js', 'utf8') + '\n' +
@@ -22,6 +23,34 @@ test('illegal browser moves cannot mutate hand or board', () => {
   assert.equal(game.makeMove({card:'AC',row:4,col:4,is_removal:false}), false);
   assert.equal(JSON.stringify(game),before);
   assert.equal(game.makeMove({card:'AC',row:-1,col:0,is_removal:false}), false);
+});
+
+for (const player of [1, 2]) {
+  test(`player ${player} replaces the chosen duplicate slot without reordering the engine hand`, () => {
+    const game=new SequenceGame(), layout=new HandLayout();
+    game.currentPlayer=player;game.hands[player]=['AC','KC','QC','AC'];game.deck=['AD'];
+    const reference=cloneGame(game),move={card:'AC',row:0,col:1,is_removal:false};
+    assert.equal(reference.makeMove(move),true);
+    assert.equal(layout.makeMove(game,move,3),true);
+    assert.deepEqual(Array.from(game.hands[player]),Array.from(reference.hands[player]));
+    assert.deepEqual(layout.cards(game,player).map(({card,slot})=>[card,slot]),
+      [['AC',0],['KC',1],['QC',2],['AD',3]]);
+    // Editing addresses the engine index associated with the visible slot.
+    const edited=layout.cards(game,player).find(c=>c.slot===1);
+    game.hands[player][edited.index]='JD';
+    assert.equal(layout.cards(game,player)[1].card,'JD');
+  });
+}
+
+test('empty deck leaves a gap, illegal moves preserve slots, and new game resets them', () => {
+  const game=new SequenceGame(),layout=new HandLayout();
+  game.hands[1]=['AC','KC','QC'];game.deck=[];
+  const before=layout.cards(game,1);
+  assert.equal(layout.makeMove(game,{card:'AC',row:4,col:4,is_removal:false}),false);
+  assert.deepEqual(layout.cards(game,1),before);
+  assert.equal(layout.makeMove(game,{card:'KC',row:0,col:2,is_removal:false}),true);
+  assert.deepEqual(layout.cards(game,1).map(({card,slot})=>[card,slot]),[['AC',0],['QC',2]]);
+  assert.deepEqual(Array.from(layout.cards(new SequenceGame(),1),c=>c.slot),[0,1,2,3,4,5,6]);
 });
 
 test('nine-chip line can count as two sequences sharing one chip', () => {
@@ -262,6 +291,7 @@ test('edited positions fail closed without explicit board-only export capability
 function evaluationHarness() {
   const el = () => ({style:{},textContent:'',classList:{toggle(){},add(){},remove(){}}});
   const ui=vm.createContext({console,setTimeout,SequenceGame,DirectPlayer,cloneGame,
+    handLayout:new HandLayout(),selectedCardIndex:null,
     game:new SequenceGame(),aiPlayer:new DirectPlayer({inputNames:['input']},runtime),
     uiGeneration:0,evaluationRequest:0,hasEvalValue:false,evalBarContainer:el(),evalBarFill:el(),evalText:el(),
     showEvalBar:{checked:true},document:{getElementById:()=>null},

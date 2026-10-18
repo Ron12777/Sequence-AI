@@ -51,8 +51,13 @@ test('evaluation before any move, Hint, human move and real AI reply', async ({p
   await page.getByRole('button', {name: 'Hint', exact: true}).click();
   const suggested = page.locator('.cell.best-move');
   await expect(suggested).toHaveCount(1);
+  const beforeHand = await page.locator('#handP1 .card').evaluateAll(cards => cards.map(c => c.dataset.card));
+  const playedSlot = Number(await page.locator('#handP1 .card.selected').getAttribute('data-slot'));
   await suggested.click();
   await expect(page.locator('.history-item')).toHaveCount(2);
+  const afterHand = await page.locator('#handP1 .card').evaluateAll(cards => cards.map(c => c.dataset.card));
+  expect(afterHand).toHaveLength(7);
+  for (let slot = 0; slot < 7; slot++) if (slot !== playedSlot) expect(afterHand[slot]).toBe(beforeHand[slot]);
   await expect(page.locator('#turnIndicator')).toContainText('Your turn');
   await expect(page.getByRole('button', {name: 'Hint', exact: true})).toBeEnabled();
   await expect(page.locator('#evalText')).toHaveText(/^(Red|Blue) \d+%$/);
@@ -148,4 +153,24 @@ test('failed model load is visible and disables AI controls', async ({page}) => 
   await expect(page.locator('#hintBtn')).toBeDisabled();
   await expect(page.locator('#watchAiBtn')).toBeDisabled();
   await expect(page.getByRole('button', {name: 'Edit board', exact: true})).toBeEnabled();
+});
+
+test('playing the second duplicate replaces only that chosen hand slot', async ({page}) => {
+  await openGame(page);
+  await page.getByRole('button', {name: 'Edit board', exact: true}).click();
+  for (const slot of [0, 6]) {
+    await page.locator(`#handP1 .card[data-slot="${slot}"]`).click();
+    await page.getByRole('dialog', {name: 'Choose card'}).getByRole('button', {name: /^J of clubs/}).click();
+  }
+  await page.getByRole('button', {name: 'Done editing', exact: true}).click();
+  const before = await page.locator('#handP1 .card').evaluateAll(cards => cards.map(c => c.dataset.card));
+  await page.locator('#handP1 .card[data-slot="6"]').click();
+  await expect(page.locator('#handP1 .card.selected')).toHaveCount(1);
+  await expect(page.locator('#handP1 .card.selected')).toHaveAttribute('data-slot', '6');
+  await page.locator('.cell.valid-move').first().click();
+  await expect(page.locator('.history-item')).toHaveCount(2);
+  const after = await page.locator('#handP1 .card').evaluateAll(cards => cards.map(c => c.dataset.card));
+  expect(after).toHaveLength(7);
+  expect(after.slice(0, 6)).toEqual(before.slice(0, 6));
+  await expect(page.locator('#hintBtn')).toBeEnabled();
 });

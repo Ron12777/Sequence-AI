@@ -9,6 +9,8 @@ let aiPlayer = null;
 let modelError = null;
 let onnxSession = null;
 let selectedCard = null;
+let selectedCardIndex = null;
+const handLayout = new HandLayout();
 let hoveredCard = null;
 let watchMode = false;
 let isThinking = false;
@@ -195,6 +197,7 @@ function cancelPendingWork() {
     evaluationRequest++;
     isThinking = false;
     selectedCard = null;
+    selectedCardIndex = null;
     hoveredCard = null;
 }
 
@@ -392,7 +395,7 @@ async function triggerAiTurn() {
         if (!isCurrent()) return false;
         if (!result.move) throw new Error('No legal move in this position. Edit the board or start a new game.');
         const player = game.currentPlayer;
-        if (!game.makeMove(result.move)) throw new Error('The AI returned an invalid move.');
+        if (!handLayout.makeMove(game, result.move)) throw new Error('The AI returned an invalid move.');
         updateHistory(result.move, player);
     } catch (error) {
         if (generation === uiGeneration) {
@@ -503,12 +506,14 @@ function renderP1Hand() {
     if (!handP1El) return;
     handP1El.innerHTML = '';
 
-    const hand = game.hands[1] || [];
+    const hand = handLayout.cards(game, 1);
 
-    hand.forEach((cardStr, index) => {
+    hand.forEach(({card: cardStr, index, slot}) => {
         const card = createCardElement(cardStr);
+        card.style.gridColumn = String(slot + 1);
+        card.dataset.slot = String(slot);
 
-        if (cardStr === selectedCard) {
+        if (cardStr === selectedCard && index === selectedCardIndex) {
             card.classList.add('selected');
         }
 
@@ -542,7 +547,7 @@ function renderP2Hand() {
     if (!handP2El) return;
     handP2El.innerHTML = '';
 
-    const hand = game.hands[2] || [];
+    const hand = handLayout.cards(game, 2);
 
     // Show backs only if NOT watch mode AND NOT analysis mode AND NOT game over
     const showBacks = (!watchMode && !analysisMode && !game.gameOver);
@@ -552,6 +557,8 @@ function renderP2Hand() {
         for (let i = 0; i < hand.length; i++) {
             const card = document.createElement('div');
             card.className = 'card back';
+            card.style.gridColumn = String(hand[i].slot + 1);
+            card.dataset.slot = String(hand[i].slot);
             card.style.background = '#4a0e0e';
             card.innerHTML = '<div style="color:rgba(255,255,255,0.1); font-size:3rem; display:flex; justify-content:center; align-items:center; height:100%">S</div>';
 
@@ -561,8 +568,10 @@ function renderP2Hand() {
             handP2El.appendChild(card);
         }
     } else {
-        hand.forEach((cardStr, index) => {
+        hand.forEach(({card: cardStr, index, slot}) => {
             const card = createCardElement(cardStr);
+            card.style.gridColumn = String(slot + 1);
+            card.dataset.slot = String(slot);
 
             // Allow editing in Analysis Mode
             if (analysisMode) {
@@ -617,7 +626,9 @@ function handleCardClick(cardStr, index = -1) {
 
 
 
-    selectedCard = (selectedCard === cardStr) ? null : cardStr;
+    const deselect = selectedCard === cardStr && selectedCardIndex === index;
+    selectedCard = deselect ? null : cardStr;
+    selectedCardIndex = deselect ? null : index;
 
     renderP1Hand();
     renderBoard();
@@ -644,10 +655,11 @@ async function handleCellClick(row, col) {
 
     if (!validMove) return;
 
-    game.makeMove(validMove);
+    if (!handLayout.makeMove(game, validMove, selectedCardIndex)) return;
     updateHistory(validMove, 1);
 
     selectedCard = null;
+    selectedCardIndex = null;
     hoveredCard = null;
 
     renderBoard();
@@ -841,6 +853,7 @@ async function getHint() {
         if (!result.move) throw new Error('No legal move in this position. Edit the board or start a new game.');
         if (result.move) {
             selectedCard = result.move.card;
+            selectedCardIndex = game.hands[1].indexOf(selectedCard);
             isThinking = false;
             renderP1Hand();
             renderBoard();
