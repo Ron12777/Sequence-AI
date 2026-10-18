@@ -1,0 +1,995 @@
+{
+  "architecture": "gru",
+  "seed": 1200000001,
+  "config": {
+    "games": 512,
+    "batch_size": 1024,
+    "seconds": 6.053342867875472,
+    "positions_per_second": 5632.094653175584,
+    "updates": 68
+  },
+  "allocated_gpu_hours": 0.05,
+  "actual_gpu_hours": 0.05026114163810336,
+  "actual_seconds": 180.94010989717208,
+  "budget_seconds": 180.0,
+  "accepted_iterations": 31,
+  "training_games": 15872,
+  "training_positions": 979198,
+  "optimizer_updates": 1950,
+  "gpu_util_mean": 15.567901234567902,
+  "telemetry": [
+    {
+      "unix": 1792189761.7016149,
+      "utilization": 0.0,
+      "memory_mib": 3363.0,
+      "watts": 82.96
+    },
+    {
+      "unix": 1792189762.7482595,
+      "utilization": 0.0,
+      "memory_mib": 3709.0,
+      "watts": 83.94
+    },
+    {
+      "unix": 1792189763.8221276,
+      "utilization": 2.0,
+      "memory_mib": 3709.0,
+      "watts": 88.34
+    },
+    {
+      "unix": 1792189764.9521835,
+      "utilization": 1.0,
+      "memory_mib": 3709.0,
+      "watts": 88.21
+    },
+    {
+      "unix": 1792189766.0186982,
+      "utilization": 3.0,
+      "memory_mib": 3711.0,
+      "watts": 88.21
+    },
+    {
+      "unix": 1792189767.1009762,
+      "utilization": 76.0,
+      "memory_mib": 5419.0,
+      "watts": 125.97
+    },
+    {
+      "unix": 1792189768.1304648,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 207.15
+    },
+    {
+      "unix": 1792189769.2238407,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 98.3
+    },
+    {
+      "unix": 1792189770.3001184,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 90.85
+    },
+    {
+      "unix": 1792189771.4303787,
+      "utilization": 1.0,
+      "memory_mib": 5419.0,
+      "watts": 88.91
+    },
+    {
+      "unix": 1792189772.4753413,
+      "utilization": 4.0,
+      "memory_mib": 5419.0,
+      "watts": 88.13
+    },
+    {
+      "unix": 1792189773.503653,
+      "utilization": 71.0,
+      "memory_mib": 5419.0,
+      "watts": 199.55
+    },
+    {
+      "unix": 1792189774.5936692,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 136.44
+    },
+    {
+      "unix": 1792189775.695659,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 97.58
+    },
+    {
+      "unix": 1792189776.9562027,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 89.49
+    },
+    {
+      "unix": 1792189778.07033,
+      "utilization": 6.0,
+      "memory_mib": 5419.0,
+      "watts": 89.46
+    },
+    {
+      "unix": 1792189779.187372,
+      "utilization": 72.0,
+      "memory_mib": 5419.0,
+      "watts": 163.45
+    },
+    {
+      "unix": 1792189780.2462423,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 165.62
+    },
+    {
+      "unix": 1792189781.4956675,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 100.49
+    },
+    {
+      "unix": 1792189782.605143,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.36
+    },
+    {
+      "unix": 1792189783.7223504,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 87.88
+    },
+    {
+      "unix": 1792189784.8006694,
+      "utilization": 66.0,
+      "memory_mib": 5419.0,
+      "watts": 124.11
+    },
+    {
+      "unix": 1792189785.8655908,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 207.27
+    },
+    {
+      "unix": 1792189786.9838903,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 98.99
+    },
+    {
+      "unix": 1792189788.100478,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 90.59
+    },
+    {
+      "unix": 1792189789.265981,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 86.87
+    },
+    {
+      "unix": 1792189790.4061172,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 89.02
+    },
+    {
+      "unix": 1792189791.491646,
+      "utilization": 67.0,
+      "memory_mib": 5419.0,
+      "watts": 174.07
+    },
+    {
+      "unix": 1792189792.5998185,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 106.08
+    },
+    {
+      "unix": 1792189793.7096794,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 99.21
+    },
+    {
+      "unix": 1792189794.857135,
+      "utilization": 1.0,
+      "memory_mib": 5419.0,
+      "watts": 89.12
+    },
+    {
+      "unix": 1792189795.9813435,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 87.09
+    },
+    {
+      "unix": 1792189797.0658097,
+      "utilization": 69.0,
+      "memory_mib": 5419.0,
+      "watts": 113.79
+    },
+    {
+      "unix": 1792189798.140287,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 154.22
+    },
+    {
+      "unix": 1792189799.2270403,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 100.55
+    },
+    {
+      "unix": 1792189800.3085632,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 91.11
+    },
+    {
+      "unix": 1792189801.4713233,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.4
+    },
+    {
+      "unix": 1792189802.5823038,
+      "utilization": 5.0,
+      "memory_mib": 5419.0,
+      "watts": 154.96
+    },
+    {
+      "unix": 1792189803.6726062,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 175.11
+    },
+    {
+      "unix": 1792189804.7654223,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 99.54
+    },
+    {
+      "unix": 1792189805.9216063,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 94.25
+    },
+    {
+      "unix": 1792189807.2009943,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 87.86
+    },
+    {
+      "unix": 1792189808.362184,
+      "utilization": 5.0,
+      "memory_mib": 5419.0,
+      "watts": 91.49
+    },
+    {
+      "unix": 1792189809.460776,
+      "utilization": 69.0,
+      "memory_mib": 5419.0,
+      "watts": 219.37
+    },
+    {
+      "unix": 1792189810.5678315,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 119.02
+    },
+    {
+      "unix": 1792189811.7009892,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 94.37
+    },
+    {
+      "unix": 1792189812.7677784,
+      "utilization": 4.0,
+      "memory_mib": 5419.0,
+      "watts": 88.21
+    },
+    {
+      "unix": 1792189813.9045653,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 87.4
+    },
+    {
+      "unix": 1792189814.969044,
+      "utilization": 67.0,
+      "memory_mib": 5419.0,
+      "watts": 179.34
+    },
+    {
+      "unix": 1792189816.086575,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 151.56
+    },
+    {
+      "unix": 1792189817.1840525,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 98.43
+    },
+    {
+      "unix": 1792189818.2736952,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.88
+    },
+    {
+      "unix": 1792189819.4159625,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 89.37
+    },
+    {
+      "unix": 1792189820.4783506,
+      "utilization": 72.0,
+      "memory_mib": 5419.0,
+      "watts": 172.9
+    },
+    {
+      "unix": 1792189821.6685922,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 98.54
+    },
+    {
+      "unix": 1792189822.776368,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 97.38
+    },
+    {
+      "unix": 1792189823.9272048,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.4
+    },
+    {
+      "unix": 1792189825.0634184,
+      "utilization": 6.0,
+      "memory_mib": 5419.0,
+      "watts": 89.01
+    },
+    {
+      "unix": 1792189826.1149817,
+      "utilization": 76.0,
+      "memory_mib": 5419.0,
+      "watts": 161.55
+    },
+    {
+      "unix": 1792189827.2074535,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 107.43
+    },
+    {
+      "unix": 1792189828.35492,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 99.05
+    },
+    {
+      "unix": 1792189829.433232,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 90.04
+    },
+    {
+      "unix": 1792189830.5403972,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.75
+    },
+    {
+      "unix": 1792189831.6680186,
+      "utilization": 73.0,
+      "memory_mib": 5419.0,
+      "watts": 191.02
+    },
+    {
+      "unix": 1792189832.7162302,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 99.98
+    },
+    {
+      "unix": 1792189833.9655995,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 97.05
+    },
+    {
+      "unix": 1792189835.1383169,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.69
+    },
+    {
+      "unix": 1792189836.20594,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 114.0
+    },
+    {
+      "unix": 1792189837.3027601,
+      "utilization": 67.0,
+      "memory_mib": 5419.0,
+      "watts": 213.5
+    },
+    {
+      "unix": 1792189838.4026046,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 99.55
+    },
+    {
+      "unix": 1792189839.550283,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 98.29
+    },
+    {
+      "unix": 1792189840.6775372,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 88.79
+    },
+    {
+      "unix": 1792189841.7609947,
+      "utilization": 58.0,
+      "memory_mib": 5419.0,
+      "watts": 86.69
+    },
+    {
+      "unix": 1792189842.9588945,
+      "utilization": 48.0,
+      "memory_mib": 5419.0,
+      "watts": 212.29
+    },
+    {
+      "unix": 1792189844.0714486,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 119.17
+    },
+    {
+      "unix": 1792189845.1956365,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 93.73
+    },
+    {
+      "unix": 1792189846.3061202,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.57
+    },
+    {
+      "unix": 1792189847.4156423,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 131.24
+    },
+    {
+      "unix": 1792189848.5208676,
+      "utilization": 72.0,
+      "memory_mib": 5419.0,
+      "watts": 191.82
+    },
+    {
+      "unix": 1792189849.6382136,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 100.39
+    },
+    {
+      "unix": 1792189850.7897632,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 89.7
+    },
+    {
+      "unix": 1792189851.9636137,
+      "utilization": 4.0,
+      "memory_mib": 5419.0,
+      "watts": 89.02
+    },
+    {
+      "unix": 1792189853.066285,
+      "utilization": 68.0,
+      "memory_mib": 5419.0,
+      "watts": 123.84
+    },
+    {
+      "unix": 1792189854.1648085,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 140.7
+    },
+    {
+      "unix": 1792189855.3043056,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 101.85
+    },
+    {
+      "unix": 1792189856.4019094,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 90.37
+    },
+    {
+      "unix": 1792189857.4917078,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 89.07
+    },
+    {
+      "unix": 1792189858.6314616,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 119.85
+    },
+    {
+      "unix": 1792189859.7043893,
+      "utilization": 75.0,
+      "memory_mib": 5419.0,
+      "watts": 142.85
+    },
+    {
+      "unix": 1792189860.8414712,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 101.23
+    },
+    {
+      "unix": 1792189862.0095198,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 91.31
+    },
+    {
+      "unix": 1792189863.077971,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 87.94
+    },
+    {
+      "unix": 1792189864.1634443,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 128.48
+    },
+    {
+      "unix": 1792189865.3038235,
+      "utilization": 74.0,
+      "memory_mib": 5419.0,
+      "watts": 142.64
+    },
+    {
+      "unix": 1792189866.8575878,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 102.61
+    },
+    {
+      "unix": 1792189867.9173737,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 93.8
+    },
+    {
+      "unix": 1792189869.0916882,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.76
+    },
+    {
+      "unix": 1792189870.2102134,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 109.88
+    },
+    {
+      "unix": 1792189871.3090289,
+      "utilization": 70.0,
+      "memory_mib": 5419.0,
+      "watts": 210.54
+    },
+    {
+      "unix": 1792189872.3825042,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 100.06
+    },
+    {
+      "unix": 1792189873.4510045,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 98.19
+    },
+    {
+      "unix": 1792189874.5841985,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 89.7
+    },
+    {
+      "unix": 1792189875.6693544,
+      "utilization": 65.0,
+      "memory_mib": 5419.0,
+      "watts": 139.83
+    },
+    {
+      "unix": 1792189876.7573502,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 185.03
+    },
+    {
+      "unix": 1792189877.8540115,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 98.3
+    },
+    {
+      "unix": 1792189879.007439,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 91.01
+    },
+    {
+      "unix": 1792189880.1461453,
+      "utilization": 1.0,
+      "memory_mib": 5419.0,
+      "watts": 89.56
+    },
+    {
+      "unix": 1792189881.2289732,
+      "utilization": 4.0,
+      "memory_mib": 5419.0,
+      "watts": 88.11
+    },
+    {
+      "unix": 1792189882.287637,
+      "utilization": 75.0,
+      "memory_mib": 5419.0,
+      "watts": 204.83
+    },
+    {
+      "unix": 1792189883.4656837,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 125.54
+    },
+    {
+      "unix": 1792189884.5813172,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 95.34
+    },
+    {
+      "unix": 1792189885.6540394,
+      "utilization": 1.0,
+      "memory_mib": 5419.0,
+      "watts": 89.56
+    },
+    {
+      "unix": 1792189886.7473187,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 89.78
+    },
+    {
+      "unix": 1792189887.8024838,
+      "utilization": 75.0,
+      "memory_mib": 5419.0,
+      "watts": 193.39
+    },
+    {
+      "unix": 1792189889.0014386,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 136.44
+    },
+    {
+      "unix": 1792189890.046291,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 95.46
+    },
+    {
+      "unix": 1792189891.1813786,
+      "utilization": 1.0,
+      "memory_mib": 5419.0,
+      "watts": 88.42
+    },
+    {
+      "unix": 1792189892.3113797,
+      "utilization": 4.0,
+      "memory_mib": 5419.0,
+      "watts": 89.31
+    },
+    {
+      "unix": 1792189893.4696844,
+      "utilization": 74.0,
+      "memory_mib": 5419.0,
+      "watts": 192.5
+    },
+    {
+      "unix": 1792189894.5596328,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 100.61
+    },
+    {
+      "unix": 1792189895.7162905,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 96.52
+    },
+    {
+      "unix": 1792189897.0591385,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 89.1
+    },
+    {
+      "unix": 1792189898.1971586,
+      "utilization": 75.0,
+      "memory_mib": 5419.0,
+      "watts": 179.34
+    },
+    {
+      "unix": 1792189899.29975,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 146.35
+    },
+    {
+      "unix": 1792189900.4102192,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 102.09
+    },
+    {
+      "unix": 1792189901.5830698,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 87.02
+    },
+    {
+      "unix": 1792189902.7325916,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 88.61
+    },
+    {
+      "unix": 1792189903.8034465,
+      "utilization": 68.0,
+      "memory_mib": 5419.0,
+      "watts": 169.72
+    },
+    {
+      "unix": 1792189904.9021282,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 154.77
+    },
+    {
+      "unix": 1792189906.0142426,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 97.56
+    },
+    {
+      "unix": 1792189907.1133401,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.02
+    },
+    {
+      "unix": 1792189908.2447107,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 86.43
+    },
+    {
+      "unix": 1792189909.3516324,
+      "utilization": 56.0,
+      "memory_mib": 5419.0,
+      "watts": 141.86
+    },
+    {
+      "unix": 1792189910.447797,
+      "utilization": 68.0,
+      "memory_mib": 5419.0,
+      "watts": 178.68
+    },
+    {
+      "unix": 1792189911.5662386,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 99.67
+    },
+    {
+      "unix": 1792189912.7143161,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 86.76
+    },
+    {
+      "unix": 1792189913.8581514,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 87.58
+    },
+    {
+      "unix": 1792189914.9474123,
+      "utilization": 70.0,
+      "memory_mib": 5419.0,
+      "watts": 102.13
+    },
+    {
+      "unix": 1792189916.047908,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 162.28
+    },
+    {
+      "unix": 1792189917.1461678,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 101.28
+    },
+    {
+      "unix": 1792189918.239049,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 92.83
+    },
+    {
+      "unix": 1792189919.4096637,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 87.26
+    },
+    {
+      "unix": 1792189920.5081227,
+      "utilization": 8.0,
+      "memory_mib": 5419.0,
+      "watts": 156.63
+    },
+    {
+      "unix": 1792189921.6071851,
+      "utilization": 70.0,
+      "memory_mib": 5419.0,
+      "watts": 163.87
+    },
+    {
+      "unix": 1792189922.6678395,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 102.17
+    },
+    {
+      "unix": 1792189923.7825267,
+      "utilization": 1.0,
+      "memory_mib": 5419.0,
+      "watts": 93.26
+    },
+    {
+      "unix": 1792189924.9921563,
+      "utilization": 4.0,
+      "memory_mib": 5419.0,
+      "watts": 87.15
+    },
+    {
+      "unix": 1792189926.1383545,
+      "utilization": 76.0,
+      "memory_mib": 5419.0,
+      "watts": 214.73
+    },
+    {
+      "unix": 1792189927.701732,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 100.83
+    },
+    {
+      "unix": 1792189928.820851,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 97.87
+    },
+    {
+      "unix": 1792189929.8756707,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.62
+    },
+    {
+      "unix": 1792189930.9785607,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 87.6
+    },
+    {
+      "unix": 1792189932.0854666,
+      "utilization": 68.0,
+      "memory_mib": 5419.0,
+      "watts": 190.17
+    },
+    {
+      "unix": 1792189933.184375,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 99.08
+    },
+    {
+      "unix": 1792189934.3041005,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 94.11
+    },
+    {
+      "unix": 1792189935.3804083,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 87.79
+    },
+    {
+      "unix": 1792189936.5232966,
+      "utilization": 4.0,
+      "memory_mib": 5419.0,
+      "watts": 107.27
+    },
+    {
+      "unix": 1792189937.6104035,
+      "utilization": 74.0,
+      "memory_mib": 5419.0,
+      "watts": 206.57
+    },
+    {
+      "unix": 1792189938.6582844,
+      "utilization": 2.0,
+      "memory_mib": 5419.0,
+      "watts": 99.96
+    },
+    {
+      "unix": 1792189939.8177912,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 98.34
+    },
+    {
+      "unix": 1792189940.9597914,
+      "utilization": 3.0,
+      "memory_mib": 5419.0,
+      "watts": 88.14
+    },
+    {
+      "unix": 1792189942.0633807,
+      "utilization": 0.0,
+      "memory_mib": 5419.0,
+      "watts": 134.07
+    }
+  ],
+  "checkpoint_sha256": "b5af5e5e7c7fa492842aa64c913c02bbb92c24fee0ba1e7dfce8f409a78a3a8d"
+}

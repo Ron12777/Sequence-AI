@@ -1,0 +1,61 @@
+{
+  "algorithm": "R-NaD",
+  "paper": "https://arxiv.org/abs/2206.15378",
+  "upstream": "https://github.com/google-deepmind/open_spiel/blob/0af322f/open_spiel/python/algorithms/rnad/rnad.py",
+  "raw_source": "https://raw.githubusercontent.com/google-deepmind/open_spiel/0af322f/open_spiel/python/algorithms/rnad/rnad.py",
+  "source_sha256": "c22c161705a0c9edc7ead61c3942174ce9f9de390c595d4148afbd6749c0f16b",
+  "license": "Apache-2.0; upstream DeepMind copyright and license notice retained in src/rnad.py",
+  "upstream_fix": "PR #1157: center logits by mean of legal actions only",
+  "implementation": "src/rnad.py",
+  "adaptations": [
+    "PyTorch instead of JAX/Haiku",
+    "Single repeating reference interval instead of multi-stage schedule",
+    "No optional policy discretization/fine-tuning",
+    "Pretrained shared exact-action CNN with separate zero-initialized unbounded critic residual",
+    "Trainer uses complete-game minibatches; optimizer settings and actual reference interval recorded by trainer",
+    "Trainer uses global gradient-norm guard at10000 rather than upstream elementwise clipping of Adam updates at10000; Adam beta1=0,beta2=.999,epsilon=1e-7 match upstream",
+    "All new CNN/transformer residual readouts, including transformer card tokens, initialize at zero to preserve the already-distilled common warm start"
+  ],
+  "preserved": [
+    "Player-aware V-trace with intervening-opponent importance ratios",
+    "Zero-sum log-policy-ratio reward regularization",
+    "Thresholded NeuRD logit objective with legal-logit centering",
+    "EMA target and alternating latest/previous regularization references",
+    "Full continuation state including target/reference weights and learner step"
+  ],
+  "validation": {
+    "generator": "experiments/2026-10-17/rnad_reference_validation.py",
+    "method": "Executes SHA-pinned, unmodified official function AST in isolated JAX environment; only jnp.clip keyword spelling shim for JAX>=0.8",
+    "jax": "0.11.2",
+    "chex": "0.1.92",
+    "torch": "2.14.1+cpu",
+    "dtype": "float64",
+    "fixture": "tests/fixtures/rnad_open_spiel_0af322f.npz",
+    "fixture_sha256": "2fbd9206ad3e1e8943f78dcbcbc3056e05a1509c72ed949f5e345e6caffc3b72",
+    "shape": [
+      9,
+      4,
+      7
+    ],
+    "cases": [
+      "Random masked actions",
+      "Variable episode length and terminal padding",
+      "Nonalternating repeated player turns",
+      "Off-policy importance sampling with finite c/rho clipping",
+      "Both positive and negative NeuRD thresholds",
+      "Exact autodiff policy and critic gradient comparison"
+    ],
+    "max_abs_errors": {
+      "value_target_player_0": 1.1102230246251565e-16,
+      "q_target_player_0": 4.440892098500626e-16,
+      "value_target_player_1": 2.220446049250313e-16,
+      "q_target_player_1": 8.881784197001252e-16,
+      "nerd_loss": 0.0,
+      "critic_loss": 0.0,
+      "nerd_gradient": 2.7755575615628914e-17,
+      "critic_gradient": 2.7755575615628914e-17
+    },
+    "tolerance": 1e-10,
+    "passed": true
+  }
+}

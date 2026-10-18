@@ -1,0 +1,52 @@
+diff --git a/csrc/liars_dice/real_net.cc b/csrc/liars_dice/real_net.cc
+index 4355c2a..2e18597 100644
+--- a/csrc/liars_dice/real_net.cc
++++ b/csrc/liars_dice/real_net.cc
+@@ -60,11 +60,11 @@ class TorchScriptNet : public IValueNet {
+       : device_(device) {
+     try {
+       // Deserialize the ScriptModule from a file using torch::jit::load().
+-      module_ = torch::jit::load(path);
++      module_ = torch::jit::load(path, device_);
+     } catch (const c10::Error& e) {
+       std::cerr << "error loading the model: " << path << std::endl;
+       std::cerr << e.what();
+-      return;
++      throw;
+     }
+     std::cerr << "Loaded: " << path << std::endl;
+     module_.to(device_);
+diff --git a/csrc/liars_dice/recursive_eval.cc b/csrc/liars_dice/recursive_eval.cc
+index 1fb2e6a..5bbff4e 100644
+--- a/csrc/liars_dice/recursive_eval.cc
++++ b/csrc/liars_dice/recursive_eval.cc
+@@ -314,7 +314,7 @@ int main(int argc, char* argv[]) {
+     std::shared_ptr<IValueNet> net =
+         net_path == "zero"
+             ? liars_dice::create_zero_net(game.num_hands(), false)
+-            : liars_dice::create_torchscript_net(net_path);
++            : liars_dice::create_torchscript_net(net_path, "cpu");
+ 
+     std::cout << "##############################################\n";
+     std::cout << "##### Recursive solving                      #\n";
+@@ -332,6 +332,8 @@ int main(int argc, char* argv[]) {
+           }
+           return liars_dice::create_oracle_value_predictor(game,
+                                                            oracle_net_params);
++        } else if (net_path == "zero") {
++          return liars_dice::create_zero_net(game.num_hands(), false);
+         } else {
+           return liars_dice::create_torchscript_net(net_path, "cpu");
+         }
+diff --git a/csrc/liars_dice/subgame_solving.cc b/csrc/liars_dice/subgame_solving.cc
+index e34b512..82c34aa 100644
+--- a/csrc/liars_dice/subgame_solving.cc
++++ b/csrc/liars_dice/subgame_solving.cc
+@@ -15,6 +15,7 @@
+ #include "subgame_solving.h"
+ 
+ #include <algorithm>
++#include <fstream>
+ #include <memory>
+ #include <numeric>
+ #include <stdexcept>

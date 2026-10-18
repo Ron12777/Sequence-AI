@@ -1,0 +1,122 @@
+{
+  "utc_epoch": 1792273213.8397083,
+  "processes": [
+    {
+      "pid": 260891,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/campaign_watchdog.py",
+        "--instance",
+        "56415071",
+        "--stop-at",
+        "2026-10-17T22:55:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 261177,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/train_exact_multigpu.py",
+        "--output-dir",
+        "campaign/exact/sustained",
+        "--reference",
+        "artifacts/checkpoints/gru-four-hour.pt",
+        "--devices",
+        "0,1",
+        "--shared-update-devices",
+        "0,1",
+        "--block-seconds",
+        "600",
+        "--evaluation-games",
+        "256",
+        "--stop-at",
+        "2026-10-17T22:30:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 261178,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/tmp/run-final-development-suite.py",
+        "--root",
+        "/workspace/sequence",
+        "--cnn-only",
+        ""
+      ]
+    },
+    {
+      "pid": 261179,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/workspace/sequence/scripts/train_exact_multigpu.py",
+        "--worker",
+        "--output-dir",
+        "/workspace/sequence/campaign/exact/sustained",
+        "--reference",
+        "/workspace/sequence/artifacts/checkpoints/gru-four-hour.pt",
+        "--stop-at",
+        "2026-10-17T22:30:00Z",
+        "--block-seconds",
+        "600.0",
+        "--evaluation-games",
+        "256",
+        "--worker-slot",
+        "0",
+        "--worker-device",
+        "0,1",
+        "--contender",
+        "cnn_ppo",
+        "--parent-pid",
+        "261177",
+        "--shared-update-devices",
+        "0,1",
+        "--stop-file",
+        "/workspace/sequence/campaign/exact/sustained/worker_control/0-1792273124816232851.stop",
+        ""
+      ]
+    }
+  ],
+  "state": {
+    "status": "training",
+    "reason": null,
+    "failure": null,
+    "workers": {
+      "0": {
+        "contender": "cnn_ppo",
+        "device": "0,1",
+        "started_epoch": 1792273124.8161952,
+        "stop_sent": false,
+        "pid": 261179
+      }
+    },
+    "completed_blocks": 0,
+    "last_completed": [],
+    "paused_slots": [],
+    "controller": "multi_gpu",
+    "stop_at": "2026-10-17T22:30:00Z",
+    "updated_utc": "2026-10-17T21:38:44.816641+00:00"
+  },
+  "training_seconds": 16180.937718083209,
+  "games": 7311360,
+  "cuda_rng_count": 2,
+  "latest_metrics": {
+    "training_seconds": 16204.199865858187,
+    "games": 7323648,
+    "updates": 535712,
+    "loss": 0.4398919290875735,
+    "policy_entropy": 0.287817995842189,
+    "approximate_kl": 0.0005104091689819853,
+    "rollout_value_explained_variance": 0.11291617777316698,
+    "parallel_update_gpu_count": 2
+  },
+  "cycle_mean_last30": 3.926596271600768,
+  "paused_slots": [],
+  "final_suite_started": false,
+  "waiter_sha256": "97df0410bcd44e22596e631e9626ceaf0966a732975e041a492675d8e5096574"
+}

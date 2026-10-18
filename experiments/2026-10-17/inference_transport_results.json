@@ -1,0 +1,39 @@
+{
+  "hardware": "RTX 4090, 24 actors x 128 games, 64 total simulations across four deals, 64 filters/3 blocks",
+  "hourly_usd": 0.4681481481481482,
+  "microbenchmark_order": [
+    "queue",
+    "shared",
+    "shared",
+    "queue"
+  ],
+  "microbenchmark_seconds_per_run": 45,
+  "mean_leaf_evaluations_per_second": {
+    "queue": 93501.24161765966,
+    "shared": 188415.03461718326
+  },
+  "mean_gpu_utilization_percent": {
+    "queue": 9.876596980255517,
+    "shared": 22.902439024390244
+  },
+  "training_validation": {
+    "games_each": 3072,
+    "epochs_each": 3,
+    "train_steps_per_epoch": 8,
+    "queue_wall_seconds": 158.95956236007623,
+    "shared_wall_seconds": 81.7937466208823,
+    "speedup": 1.943419502432881,
+    "both_checkpoints_valid": true,
+    "both_checkpoints_epoch": 3,
+    "all_parameters_finite": true
+  },
+  "decision": "Shared inference is the training default for subsequent processes. Existing round 1 continues with its already-loaded queue transport; sole controller 1448 resumed.",
+  "limits": [
+    "Short benchmark and one complete-training comparison, not a strength test.",
+    "GPU utilization about 23% during shared inference; not fully saturated.",
+    "Controller and child were SIGSTOP-paused during comparisons; affected campaign epoch wall times include these pauses.",
+    "Existing training allocations remained on the GPU during comparisons, so GPU memory readings include the paused trainer.",
+    "Asynchronous batches/replay ordering can change trajectories; bitwise equivalence of training runs is not claimed."
+  ],
+  "validation": "66 local tests passed; 7 transport/training tests passed remotely; two 3-epoch CUDA training runs completed; checkpoints loaded with finite parameters."
+}

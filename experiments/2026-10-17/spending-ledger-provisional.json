@@ -1,0 +1,308 @@
+{
+  "status": "provisional_provider_charge_ledger",
+  "queried_utc": "2026-10-17T19:17:34.029258+00:00",
+  "requested_campaign_start_utc": "2026-10-16T20:37:00+00:00",
+  "campaign_deadline_utc": "2026-10-17T22:00:00Z",
+  "task_instances": [
+    56294531,
+    56404543,
+    56406932,
+    56415071
+  ],
+  "read_only": true,
+  "unrelated_records_retained": false,
+  "provider_reported_task_charges_usd": 13.659,
+  "per_instance_provider_charges_usd": {
+    "56294531": 8.286,
+    "56404543": 0.775,
+    "56406932": 1.044,
+    "56415071": 3.554
+  },
+  "provider_charge_categories_usd": {
+    "gpu": 13.295,
+    "disk": 0.357,
+    "bwd": 0.004,
+    "bwu": 0.003
+  },
+  "category_meaning": {
+    "gpu": "GPU/compute rental charge",
+    "disk": "storage rental charge",
+    "bwd": "download traffic charge",
+    "bwu": "upload traffic charge"
+  },
+  "credit_adjustments_usd": null,
+  "credit_adjustments_scope": "Charges-only endpoint. Purchases, credit balance, refunds, transfers, promotional credits, and taxes are not queried or netted. No net account cash-spend claim.",
+  "final_invoice": false,
+  "billing_limitations": [
+    "Provider raw rows report amounts rounded to three decimals; totals can change or lag until settlement.",
+    "The endpoint filters aggregated billing days. Query starts at October 16 00:00 UTC to include the campaign's partial first day, then retains only the four task rentals.",
+    "Charge start/end fields identify billing days, not exact rental creation/destruction. Precisely excluding any pre-20:37 activity on the first task rental is not possible from this response.",
+    "Provider-reported charges and timestamp-derived estimates differ; estimates do not replace the provider ledger or imply unreported fees are zero."
+  ],
+  "provider_query": {
+    "argv": [
+      "vastai",
+      "show",
+      "invoices-v1",
+      "--charges",
+      "--charge-type",
+      "instance",
+      "--start-date",
+      "1792108800",
+      "--end-date",
+      "1792264654",
+      "--limit",
+      "100",
+      "--format",
+      "tree",
+      "--raw"
+    ],
+    "pages": 1,
+    "pagination_complete": true,
+    "kept_instance_ids": [
+      56294531,
+      56404543,
+      56406932,
+      56415071
+    ]
+  },
+  "provider_source_rows": [
+    {
+      "instance_id": 56294531,
+      "type": "instance",
+      "source": "instance-56294531",
+      "amount": 8.286,
+      "start": 1792108800,
+      "end": 1792195200,
+      "items": [
+        {
+          "type": "gpu",
+          "source": null,
+          "amount": 8.022,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "disk",
+          "source": null,
+          "amount": 0.263,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwd",
+          "source": null,
+          "amount": 0.0,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwu",
+          "source": null,
+          "amount": 0.001,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        }
+      ]
+    },
+    {
+      "instance_id": 56404543,
+      "type": "instance",
+      "source": "instance-56404543",
+      "amount": 0.775,
+      "start": 1792195200,
+      "end": 1792195200,
+      "items": [
+        {
+          "type": "gpu",
+          "source": null,
+          "amount": 0.763,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "disk",
+          "source": null,
+          "amount": 0.008,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwd",
+          "source": null,
+          "amount": 0.004,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwu",
+          "source": null,
+          "amount": 0.0,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        }
+      ]
+    },
+    {
+      "instance_id": 56406932,
+      "type": "instance",
+      "source": "instance-56406932",
+      "amount": 1.044,
+      "start": 1792195200,
+      "end": 1792195200,
+      "items": [
+        {
+          "type": "gpu",
+          "source": null,
+          "amount": 1.019,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "disk",
+          "source": null,
+          "amount": 0.024,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwd",
+          "source": null,
+          "amount": 0.0,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwu",
+          "source": null,
+          "amount": 0.001,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        }
+      ]
+    },
+    {
+      "instance_id": 56415071,
+      "type": "instance",
+      "source": "instance-56415071",
+      "amount": 3.554,
+      "start": 1792195200,
+      "end": 1792195200,
+      "items": [
+        {
+          "type": "gpu",
+          "source": null,
+          "amount": 3.491,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "disk",
+          "source": null,
+          "amount": 0.062,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwd",
+          "source": null,
+          "amount": 0.0,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        },
+        {
+          "type": "bwu",
+          "source": null,
+          "amount": 0.001,
+          "start": 1792195200,
+          "end": 1792195200,
+          "items": []
+        }
+      ]
+    }
+  ],
+  "instance_start_and_rate_facts": {
+    "56294531": {
+      "historical_instance_details_unavailable": true
+    },
+    "56404543": {
+      "historical_instance_details_unavailable": true
+    },
+    "56406932": {
+      "historical_instance_details_unavailable": true
+    },
+    "56415071": {
+      "id": 56415071,
+      "start_date": 1792252512.4925594,
+      "actual_status": "running",
+      "dph_base": 1.04,
+      "dph_total": 1.0585185185185186,
+      "storage_cost": 0.2666666666666666,
+      "disk_space": 50.0,
+      "gpu_name": "RTX 4090",
+      "num_gpus": 2,
+      "read_utc": "2026-10-17T19:17:34.029258+00:00"
+    }
+  },
+  "timestamp_estimates": [
+    {
+      "instance_id": 56294531,
+      "start_utc": "2026-10-16T20:37:19Z",
+      "end_utc": "2026-10-17T14:11:00Z",
+      "hours": 17.56138888888889,
+      "gpu_plus_storage_hourly_usd": 0.4681481481481482,
+      "estimated_gpu_plus_storage_usd": 8.221331687242799,
+      "actual_spending": false,
+      "timing_limitation": "Campaign work start, not verified rental creation; destruction timestamp explicitly approximate."
+    },
+    {
+      "instance_id": 56404543,
+      "start_utc": "2026-10-17T14:12:12.869765+00:00",
+      "end_utc": "2026-10-17T14:33:11.249615+00:00",
+      "hours": 0.34954995833333335,
+      "gpu_plus_storage_hourly_usd": 1.8838518518518519,
+      "estimated_gpu_plus_storage_usd": 0.6585003363209877,
+      "actual_spending": false,
+      "timing_limitation": "Recorded creation; successor creation used as upper-bound end proxy, not verified destruction time."
+    },
+    {
+      "instance_id": 56406932,
+      "start_utc": "2026-10-17T14:33:11.249615+00:00",
+      "end_utc": "2026-10-17T15:55:12.492559+00:00",
+      "hours": 1.367011928888889,
+      "gpu_plus_storage_hourly_usd": 0.7366666666666668,
+      "estimated_gpu_plus_storage_usd": 1.0070321209481483,
+      "actual_spending": false,
+      "timing_limitation": "Recorded creation; successor provider start used as upper-bound end proxy, not verified destruction time."
+    },
+    {
+      "instance_id": 56415071,
+      "start_utc": "2026-10-17T15:55:12.492559+00:00",
+      "end_utc": "2026-10-17T19:17:34.029258+00:00",
+      "hours": 3.3726490830555558,
+      "gpu_plus_storage_hourly_usd": 1.0585185185185186,
+      "estimated_gpu_plus_storage_usd": 3.5700115108788073,
+      "actual_spending": false,
+      "timing_limitation": "Provider start timestamp when available; quoted full GPU plus storage hourly rate; excludes transfers/adjustments."
+    }
+  ],
+  "estimated_gpu_plus_storage_total_usd": 13.456875655390743,
+  "estimate_source_campaign_sha256": "8a8850496b88270e329c1c89b70d9c5e3aabda2dfbc7c56fb7efad7be733123d",
+  "refresh_command": "/tmp/sequence-ai-venv/bin/python experiments/2026-10-17/refresh-spending-ledger.py --output experiments/2026-10-17/spending-ledger-provisional.json",
+  "final_refresh_note": "Run the refresh command after verified destruction. Optionally append --final-stop-utc with the verified final stop/destruction timestamp to close the estimate segment; provider charges may still settle later."
+}

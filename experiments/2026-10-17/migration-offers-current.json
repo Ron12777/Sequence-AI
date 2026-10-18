@@ -1,0 +1,86 @@
+[
+  {
+    "id": 55530780,
+    "machine_id": 7746,
+    "gpu_name": "RTX 3090",
+    "cpu_name": "AMD Ryzen Threadripper PRO 5995WX 64-Cores",
+    "cpu_cores_effective": 128.0,
+    "cpu_ram": 257527,
+    "gpu_ram": 24576,
+    "dph_total": 1.0185185185185186,
+    "disk_space": 1214.0713300793705,
+    "reliability": 0.9985081
+  },
+  {
+    "id": 55530828,
+    "machine_id": 24257,
+    "gpu_name": "RTX 3090",
+    "cpu_name": "AMD Ryzen Threadripper PRO 7995WX 96-Cores",
+    "cpu_cores_effective": 192.0,
+    "cpu_ram": 257179,
+    "gpu_ram": 24576,
+    "dph_total": 1.151851851851852,
+    "disk_space": 3176.0,
+    "reliability": 0.9982208
+  },
+  {
+    "id": 43920286,
+    "machine_id": 142748,
+    "gpu_name": "RTX 5090",
+    "cpu_name": "AMD EPYC 7B12 64-Core Processor",
+    "cpu_cores_effective": 256.0,
+    "cpu_ram": 257703,
+    "gpu_ram": 32607,
+    "dph_total": 1.2005555555555556,
+    "disk_space": 3207.6,
+    "reliability": 0.9954897
+  },
+  {
+    "id": 56271881,
+    "machine_id": 94265,
+    "gpu_name": "RTX 5090",
+    "cpu_name": "AMD EPYC 7B13 64-Core Processor",
+    "cpu_cores_effective": 128.0,
+    "cpu_ram": 128843,
+    "gpu_ram": 32607,
+    "dph_total": 1.8416666666666666,
+    "disk_space": 4473.2,
+    "reliability": 0.9898894
+  },
+  {
+    "id": 55530460,
+    "machine_id": 26994,
+    "gpu_name": "RTX PRO 6000 WS",
+    "cpu_name": "AMD Ryzen Threadripper PRO 7995WX 96-Cores",
+    "cpu_cores_effective": 192.0,
+    "cpu_ram": 257179,
+    "gpu_ram": 97887,
+    "dph_total": 1.8838518518518519,
+    "disk_space": 2791.0,
+    "reliability": 0.9981849
+  },
+  {
+    "id": 56041192,
+    "machine_id": 137718,
+    "gpu_name": "RTX 4090",
+    "cpu_name": "AMD Eng Sample: 100-000000894-04",
+    "cpu_cores_effective": 384.0,
+    "cpu_ram": 257397,
+    "gpu_ram": 24564,
+    "dph_total": 1.936111111111111,
+    "disk_space": 1018.0,
+    "reliability": 0.9957176
+  },
+  {
+    "id": 56294836,
+    "machine_id": 39081,
+    "gpu_name": "RTX PRO 6000 WS",
+    "cpu_name": "AMD EPYC 9654 96-Core Processor",
+    "cpu_cores_effective": 192.0,
+    "cpu_ram": 515629,
+    "gpu_ram": 97887,
+    "dph_total": 2.0231481481481484,
+    "disk_space": 12309.661362904388,
+    "reliability": 0.9950447
+  }
+]

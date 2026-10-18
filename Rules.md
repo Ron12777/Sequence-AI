@@ -32,8 +32,8 @@ Turns move clockwise. On your turn:
 
 ## Special Cards
 
-* **Red Jacks (Wild):** Hearts and Diamonds. Can be played to place a chip on **any** open space on the board.
-* **Black Jacks (Remove):** Clubs and Spades. Can be played to **remove** one of the opponent's chips from the board.
+* **Two-eyed Jacks (Wild):** Clubs and Diamonds. Can be played to place a chip on **any** open space on the board.
+* **One-eyed Jacks (Remove):** Hearts and Spades. Can be played to **remove** one of the opponent's chips from the board.
 * *Restriction:* You cannot remove a chip that is part of a completed Sequence.
 
 

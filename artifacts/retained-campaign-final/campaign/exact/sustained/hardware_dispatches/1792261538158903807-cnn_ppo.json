@@ -1,0 +1,19 @@
+{
+  "contender": "cnn_ppo",
+  "physical_device": "1",
+  "worker_slot": 1,
+  "device_name": "NVIDIA GeForce RTX 4090",
+  "cuda_visible_devices": "1",
+  "pid": 2211,
+  "started_utc": "2026-10-17T18:25:38.216821+00:00",
+  "training_seconds_before": 6943.986691019149,
+  "block_seconds_requested": 600.0,
+  "status": "complete",
+  "accounting": "Single-GPU allocated training seconds; overlapping node billing is separate. Hardware changes are not bitwise reproducible.",
+  "finished_utc": "2026-10-17T18:35:43.145655+00:00",
+  "training_seconds_after": 7548.039206775138,
+  "training_gpu_seconds": 604.0525157559896,
+  "monitor_seconds": 0.21910906198900193,
+  "worker_wall_seconds": 604.9867920875549,
+  "stopped_by_signal": false
+}

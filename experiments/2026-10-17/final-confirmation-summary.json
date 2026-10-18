@@ -1,0 +1,62 @@
+{
+  "status": "complete",
+  "candidate": {
+    "checkpoint": "/workspace/sequence/campaign/exact/final-development/checkpoints/cnn_ppo-final.pt",
+    "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45"
+  },
+  "incumbent": {
+    "checkpoint": "/workspace/sequence/campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+    "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8"
+  },
+  "head_to_head": {
+    "mean": 0.53619384765625,
+    "paired95ci": [
+      0.5274794391817258,
+      0.5449082561307742
+    ],
+    "independent_deals": 4096,
+    "games": 8192,
+    "gate_pass": true
+  },
+  "heldout_retention": [
+    {
+      "label": "original_search_128",
+      "games_per_model": 2048,
+      "candidate_score": 0.64404296875,
+      "incumbent_score": 0.594970703125,
+      "difference": {
+        "mean": 0.049072265625,
+        "paired95ci": [
+          0.027261321974435787,
+          0.07088320927556421
+        ],
+        "independent_deals": 1024
+      },
+      "practical_retention_margin": 0.02,
+      "gate_pass": true
+    },
+    {
+      "label": "heldout_baseline_32",
+      "games_per_model": 8192,
+      "candidate_score": 0.80584716796875,
+      "incumbent_score": 0.78399658203125,
+      "difference": {
+        "mean": 0.0218505859375,
+        "paired95ci": [
+          0.011689540643268733,
+          0.032011631231731265
+        ],
+        "independent_deals": 4096
+      },
+      "practical_retention_margin": 0.02,
+      "gate_pass": true
+    }
+  ],
+  "all_gates_pass": true,
+  "recommendation": "Eligible for promotion after artifact validation",
+  "automatic_deployment": false,
+  "candidate_reselection_permitted": false,
+  "elapsed_evaluator_seconds": 269.74783630802995,
+  "interval_method": "Normal95% interval over independent deal averages; both swapped seats grouped. Heldout deltas pair candidate/control on the same deal and seat. Fixed samples; no extension after results.",
+  "gpu_lease_wall_seconds": 272.98173629297526
+}

@@ -1,0 +1,23 @@
+{
+  "candidate": {
+    "checkpoint": "campaign/exact/milestones/cnn_ppo-mixed-1h.pt",
+    "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb"
+  },
+  "opponents": [
+    {
+      "label": "retained_cnn_7h48",
+      "kind": "history",
+      "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+      "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+      "games": 512,
+      "seed": 2200100000001
+    }
+  ],
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "candidate_action_mode": "sample",
+  "action_seed": 311072,
+  "purpose": "T1 learned stochastic policy supplement,256 paired deals repeated across two action seeds; cluster inference by deal, compare same first512 greedy games; no temperature tuning"
+}

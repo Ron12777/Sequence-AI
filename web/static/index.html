@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Triggering initial deployment -->
     <title>Sequence AI</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=7cfcb63081261844">
 </head>
 
 <body>
@@ -57,7 +57,7 @@
                     <div class="controls">
                         <div class="control-group">
                             <div class="toggle-wrapper">
-                                <span class="toggle-label">Show Win Prob</span>
+                                <span class="toggle-label">Show model estimate</span>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="showEvalBar">
                                     <span class="slider"></span>
@@ -78,40 +78,41 @@
                         <!-- P1 Depth (Red AI) - Hidden by default -->
                         <div id="depthP1Container" class="control-group depth-control" style="display: none;">
                             <div class="control-row">
-                                <span id="depthP1Title" class="control-title">Red Depth</span>
+                                <span id="depthP1Title" class="control-title">Red simulations</span>
                                 <div class="control-meta">
                                     <input type="number" id="depthP1Value" class="depth-number-input" min="1" max="500"
-                                        value="50">
-                                    <span id="difficultyLabelP1" class="difficulty-label">Medium</span>
+                                        value="128">
+                                    <span id="difficultyLabelP1" class="difficulty-label">Standard search</span>
                                 </div>
                             </div>
-                            <input type="range" id="depthP1" min="1" max="500" step="1" value="50">
+                            <input type="range" id="depthP1" min="1" max="500" step="1" value="128">
                         </div>
 
                         <!-- P2 Depth (Blue AI / Default AI) -->
                         <div class="control-group depth-control">
                             <div class="control-row">
-                                <span id="depthTitle" class="control-title">Depth</span>
+                                <span id="depthTitle" class="control-title">Search simulations</span>
                                 <div class="control-meta">
                                     <input type="number" id="depthValue" class="depth-number-input" min="1" max="500"
-                                        value="50">
-                                    <span id="difficultyLabel" class="difficulty-label">Medium</span>
+                                        value="128">
+                                    <span id="difficultyLabel" class="difficulty-label">Standard search</span>
                                 </div>
                             </div>
-                            <input type="range" id="depth" min="1" max="500" step="1" value="50">
+                            <input type="range" id="depth" min="1" max="500" step="1" value="128">
                         </div>
 
                         <!-- Judge Depth (Eval Bar) -->
                         <div class="control-group depth-control">
                             <div class="control-row">
-                                <span id="judgeDepthTitle" class="control-title">Win Prob Calc Min Depth</span>
+                                <span id="judgeDepthTitle" class="control-title">Evaluation simulations</span>
                                 <div class="control-meta">
                                     <input type="number" id="judgeDepthValue" class="depth-number-input" min="1"
-                                        max="500" value="50">
+                                        max="500" value="128">
                                 </div>
                             </div>
-                            <input type="range" id="judgeDepth" min="1" max="500" step="1" value="50">
+                            <input type="range" id="judgeDepth" min="1" max="500" step="1" value="128">
                         </div>
+                        <p id="aiError" role="alert" hidden></p>
                         <button id="hintBtn" class="btn secondary">Get Hint</button>
                         <button id="analysisBtn" class="btn secondary">Analysis Board</button>
 
@@ -200,11 +201,12 @@
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js"></script>
 
     <!-- Game Engine & MCTS -->
-    <script src="game_engine.js"></script>
+    <script src="game_engine.js?v=324f370d5a5a1062"></script>
     <script src="mcts.js"></script>
+    <script src="direct_player.js?v=7a3bc458213c3683"></script>
 
     <!-- Main Game UI -->
-    <script src="game.js?v=13"></script>
+    <script src="game.js?v=0fcbc0e0fee63ad5"></script>
 
 </body>
 

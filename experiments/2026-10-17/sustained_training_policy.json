@@ -1,0 +1,22 @@
+{
+  "user_priority": "Deliver a substantially trained model with a sound recipe; do not finish with the best of many undertrained models.",
+  "exploration_cutoff_utc": "2026-10-16T23:15:00Z",
+  "sustained_training_share_target": 0.75,
+  "sustained_training_hours_target": 8,
+  "maximum_serious_contenders": 2,
+  "training_deadline_utc": "2026-10-17T15:00:00Z",
+  "interpretation": "Allocate most remaining compute to substantial continuous training. Eight hours is a planning target, not a requirement to continue a clearly broken or regressing recipe.",
+  "actions": [
+    "Finish the currently active bounded compute comparison without starting another short-run sweep. Treat180-second results as diagnostics, not an architectural verdict or final model selection.",
+    "By23:15UTC narrow to at most two serious contenders and commit the majority of remaining compute to sustained training. If alternatives lack credible learning progress, prioritize the validated production pipeline while diagnosing the alternative recipe.",
+    "Early PPO regression requires diagnosis of learning rate, KL/entropy, value error, data freshness and update/data ratio; it is not evidence that the architecture has a low ceiling. Make justified recipe corrections and give serious candidates a substantial budget before rejecting them.",
+    "Use continuous training with preserved optimizer/scheduler state and replay where applicable. Avoid repeated optimizer resets and fresh starts. Distinguish matched-budget architecture studies from the final exploitation run.",
+    "Evaluate selected checkpoints periodically against a fixed reference and held-out opponents; keep a separate untouched final confirmation seed set. Preserve the best independently validated checkpoint, not automatically the final checkpoint. Repeated monitoring alone is not promotion evidence.",
+    "Target at least75percent of remaining allocated compute for sustained training/self-play and8or more hours of serious training when time permits. Use matched longer-budget checkpoints, learning-curve slope and independent strength evidence. Stop on numerical failure; investigate sustained regression or plateau rather than treating a short dip as failure.",
+    "Before launching a long run, adapt the current one-hour-per-trial controller limit or replace it sequentially; never leave duplicate controllers. Preserve selected weights before stopping a trial. Ensure deadline-bound process cleanup and automatic rental shutdown remain active.",
+    "Continue finalization by11:30Toronto, retrieve/checksum best weights and evidence, validate deployment/export, destroy rental, report bynoon."
+  ],
+  "current_evidence": "First matched-budget seed: CNN46.53percent andGRU47.90percent against the initial direct policy; neither establishes improved strength. Complete remaining replicas and pairwise comparisons before deciding.",
+  "minimum_serious_comparison_budget_hours": 1,
+  "slow_starter_policy": "Early ranking is not an estimate of final ceiling. Give serious contenders at least one hour each at matched GPU-time, subject to deadline and numerical health, then extend promising or unresolved learning curves. Preserve both latest continuation state and best validated weights. A temporary dip is not grounds to discard an architecture."
+}

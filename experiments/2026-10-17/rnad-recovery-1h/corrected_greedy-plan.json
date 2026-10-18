@@ -1,0 +1,29 @@
+{
+  "candidate": {
+    "checkpoint": "campaign/exact/milestones-v2/cnn_rnad-threshold8-1h.pt",
+    "sha256": "514684650e97465d45192e5429cb0c174bb27b060f9a4ab1b53428ce02fc2719"
+  },
+  "opponents": [
+    {
+      "label": "validated_cnn_2h",
+      "kind": "exact",
+      "checkpoint": "campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+      "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+      "games": 4096,
+      "seed": 2900100000001
+    },
+    {
+      "label": "previous_cnn_1h_anchor",
+      "kind": "exact",
+      "checkpoint": "campaign/exact/milestones/cnn_ppo-mixed-1h.pt",
+      "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb",
+      "games": 2048,
+      "seed": 2900200000001
+    }
+  ],
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Fixed developmental recovery comparison after>=1h threshold8 continuation; identical fresh paired deals, prechange control, same opponent anchors. Greedy andT1policy reported separately; action replicas clustered within deal, not additional independentdeals. No finalseeds or automaticpromotion."
+}

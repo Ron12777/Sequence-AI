@@ -1,0 +1,22 @@
+{
+  "staged_only": true,
+  "checkpoint": "artifacts/checkpoints/board-four-hour.pt",
+  "onnx_sha256": "67ff21d9d9827fb4bbf306c1f4d57e1c7a5e3adde7f48d2db21a4dbbb1fff7ee",
+  "runtime": "onnxruntime-web1.18WASM in Codex in-app browser",
+  "ui_checks": [
+    "direct-policy mode active",
+    "searchcontrols hidden",
+    "hint highlights one legal square",
+    "full AIvsAI game completed with two sequences",
+    "no browser warnings or errors"
+  ],
+  "numerical_validation": "artifacts/board-four-hour.validation.json (CPUORT; browser numeric replay not run for this checkpoint)",
+  "pytest_passed": 4,
+  "node_tests_passed": 12,
+  "source_sha256": {
+    "web/static/direct_player.js": "4d4cd5831da45004d5acf7a23e66610696f5b82c9360477b5bfc89386ab3ff95",
+    "web/static/game.js": "0f0e62726782826b4b9ed3e2048bef92ebdb2cc08b3b4c44a523a0a95a4aad81",
+    "web/static/model.json": "bcc1a1275b2bfacea104d0e6cb5aa7daef3f58eff239a198e74e076702fce592",
+    "scripts/export_history_onnx.py": "d6b4937cd8d46f6ad9a709db567c08567fff132037eada4f5c1230546435af66"
+  }
+}

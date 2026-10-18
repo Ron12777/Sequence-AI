@@ -1,0 +1,137 @@
+{
+  "scope": "Developmental comparison after approximately three cumulative GPU hours each, inherited 5090 budgets differ; not equal FLOPs, one seed per contender. Shared teacher training/distillation separate. RNaD includes threshold correction.",
+  "candidates": {
+    "cnn_ppo": {
+      "sha256": "19840e3a18f37e687de646a4879b7203d15194867644e1dcc4bccfcc069987b3",
+      "training_seconds": 10801.552667114156,
+      "seconds_5090": 1255.0600130441599,
+      "seconds_4090": 9546.492654069996,
+      "selfplay_games": 4646912,
+      "allocated_training_cost_usd": 1.660314029679542,
+      "results": [
+        {
+          "label": "validated_cnn_2h",
+          "games": 4096,
+          "score": 0.5172119140625,
+          "paired_score_95ci": [
+            0.5058015410967057,
+            0.5286222870282943
+          ]
+        },
+        {
+          "label": "previous_cnn_1h_anchor",
+          "games": 2048,
+          "score": 0.52294921875,
+          "paired_score_95ci": [
+            0.5062727110971333,
+            0.5396257264028667
+          ]
+        }
+      ]
+    },
+    "transformer_ppo": {
+      "sha256": "290de15464443c4ec1762c397302d3435d577ea90a3a41d05b5819427e19d461",
+      "training_seconds": 10829.496933338582,
+      "seconds_5090": 1635.5041665015742,
+      "seconds_4090": 9193.992766837007,
+      "selfplay_games": 1390592,
+      "allocated_training_cost_usd": 1.686340890010191,
+      "results": [
+        {
+          "label": "validated_cnn_2h",
+          "games": 4096,
+          "score": 0.487060546875,
+          "paired_score_95ci": [
+            0.47498393278332407,
+            0.49913716096667593
+          ]
+        },
+        {
+          "label": "previous_cnn_1h_anchor",
+          "games": 2048,
+          "score": 0.50048828125,
+          "paired_score_95ci": [
+            0.4836570132984615,
+            0.5173195492015386
+          ]
+        }
+      ]
+    },
+    "cnn_rnad": {
+      "sha256": "2b0b721312aed666909b1d40110daf95b7f12adcd22ddbfea43af3ee32084491",
+      "training_seconds": 10825.425835264177,
+      "seconds_5090": 1382.350604493171,
+      "seconds_4090": 9443.075230771006,
+      "selfplay_games": 3035136,
+      "allocated_training_cost_usd": 1.6711573926951666,
+      "results": [
+        {
+          "label": "validated_cnn_2h",
+          "games": 4096,
+          "score": 0.4564208984375,
+          "paired_score_95ci": [
+            0.4438784231330159,
+            0.4689633737419841
+          ]
+        },
+        {
+          "label": "previous_cnn_1h_anchor",
+          "games": 2048,
+          "score": 0.4619140625,
+          "paired_score_95ci": [
+            0.44461116483977603,
+            0.47921696016022397
+          ]
+        }
+      ]
+    }
+  },
+  "paired_common_opponent_differences": [
+    {
+      "label": "validated_cnn_2h",
+      "cnn_minus_transformer": {
+        "score": 0.0301513671875,
+        "paired95ci": [
+          0.014202756420674905,
+          0.04609997795432509
+        ]
+      }
+    },
+    {
+      "label": "previous_cnn_1h_anchor",
+      "cnn_minus_transformer": {
+        "score": 0.0224609375,
+        "paired95ci": [
+          -0.0004677843796937649,
+          0.04538965937969376
+        ]
+      }
+    }
+  ],
+  "rnad_sampled": [
+    {
+      "label": "validated_cnn_2h",
+      "independent_deals": 512,
+      "action_replicates": 2,
+      "games": 2048,
+      "score": 0.393798828125,
+      "paired95ci": [
+        0.37402997317538833,
+        0.41356768307461167
+      ]
+    },
+    {
+      "label": "previous_cnn_1h_anchor",
+      "independent_deals": 512,
+      "action_replicates": 2,
+      "games": 2048,
+      "score": 0.4033203125,
+      "paired95ci": [
+        0.3843552302698201,
+        0.4222853947301799
+      ]
+    }
+  ],
+  "promotion": "None; independent final confirmation still required.",
+  "cost_caveat": "Allocated training device cost only; excludes shared pretraining, tuning, evaluation, idle time and bandwidth. Not an invoice."
+}

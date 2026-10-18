@@ -1,0 +1,80 @@
+{
+  "design": "256 independent paired deals, two action-seed repeats per deal; candidate T1 sampled, incumbent fixedgreedy. Uncertainty computed across deal means after averaging seats and replicas. Samefirst512 greedy games provide pairedmodecomparison.",
+  "contenders": {
+    "cnn_ppo": {
+      "sample_score": 0.4912109375,
+      "clustered_deal95ci": [
+        0.46445188790966196,
+        0.517969987090338
+      ],
+      "matched_greedy_score": 0.5126953125,
+      "sample_minus_greedy": -0.021484375,
+      "paired_mode_difference95ci": [
+        -0.055474006523832664,
+        0.012505256523832664
+      ],
+      "games_sampled": 1024,
+      "distinct_deals": 256,
+      "sample_change_from_shared_initial": {
+        "difference": 0.0107421875,
+        "paired_deal95ci": [
+          -0.02071386485393094,
+          0.04219823985393094
+        ]
+      }
+    },
+    "transformer_ppo": {
+      "sample_score": 0.47265625,
+      "clustered_deal95ci": [
+        0.4464349498190374,
+        0.4988775501809626
+      ],
+      "matched_greedy_score": 0.482421875,
+      "sample_minus_greedy": -0.009765625,
+      "paired_mode_difference95ci": [
+        -0.049144303426355444,
+        0.029613053426355444
+      ],
+      "games_sampled": 1024,
+      "distinct_deals": 256,
+      "sample_change_from_shared_initial": {
+        "difference": -0.0078125,
+        "paired_deal95ci": [
+          -0.03986062294715986,
+          0.024235622947159863
+        ]
+      }
+    },
+    "cnn_rnad": {
+      "sample_score": 0.2607421875,
+      "clustered_deal95ci": [
+        0.23629273006913187,
+        0.2851916449308681
+      ],
+      "matched_greedy_score": 0.455078125,
+      "sample_minus_greedy": -0.1943359375,
+      "paired_mode_difference95ci": [
+        -0.23521316980985624,
+        -0.15345870519014376
+      ],
+      "games_sampled": 1024,
+      "distinct_deals": 256,
+      "sample_change_from_shared_initial": {
+        "difference": -0.2197265625,
+        "paired_deal95ci": [
+          -0.2527634034526601,
+          -0.18668972154733993
+        ]
+      }
+    }
+  },
+  "common_initial_stochastic_control": {
+    "score": 0.48046875,
+    "clustered_deal95ci": [
+      0.45629081554412276,
+      0.5046466844558772
+    ],
+    "distinct_deals": 256,
+    "games": 1024
+  }
+}

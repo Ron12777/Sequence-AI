@@ -1,0 +1,158 @@
+{
+  "device": "cpu",
+  "cpu": "Intel(R) Core(TM) 7 240H",
+  "torch": "2.14.1+cpu",
+  "threads": 2,
+  "timings": [
+    {
+      "architecture": "board",
+      "batch": 1,
+      "scope": "forward_only",
+      "median_batch_ms": 0.5551364738494158,
+      "median_ms_per_position": 0.5551364738494158,
+      "p95_batch_ms": 0.5998693697620183,
+      "samples": 40
+    },
+    {
+      "architecture": "gru",
+      "batch": 1,
+      "scope": "forward_only",
+      "median_batch_ms": 1.6232445486821234,
+      "median_ms_per_position": 1.6232445486821234,
+      "p95_batch_ms": 1.8542967620305708,
+      "samples": 40
+    },
+    {
+      "architecture": "board",
+      "batch": 1,
+      "scope": "observe_forward_legal_argmax",
+      "median_batch_ms": 0.559168984182179,
+      "median_ms_per_position": 0.559168984182179,
+      "p95_batch_ms": 0.8373483666218813,
+      "samples": 15
+    },
+    {
+      "architecture": "gru",
+      "batch": 1,
+      "scope": "observe_forward_legal_argmax",
+      "median_batch_ms": 1.6928199911490083,
+      "median_ms_per_position": 1.6928199911490083,
+      "p95_batch_ms": 1.8329944228753445,
+      "samples": 15
+    },
+    {
+      "architecture": "board",
+      "batch": 32,
+      "scope": "forward_only",
+      "median_batch_ms": 9.135112981311977,
+      "median_ms_per_position": 0.2854722806659993,
+      "p95_batch_ms": 10.212744330056012,
+      "samples": 40
+    },
+    {
+      "architecture": "gru",
+      "batch": 32,
+      "scope": "forward_only",
+      "median_batch_ms": 12.721512466669083,
+      "median_ms_per_position": 0.39754726458340883,
+      "p95_batch_ms": 13.693830621195957,
+      "samples": 40
+    },
+    {
+      "architecture": "board",
+      "batch": 32,
+      "scope": "observe_forward_legal_argmax",
+      "median_batch_ms": 9.857277036644518,
+      "median_ms_per_position": 0.3080399073951412,
+      "p95_batch_ms": 10.494198196101934,
+      "samples": 15
+    },
+    {
+      "architecture": "gru",
+      "batch": 32,
+      "scope": "observe_forward_legal_argmax",
+      "median_batch_ms": 14.409200055524707,
+      "median_ms_per_position": 0.4502875017351471,
+      "p95_batch_ms": 14.90298273274675,
+      "samples": 15
+    },
+    {
+      "architecture": "board",
+      "batch": 128,
+      "scope": "forward_only",
+      "median_batch_ms": 33.960843982640654,
+      "median_ms_per_position": 0.2653190936143801,
+      "p95_batch_ms": 35.55339421145618,
+      "samples": 40
+    },
+    {
+      "architecture": "gru",
+      "batch": 128,
+      "scope": "forward_only",
+      "median_batch_ms": 44.880461995489895,
+      "median_ms_per_position": 0.3506286093397648,
+      "p95_batch_ms": 46.54621557565406,
+      "samples": 40
+    },
+    {
+      "architecture": "board",
+      "batch": 128,
+      "scope": "observe_forward_legal_argmax",
+      "median_batch_ms": 37.179455044679344,
+      "median_ms_per_position": 0.2904644925365574,
+      "p95_batch_ms": 38.419391529168934,
+      "samples": 15
+    },
+    {
+      "architecture": "gru",
+      "batch": 128,
+      "scope": "observe_forward_legal_argmax",
+      "median_batch_ms": 51.16136302240193,
+      "median_ms_per_position": 0.39969814861251507,
+      "p95_batch_ms": 52.05206430982798,
+      "samples": 15
+    }
+  ],
+  "paired_reference_differences": [
+    {
+      "opponent": "original_champion_search",
+      "games": 2048,
+      "cnn_minus_gru_score": 0.01171875,
+      "paired_95ci": [
+        -0.010082755479024673,
+        0.03352025547902467
+      ]
+    },
+    {
+      "opponent": "heldout_baseline",
+      "games": 512,
+      "cnn_minus_gru_score": 0.03515625,
+      "paired_95ci": [
+        -0.005206173250235202,
+        0.0755186732502352
+      ]
+    }
+  ],
+  "architectures": {
+    "board": {
+      "parameters": 756469,
+      "training_seconds": 14420.678512422135,
+      "allocated_training_gpu_hours": 4.005744031228371,
+      "allocated_training_cost_usd": 1.8752816501750598,
+      "checkpoint_sha256": "8d3af846086fea02e4a2a19315e8c318d81ccc982f740d2640ee783aa591713e"
+    },
+    "gru": {
+      "parameters": 816666,
+      "training_seconds": 14416.562711129198,
+      "allocated_training_gpu_hours": 4.004600753091444,
+      "allocated_training_cost_usd": 1.8747464266324394,
+      "checkpoint_sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb"
+    }
+  },
+  "caveats": [
+    "CPU PyTorch timings; not browser ONNX or GPU timings.",
+    "Allocated training hours include self-play and CPU rollout while owning the GPU; not active kernel hours.",
+    "Incremental training cost excludes common pretraining, tuning, evaluations and other rental overhead.",
+    "One training seed per architecture and a shared pretrained CNN; does not establish asymptotic architecture ceilings."
+  ]
+}

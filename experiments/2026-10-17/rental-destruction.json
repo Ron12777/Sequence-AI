@@ -1,0 +1,8 @@
+{
+  "instance_id": 56415071,
+  "verified_utc": "2026-10-17T23:36:59.638923+00:00",
+  "task_instance_present": false,
+  "remaining_instance_ids": [],
+  "destroy_command_exit_code": 0,
+  "note": "Destroy CLI returned success exit code with non-JSON output; authoritative subsequent instance listing used for verification."
+}

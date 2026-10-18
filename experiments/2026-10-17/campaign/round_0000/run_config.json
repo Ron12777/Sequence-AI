@@ -1,0 +1,39 @@
+{
+  "command": "train",
+  "overlap_training": false,
+  "compact_observations": false,
+  "inference_batch_size": 4096,
+  "seed": 1009,
+  "root_noise_fraction": 0.25,
+  "output_dir": "/workspace/sequence/campaign/round_0000",
+  "init_from": "/workspace/sequence/campaign/champion.pt",
+  "epochs": 64,
+  "games_per_epoch": 1024,
+  "simulations": 32,
+  "batch_size": 2048,
+  "buffer_size": 200000,
+  "train_steps": 96,
+  "lr": 0.0003,
+  "num_filters": 128,
+  "num_res_blocks": 6,
+  "fresh": true,
+  "no_compile": true,
+  "verbose": false,
+  "workers": 24,
+  "games_per_worker": 128,
+  "worker_start_timeout": 120.0,
+  "start_epoch": 0,
+  "torch_version": "2.6.0+cu126",
+  "cuda_version": "12.6",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "parameters": 756469,
+  "architecture": {
+    "num_filters": 64,
+    "num_res_blocks": 3
+  },
+  "root_noise": {
+    "alpha": 0.3,
+    "epsilon": 0.25,
+    "normalized_over_legal_targets": true
+  }
+}

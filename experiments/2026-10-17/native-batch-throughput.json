@@ -1,0 +1,37 @@
+{
+  "scope": "Environment-only entire games, 512 identical explicit decks, exact canonical observation + legal extraction + deterministic smallest-exact-ID action + real rules/deck update. Excludes model inference/optimization and initialization. Local Intel Core7 240H, other system load uncontrolled. Winner and move count identical across all implementations.",
+  "results": [
+    {
+      "implementation": "rust_batch",
+      "threads": 1,
+      "games": 512,
+      "moves": 36105,
+      "seconds": 0.13314946298487484,
+      "moves_per_second": 271161.43911223556
+    },
+    {
+      "implementation": "rust_batch",
+      "threads": 4,
+      "games": 512,
+      "moves": 36105,
+      "seconds": 0.14760186499916017,
+      "moves_per_second": 244610.73036038826
+    },
+    {
+      "implementation": "rust_batch",
+      "threads": 16,
+      "games": 512,
+      "moves": 36105,
+      "seconds": 0.19035357097163796,
+      "moves_per_second": 189673.3526757926
+    },
+    {
+      "implementation": "python_fastgame",
+      "threads": 1,
+      "games": 512,
+      "moves": 36105,
+      "seconds": 3.3416496040299535,
+      "moves_per_second": 10804.54394633662
+    }
+  ]
+}

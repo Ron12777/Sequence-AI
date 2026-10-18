@@ -1,0 +1,171 @@
+{
+  "model": {
+    "architecture": "exact-action CNN, 3 residual blocks, 64 channels, own-hand set encoder",
+    "algorithm": "PPO",
+    "checkpoint": "artifacts/checkpoints/exact-final/cnn_ppo-final.pt",
+    "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+    "onnx": "artifacts/exact-cnn-final.onnx",
+    "onnx_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+    "confirmation": "experiments/2026-10-17/final-confirmation-summary.json",
+    "all_gates_pass": true,
+    "training_wall_seconds": 22750.368895523163,
+    "allocated_gpu_seconds": 32884.38954292814,
+    "games": 10846208,
+    "observation": "board and own hand; no ordered public history or played-card counts",
+    "play_mode": "direct exact card-and-square, no search or forced-win override"
+  },
+  "confirmation": {
+    "status": "complete",
+    "candidate": {
+      "checkpoint": "/workspace/sequence/campaign/exact/final-development/checkpoints/cnn_ppo-final.pt",
+      "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45"
+    },
+    "incumbent": {
+      "checkpoint": "/workspace/sequence/campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+      "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8"
+    },
+    "head_to_head": {
+      "mean": 0.53619384765625,
+      "paired95ci": [
+        0.5274794391817258,
+        0.5449082561307742
+      ],
+      "independent_deals": 4096,
+      "games": 8192,
+      "gate_pass": true
+    },
+    "heldout_retention": [
+      {
+        "label": "original_search_128",
+        "games_per_model": 2048,
+        "candidate_score": 0.64404296875,
+        "incumbent_score": 0.594970703125,
+        "difference": {
+          "mean": 0.049072265625,
+          "paired95ci": [
+            0.027261321974435787,
+            0.07088320927556421
+          ],
+          "independent_deals": 1024
+        },
+        "practical_retention_margin": 0.02,
+        "gate_pass": true
+      },
+      {
+        "label": "heldout_baseline_32",
+        "games_per_model": 8192,
+        "candidate_score": 0.80584716796875,
+        "incumbent_score": 0.78399658203125,
+        "difference": {
+          "mean": 0.0218505859375,
+          "paired95ci": [
+            0.011689540643268733,
+            0.032011631231731265
+          ],
+          "independent_deals": 4096
+        },
+        "practical_retention_margin": 0.02,
+        "gate_pass": true
+      }
+    ],
+    "all_gates_pass": true,
+    "recommendation": "Eligible for promotion after artifact validation",
+    "automatic_deployment": false,
+    "candidate_reselection_permitted": false,
+    "elapsed_evaluator_seconds": 269.74783630802995,
+    "interval_method": "Normal95% interval over independent deal averages; both swapped seats grouped. Heldout deltas pair candidate/control on the same deal and seat. Fixed samples; no extension after results.",
+    "gpu_lease_wall_seconds": 272.98173629297526
+  },
+  "deployment": {
+    "deployed_utc": "2026-10-17T23:36:15.022777+00:00",
+    "scope": "Local static files only; no public push",
+    "checkpoint_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+    "onnx_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+    "deployed_model": "web/static/model-exact-0bd3130842892f06.onnx",
+    "manifest": {
+      "model": "model-exact-0bd3130842892f06.onnx",
+      "policyKind": "exact_sequence_policy",
+      "playMode": "direct",
+      "actionEncoding": "card_id * 100 + row * 10 + col",
+      "variant": "cnn",
+      "valueMode": "bounded",
+      "historyArchitecture": "board",
+      "observationMode": "board_hand"
+    },
+    "manifest_sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f",
+    "asset_cache_versions": {
+      "game_engine.js": "324f370d5a5a1062",
+      "direct_player.js": "7a3bc458213c3683",
+      "game.js": "0fcbc0e0fee63ad5",
+      "style.css": "7cfcb63081261844"
+    },
+    "rollback_directory": "artifacts/rollback/exact-final-2026-10-17",
+    "rollback_sha256": {
+      "model.json": "bcc1a1275b2bfacea104d0e6cb5aa7daef3f58eff239a198e74e076702fce592",
+      "model.onnx": "d6e8a786804aa82b19a8c273e1c04af540843e6eae87ee24785497a96fff5fb0",
+      "index.html": "fecb96aeedf4d58d52078023abb1c5c82f988adfc5428454f36b07dd8a6f7982"
+    },
+    "previous_model_retained_unchanged": true,
+    "rendered_validation": "passed",
+    "rendered_validation_report": "experiments/2026-10-17/exact-cnn-final-rendered-browser-validation.json",
+    "rendered_report_sha256": "c4dff95b6f8d649d2a7236be0f8f52d85126230d438755e5660e3255914452b1",
+    "served_model_hash_verified": true,
+    "same_session_reload_verified": true,
+    "search_calls": 0,
+    "runtime_errors": [],
+    "known_browser_diagnostic": "Missing favicon.ico produced one HTTP404 console message; no application, inference, or JavaScript errors",
+    "public_deployment": false,
+    "rollback_instructions": "Restore model.json and index.html from rollback_directory; original model.onnx remains present and unchanged."
+  },
+  "rental": {
+    "instance_id": 56415071,
+    "verified_utc": "2026-10-17T23:36:59.638923+00:00",
+    "task_instance_present": false,
+    "remaining_instance_ids": [],
+    "destroy_command_exit_code": 0,
+    "note": "Destroy CLI returned success exit code with non-JSON output; authoritative subsequent instance listing used for verification."
+  },
+  "training_accounting": {
+    "checkpoint_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+    "training_wall_seconds": 22750.368895523163,
+    "allocated_gpu_seconds": 32884.38954292814,
+    "hardware_segments": [
+      {
+        "hardware": "RTX5090",
+        "gpus": 1,
+        "wall_seconds": 1255.0600130441599
+      },
+      {
+        "hardware": "RTX4090",
+        "gpus": 1,
+        "wall_seconds": 11361.288234974
+      },
+      {
+        "hardware": "RTX4090",
+        "gpus": 2,
+        "wall_seconds": 10134.020647404977
+      }
+    ],
+    "games": 10846208,
+    "positions": 398980203,
+    "optimizer_updates": 784574,
+    "limitations": "Excludes inherited 7.48-hour CNN pretraining, shared exact-action distillation, tuning, evaluation and idle rental time. Allocated GPU time is not measured GPU busy time or equal FLOPs. Mixed hardware.",
+    "retention_audit": "184 files independently rehashed; all match. Final optimizer, Python/NumPy/CPU and two CUDA RNG states, historical pools, all three continuations and reference models preserved.",
+    "shared_teacher": {
+      "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+      "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+      "training_seconds": 26913.58923665015,
+      "lineage": "Verified exact-common-warm shared_distillation.teacher_sha256; not earlier board-four-hour checkpoint."
+    },
+    "shared_distillation": {
+      "elapsed_seconds_including_collection": 9.462135,
+      "collection_seconds": 1.415753
+    }
+  },
+  "spending_evidence": "experiments/2026-10-17/spending-ledger-final.json",
+  "provider_reported_charges_usd": 18.227,
+  "final_invoice": false,
+  "automation_deleted": true,
+  "public_published": false,
+  "legacy_flask_api": "unchanged search backend"
+}

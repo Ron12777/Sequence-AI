@@ -1,0 +1,33 @@
+{
+  "models": {
+    "cnn_ppo": {
+      "checkpoint": "artifacts/checkpoints/exact-4090-hour/cnn_ppo-4090-1h.pt",
+      "sha256": "4b33dd47b281e7d011917c2678790088571253b49f5693fd3c04bc04e8551cdd",
+      "verified": true,
+      "inherited5090_seconds": 1255.0600130441599,
+      "additional4090_seconds": 3659.857009672007,
+      "total_training_seconds": 4914.917022716167,
+      "allocated_training_cost_usd": 0.7948816906137997
+    },
+    "transformer_ppo": {
+      "checkpoint": "artifacts/checkpoints/exact-4090-hour/transformer_ppo-4090-1h.pt",
+      "sha256": "c830bc1a56546b2a10830c38e87b70197909e121bc57a138a8f0e46c6538c430",
+      "verified": true,
+      "inherited5090_seconds": 1635.5041665015742,
+      "additional4090_seconds": 3614.2603219510347,
+      "total_training_seconds": 5249.764488452609,
+      "allocated_training_cost_usd": 0.8660283731728047
+    },
+    "cnn_rnad": {
+      "checkpoint": "artifacts/checkpoints/exact-4090-hour/cnn_rnad-4090-1h.pt",
+      "sha256": "41f45be70ac681df88664c597b9f5dff96f5305700bac58df5a0837e30c46676",
+      "verified": true,
+      "inherited5090_seconds": 1382.350604493171,
+      "additional4090_seconds": 3654.350907074986,
+      "total_training_seconds": 5036.701511568157,
+      "allocated_training_cost_usd": 0.8201196294801516
+    }
+  },
+  "cost_scope": "Training device allocation only, excludes shared pretraining, tuning, evaluation, idle, migration, bandwidth. DualGPU node price allocated equally by device. Not actual invoice.",
+  "comparison_caveat": "Additional RTX4090 device-time approximately matched within60s; inherited RTX5090 budgets unequal. No equal-FLOP claim."
+}

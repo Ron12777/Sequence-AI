@@ -1,0 +1,29 @@
+{
+  "supervisor_pid": 4452,
+  "command": [
+    "/opt/conda/bin/python",
+    "-u",
+    "scripts/train_exact_multigpu.py",
+    "--output-dir",
+    "campaign/exact/sustained",
+    "--reference",
+    "artifacts/checkpoints/gru-four-hour.pt",
+    "--devices",
+    "0,1",
+    "--shared-update-devices",
+    "0,1",
+    "--block-seconds",
+    "600",
+    "--evaluation-games",
+    "256",
+    "--stop-at",
+    "2026-10-17T21:30:00Z"
+  ],
+  "backup_sha256": "1f837facceaa36f5f223b595f138d272b0fa5c3c2955fb0fd7e26a581919d76f",
+  "source_sha256": {
+    "train_exact_policy.py": "03732203c9399367b24c2724107e95a3551c19f8033f72dc5cac32cd8a314287",
+    "train_exact_multigpu.py": "704630d09b04d5f62c74c90c092efc6b310851b2fef6672aa4be1018ae4cbcac"
+  },
+  "started_epoch": 1792269601.8526428,
+  "old_supervisor_cleanly_stopped": true
+}

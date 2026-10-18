@@ -1,0 +1,32 @@
+{
+  "native_checks": 252,
+  "states_per_batch_configuration": 192,
+  "native_prediction_rows": 576,
+  "native_argmax_matches": 576,
+  "max_native_logit_error": 2.09808349609375e-05,
+  "max_native_value_error": 1.043081283569336e-06,
+  "compressed_fixture_bytes": 463553,
+  "checkpoint_sha256": "19840e3a18f37e687de646a4879b7203d15194867644e1dcc4bccfcc069987b3",
+  "onnx_sha256": "93b24c64c68527267be4750ad62fee9a6611ddd8fe0246e41ce01d4e25b12824",
+  "browser_validation": "experiments/2026-10-17/exact-cnn-threehour-browser-validation.json",
+  "native_validation": "artifacts/exact-cnn-threehour.validation.json",
+  "browser_move_matches": 1016,
+  "browser_states": 1016,
+  "normal_vs_jack_cases": {
+    "states": 44,
+    "selected_normal": 44,
+    "selected_jack": 0
+  },
+  "capabilities": {
+    "policyKind": "exact_sequence_policy",
+    "playMode": "direct",
+    "actionEncoding": "card_id * 100 + row * 10 + col",
+    "variant": "cnn",
+    "valueMode": "bounded",
+    "historyArchitecture": "board",
+    "observationMode": "board_hand"
+  },
+  "capability_limitations": "CNN reads board and own hand. Public history input is retained for interface compatibility but does not make this architecture history-aware. This is a direct policy, not ReBeL or belief-state search.",
+  "promotion_claim": false,
+  "deployment_changed": false
+}

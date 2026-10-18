@@ -1,0 +1,108 @@
+{
+  "candidate": {
+    "checkpoint": "campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+    "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8"
+  },
+  "confirmation_results": [
+    {
+      "label": "validated_exact_cnn_1h",
+      "games": 8192,
+      "score": 0.51422119140625,
+      "paired_score_95ci": [
+        0.5059115676167291,
+        0.5225308151957709
+      ]
+    },
+    {
+      "label": "original_search_128",
+      "games": 2048,
+      "score": 0.5947265625,
+      "paired_score_95ci": [
+        0.5765404824211349,
+        0.6129126425788651
+      ]
+    },
+    {
+      "label": "heldout_baseline_32",
+      "games": 1024,
+      "score": 0.77099609375,
+      "paired_score_95ci": [
+        0.7479771824756771,
+        0.7940150050243229
+      ]
+    }
+  ],
+  "paired_heldout_differences": [
+    {
+      "label": "original_search_128",
+      "games": 2048,
+      "candidate_score": 0.5947265625,
+      "incumbent_score": 0.57861328125,
+      "candidate_minus_incumbent": 0.01611328125,
+      "paired95ci": [
+        -0.004577038543079715,
+        0.03680360104307971
+      ]
+    },
+    {
+      "label": "heldout_baseline_32",
+      "games": 1024,
+      "candidate_score": 0.77099609375,
+      "incumbent_score": 0.7822265625,
+      "candidate_minus_incumbent": -0.01123046875,
+      "paired95ci": [
+        -0.037673952688553815,
+        0.015213015188553815
+      ]
+    }
+  ],
+  "gpu_evaluation_seconds": 155.69546908902703,
+  "candidate_training_metadata": {
+    "recipe": {
+      "contenders": [
+        "cnn_ppo",
+        "transformer_ppo",
+        "cnn_rnad"
+      ],
+      "games_per_iteration": 2048,
+      "batch_size": 1024,
+      "epochs": 2,
+      "trunk_lr": 1e-05,
+      "new_lr": 0.0001,
+      "minimum_lr_fraction": 0.3,
+      "schedule_training_seconds": 10800,
+      "entropy_initial": 0.003,
+      "entropy_final": 0.002,
+      "ppo_clip": 0.1,
+      "target_kl": 0.01,
+      "value_coefficient": 0.5,
+      "gradient_clip": 1.0,
+      "opponents": "50% current self-play,25% frozen GRU reference,25% historical exact policy; balanced learner seats",
+      "historical_pool_size": 3,
+      "checkpoint_seconds": 60,
+      "seed": 2100000001,
+      "monitor_seed": 2100000000001,
+      "final_confirmation_seed_reserved": 9100000000001,
+      "replay": "none; fresh on-policy trajectories per update",
+      "returns": "terminal outcome from each acting player's perspective, undiscounted",
+      "rnad_games_per_minibatch": 32,
+      "rnad_reference_interval": 4000,
+      "rnad_eta": 0.2,
+      "rnad_target_avg": 0.001,
+      "rnad_gradient_clip": 10000.0,
+      "rnad_opponents": "100% current policy both-player self-play; complete episodes",
+      "common_pretraining_checkpoint_sha256": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1",
+      "reference_sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb"
+    },
+    "variant": "cnn",
+    "algorithm": "ppo",
+    "contender": "cnn_ppo",
+    "iterations": 1500,
+    "games": 3072000,
+    "positions": 116485249,
+    "updates": 229022,
+    "training_seconds": 7254.263982497156,
+    "blocks": 14
+  },
+  "scope": "Fresh paired complete-game independent confirmation; previousdevelopmentalseedsandfinalcampaignseedsnotused. Heldoutdifferencespairbothcandidateandincumbentbydeal andseat; no independenceclaimperseat."
+}

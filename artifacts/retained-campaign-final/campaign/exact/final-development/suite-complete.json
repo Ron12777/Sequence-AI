@@ -1,0 +1,44 @@
+{
+  "status": "complete",
+  "utc": "2026-10-17T23:30:11.211186+00:00",
+  "gpu_suite_seconds": 10.429064301017206,
+  "total_wall_seconds_including_wait": 5716.574075043987,
+  "results": [
+    {
+      "name": "cnn_ppo_final",
+      "elapsed_seconds": 3.9124580459902063,
+      "evaluations": [
+        {
+          "label": "validated_cnn_2h",
+          "games": 4096,
+          "score": 0.5509033203125,
+          "paired_score_95ci": [
+            0.538785093096371,
+            0.563021547528629
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cnn_ppo_3h",
+      "elapsed_seconds": 3.9885126709996257,
+      "evaluations": [
+        {
+          "label": "validated_cnn_2h",
+          "games": 4096,
+          "score": 0.5166015625,
+          "paired_score_95ci": [
+            0.5047295257575347,
+            0.5284735992424653
+          ]
+        }
+      ]
+    }
+  ],
+  "rnad_samples": false,
+  "cnn_only": true,
+  "scope": "User requested CNN delivery and CNN training through23:30UTC. Preserve all continuations actually registered in the saved recipe; evaluate mainCNN, any registered CNN/PPO replicas identified by checkpoint metadata, and saved3hCNN. A continuation replica shares parent pre-branch training and is not an independently initialized architecture trial. Corrected RNaD milestone checks and stochastic comparisons intentionally omitted, not missing or failed.",
+  "unmet_corrected_milestones": {},
+  "rnad_sample_deal_summary": null,
+  "interpretation": "Developmental screening only. Sample action replicas share deals and are not independent extra deals. Owner selects one candidate before reserved final confirmation."
+}

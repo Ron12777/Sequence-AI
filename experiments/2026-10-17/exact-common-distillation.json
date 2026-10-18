@@ -1,0 +1,58 @@
+{
+  "positions": 76612,
+  "games": 1536,
+  "collection_seconds": 1.4157530018128455,
+  "heldout_split": "Every fifth complete deal, never individual states from a training deal",
+  "teacher_action_semantics": "Spatial soft probabilities assigned to existing teacher's preferred legal card per square",
+  "teacher_sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+  "seed": 3100000001,
+  "scope": "Shared distillation, excluded from per-contender PPO/RNaD training budgets",
+  "before": {
+    "policy_kl": 0.6405223406535389,
+    "value_mse": 0.004531701906386401,
+    "exact_agreement": 0.759301344068567,
+    "position_agreement": 0.7709239659762354
+  },
+  "curve": [
+    {
+      "epoch": 1,
+      "training_loss": 0.7605250726143519,
+      "policy_kl": 0.3935481026206541,
+      "value_mse": 0.006014041080620991,
+      "exact_agreement": 0.7854684760729823,
+      "position_agreement": 0.7854684760729823
+    },
+    {
+      "epoch": 2,
+      "training_loss": 0.6634315550327301,
+      "policy_kl": 0.36421125986755504,
+      "value_mse": 0.005127477131914097,
+      "exact_agreement": 0.7915719758457243,
+      "position_agreement": 0.7915719758457243
+    },
+    {
+      "epoch": 3,
+      "training_loss": 0.6276888658603033,
+      "policy_kl": 0.35095569686637,
+      "value_mse": 0.004669430178331482,
+      "exact_agreement": 0.7926758002727096,
+      "position_agreement": 0.7926758002727096
+    },
+    {
+      "epoch": 4,
+      "training_loss": 0.6027739355961482,
+      "policy_kl": 0.3436735948411902,
+      "value_mse": 0.004378108999634879,
+      "exact_agreement": 0.7952730342185572,
+      "position_agreement": 0.7952730342185572
+    }
+  ],
+  "after": {
+    "policy_kl": 0.3436735948411902,
+    "value_mse": 0.004378108999634879,
+    "exact_agreement": 0.7952730342185572,
+    "position_agreement": 0.7952730342185572
+  },
+  "elapsed_seconds": 9.462135441135615,
+  "checkpoint_sha256": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1"
+}

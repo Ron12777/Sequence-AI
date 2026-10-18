@@ -1,0 +1,11 @@
+{
+  "cpu_float64_forward_max_abs": 1.1102230246251565e-16,
+  "cpu_float64_global_loss_abs_error": 0.0,
+  "cpu_float64_gradient_max_abs": 6.938893903907228e-18,
+  "cpu_float32_full_ppo_max_parameter_error": 1.4901161193847656e-08,
+  "same_update_count": 22,
+  "same_kl_stop": false,
+  "raw_state_keys_preserved": true,
+  "proxy_calls": 22,
+  "gpu_measured": false
+}

@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "states": 209,
+  "policy_max_abs": 1.621246337890625e-05,
+  "value_max_abs": 5.010515451431274e-07,
+  "rtol": 1e-05,
+  "atol": 1e-05,
+  "inference_ms_per_move": 2.003827750397641,
+  "runtime": "onnxruntime-web 1.18.0 WASM single thread",
+  "browser": "Chrome155 Linux x86_64 Codex in-app browser",
+  "checkpoint_sha256": "63c0efcf79237f1ba019f22d2ce55cee50156104c78b072dc2f4008bddef4cb2",
+  "onnx_sha256": "b9fab77b2dd8b28efb42e0e4ee977876ab9737bc27e9e3ac7d9309a0fe713e89",
+  "move_parity": true,
+  "ui_checks": [
+    "hint highlighted legal move",
+    "AI vs AI completed with two sequences",
+    "search-depth controls hidden",
+    "analysis edit displays incomplete-history alert"
+  ],
+  "pytest_cases_passed": 4,
+  "node_cases_passed": 11,
+  "production_model_replaced": false,
+  "source_sha256": {
+    "web/static/history_player.js": "313614e7a5cef535ca9aac41a0e87497879775f61dc5763f9cfbabb9190380e2",
+    "web/static/game_engine.js": "af31c4821cc30b3f67b30da07d7fe2fc133dcb4781d2cce9d21ee075b294f24c",
+    "web/static/game.js": "04e66a33fa95b5aca9c789cc0799209b477a03bf25aaeda009369e4422601a92",
+    "web/static/index.html": "784c2c65733291c3cd84e73fb56f4f244c547662ea2d0fc3d2d6b1348ed0c1d5",
+    "web/static/style.css": "d3d31793dbe0ae9638a3dc2f7b5816e31ffeec34f67213da043627f18f1bc88b"
+  }
+}

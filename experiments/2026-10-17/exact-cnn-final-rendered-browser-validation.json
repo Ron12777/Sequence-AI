@@ -1,0 +1,124 @@
+{
+  "started_utc": "2026-10-17T23:37:04.062Z",
+  "scope": "Actual headless Chrome rendered UI against served deployment; loaded manifest and ONNX bytes checked against local selected files",
+  "url": "http://127.0.0.1:8765/",
+  "expected_model_path": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/exact-cnn-final.onnx",
+  "expected_model_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+  "expected_manifest_path": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/web/static/model.json",
+  "checks": {
+    "served_manifest_matches_local": true,
+    "loaded_onnx_sha256_matches_selected": true,
+    "loaded": {
+      "direct": true,
+      "exact": true,
+      "boardHandOnly": true,
+      "inputs": [
+        "board",
+        "context",
+        "history",
+        "actions"
+      ],
+      "outputs": [
+        "logits",
+        "value"
+      ],
+      "depthControlsHidden": true
+    },
+    "human_hint_move_ai_reply": {
+      "events": 2,
+      "currentPlayer": 1,
+      "error": "",
+      "historyItems": 2
+    },
+    "watch_pause_resume_reset": true,
+    "edited_board_and_hand_analysis_and_hint": {
+      "publicHistoryComplete": false,
+      "error": "",
+      "editedChip": 1,
+      "hand": [
+        "6H",
+        "2H",
+        "4C",
+        "3C",
+        "JD",
+        "7D",
+        "AC"
+      ],
+      "directCalls": 10
+    },
+    "search_calls": 0,
+    "same_session_reload": true,
+    "ai_error": ""
+  },
+  "console_errors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "location": {
+        "url": "http://127.0.0.1:8765/favicon.ico",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "page_errors": [],
+  "request_failures": [],
+  "responses": [],
+  "loaded_assets": [
+    {
+      "url": "http://127.0.0.1:8765/model.json",
+      "status": 200,
+      "sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f"
+    },
+    {
+      "url": "http://127.0.0.1:8765/model-exact-0bd3130842892f06.onnx",
+      "status": 200,
+      "sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f"
+    },
+    {
+      "url": "http://127.0.0.1:8765/model.json",
+      "status": 200,
+      "sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f"
+    },
+    {
+      "url": "http://127.0.0.1:8765/model.json",
+      "status": 200,
+      "sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f"
+    },
+    {
+      "url": "http://127.0.0.1:8765/model-exact-0bd3130842892f06.onnx",
+      "status": 200,
+      "sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f"
+    },
+    {
+      "url": "http://127.0.0.1:8765/model.json",
+      "status": 200,
+      "sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f"
+    }
+  ],
+  "browser_version": "155.0.8059.39",
+  "manifest": {
+    "model": "model-exact-0bd3130842892f06.onnx",
+    "policyKind": "exact_sequence_policy",
+    "playMode": "direct",
+    "actionEncoding": "card_id * 100 + row * 10 + col",
+    "variant": "cnn",
+    "valueMode": "bounded",
+    "historyArchitecture": "board",
+    "observationMode": "board_hand"
+  },
+  "actionable_console_errors": [],
+  "passed": true,
+  "finished_utc": "2026-10-17T23:37:09.011Z",
+  "source_sha256": {
+    "web/static/game.js": "0fcbc0e0fee63ad5f3b5a9863ba66a960dbc4c8e396e49fe9935a885268fe2f1",
+    "web/static/game_engine.js": "324f370d5a5a10626cd2eb5e3ed3838c38a631bd2fb20d5ac04fd0e4d91b1006",
+    "web/static/direct_player.js": "7a3bc458213c36836290fd2873f8a00b49a3c8af84fcb21b2d6e7d14ccda8656",
+    "web/static/index.html": "4c1a0e513335fa1020392e043cd4e2c9e6c841b96fd731a99e5dd33bc73d79ca",
+    "web/static/style.css": "7cfcb63081261844cbcb44bf17c989e5d931633735c4fe6cd20f621238989075",
+    "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/exact-cnn-final.onnx": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+    "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/web/static/model.json": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f"
+  },
+  "script_sha256": "c0a7111daee06e901dc8924d2b2e61cdddc40f8971ab6c41f05d6d794ab5c739"
+}

@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "states": 209,
+  "policyMaxAbs": 1.71661376953125e-05,
+  "valueMaxAbs": 5.960464477539062e-07,
+  "inferenceMsPerMove": 1.8248803838018024,
+  "runtime": "onnxruntime-web 1.18.0 WASM single thread",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+  "onnx": "artifacts/gru-four-hour.onnx",
+  "tolerance": {
+    "atol": 1e-05,
+    "rtol": 1e-05
+  },
+  "checks": [
+    "209 real replayed states across three complete random games",
+    "All policy logits and values within atol+rtol*abs(expected)",
+    "Every legal argmax move matches Python direct_moves exactly",
+    "Displayed legal policy sums to one",
+    "Every replayed move accepted by browser game engine"
+  ],
+  "sha256": {
+    "artifacts/checkpoints/gru-four-hour.pt": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+    "artifacts/gru-four-hour.onnx": "0cec8d66046fc71773aeb04f89824a5f618a304c7411dffbd3557f4d3b771ca6",
+    "web/static/game_engine.js": "af31c4821cc30b3f67b30da07d7fe2fc133dcb4781d2cce9d21ee075b294f24c",
+    "web/static/direct_player.js": "4d4cd5831da45004d5acf7a23e66610696f5b82c9360477b5bfc89386ab3ff95",
+    "experiments/2026-10-17/browser-policy-validation.html": "88e22a3cecc3c25ee6fa80b2e68ecaf460769235b29330425d95398ba49ef01a",
+    "experiments/2026-10-17/browser-gru-four-hour-fixtures.json": "17dc1a55b97dd6a616b4eb72f9e241242efa1917f5b39dabc0cb03a357662a02"
+  },
+  "production_deployed": false,
+  "notes": "Exact retained checkpoint numerical and move parity passed. Existing architecture UI tests are separate; no browser production model replacement performed."
+}

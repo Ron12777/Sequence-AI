@@ -1,0 +1,60 @@
+{
+  "scope": "Final exact CNN deployment readiness; no production manifest/model, training, rental, automation or campaign changes",
+  "candidate": "artifacts/exact-cnn-twohour.onnx",
+  "candidate_sha256": "e0e7c9c30bc09dd3308fb422c8a1edfa16e98b4ed102d7129a081049da621c89",
+  "current_manifest": {
+    "model": "model.onnx",
+    "playMode": "search"
+  },
+  "proposed_manifest": {
+    "model": "model-exact-e0e7c9c30bc09dd33.onnx",
+    "playMode": "direct",
+    "policyKind": "exact_sequence_policy",
+    "actionEncoding": "card_id * 100 + row * 10 + col",
+    "variant": "cnn",
+    "valueMode": "bounded",
+    "historyArchitecture": "board",
+    "observationMode": "board_hand"
+  },
+  "required_file_changes": [
+    "Copy final verified ONNX under content-versioned filename in web/static; retain old model for rollback",
+    "Replace web/static/model.json only after selected versioned model exists",
+    "Update web/static/index.html cache versions for game_engine.js, direct_player.js, game.js and style.css; currently only game.js has v14"
+  ],
+  "evidence": {
+    "native_argmax": "576/576",
+    "ort_web_exact_moves": "1016/1016 across 12 complete games before edited-position capability fix",
+    "report": "experiments/2026-10-17/exact-cnn-twohour-browser-validation.json",
+    "rendered_ui_test": "Passed actual Chrome155 staged UI with exact2h ONNX and board_hand capability; see exact-cnn-rendered-browser-validation.json"
+  },
+  "analysis_board_fix": {
+    "status": "Implemented and tested",
+    "capability": "observationMode=board_hand requires variant=cnn AND historyArchitecture=board; missing metadata or public_history retains complete-history guard",
+    "inputs": "Edited positions use actual canonical board and own card counts; ignored history/context inputs get zero buffers. Never used for transformer/GRU/summary",
+    "tests": "18 Node browser tests; 8 Python browser parity/export tests. Actual hint path tested; bounded/unbounded CNN ONNX outputs bit-identical when ignored inputs zeroed"
+  },
+  "remaining_checks": [
+    "Verify selected model hash at actual served URL; test cached-session reload. Existing sessions adopt model only after reload",
+    "If later selected model changes, rerun immutable checkpoint native export and actual pinned ORT Web parity",
+    "Publish static folder through authorized deployment and verify remote page; local changes alone do not publish"
+  ],
+  "known_limits": [
+    "Legacy Flask /api/ai_move and /api/hint ignore static manifest, load models/latest.pt and MCTS. Static browser frontend never calls these endpoints; browser deployment does not upgrade legacy API",
+    "Browser chooses greedy exact argmax; no temperature or sample-policy manifest support",
+    "Manifest uses no-store but ONNX/scripts may be cached; use content-versioned model and script/CSS versions",
+    "Model sha256 manifest field would be provenance only; browser currently does not verify hashes",
+    "Analysis editor preexisting manual chip edits do not recompute completedSequences; this fix removes inappropriate history guard only"
+  ],
+  "deployment_workflow": ".github/workflows/deploy.yml runs on main push touching web/static/** and publishes that folder to gh-pages",
+  "source_sha256": {
+    "web/static/model.json": "bcc1a1275b2bfacea104d0e6cb5aa7daef3f58eff239a198e74e076702fce592",
+    "web/static/index.html": "fecb96aeedf4d58d52078023abb1c5c82f988adfc5428454f36b07dd8a6f7982",
+    "web/static/game.js": "0fcbc0e0fee63ad5f3b5a9863ba66a960dbc4c8e396e49fe9935a885268fe2f1",
+    "web/static/game_engine.js": "324f370d5a5a10626cd2eb5e3ed3838c38a631bd2fb20d5ac04fd0e4d91b1006",
+    "web/static/direct_player.js": "7a3bc458213c36836290fd2873f8a00b49a3c8af84fcb21b2d6e7d14ccda8656",
+    "web/static/style.css": "7cfcb63081261844cbcb44bf17c989e5d931633735c4fe6cd20f621238989075",
+    "web/app.py": "b2c486c3af0c610449bbfcbaf33dc4cb11964041fa6f78c16c0990ed8aa7ab36",
+    ".github/workflows/deploy.yml": "6fef108ceb3462f5921db5bd14a8ac50b0efd605da5dc435bef62997c08521a9",
+    "scripts/export_exact_onnx.py": "5d3858ecc24a5ca0e6aa0e24597d7a4e9f68859a034feaec1036aa1e0eca7b32"
+  }
+}

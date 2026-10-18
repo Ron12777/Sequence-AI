@@ -1,0 +1,23 @@
+{
+  "candidate": {
+    "checkpoint": "campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+    "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8"
+  },
+  "opponents": [
+    {
+      "label": "heldout_baseline_32",
+      "kind": "champion",
+      "checkpoint": "artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "games": 8192,
+      "seed": 2800300000001,
+      "simulations": 32
+    }
+  ],
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Fixed8192-game fresh paired heldout replication for candidate and incumbent after ambiguous1024game screen. Assess practical retention with predeclared2percentagepoint margin on paired candidate-minus-incumbent95percent lowerbound; report raw effect and interval. No optional stopping or more games selected from interim results. Final campaign seeds untouched.",
+  "execution_note": "Moved from CPU to GPU after >112seconds with no completed256game chunk; fixedsample/seeds/criterion unchanged, no interimoutcomes used."
+}

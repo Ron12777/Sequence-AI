@@ -1,0 +1,18 @@
+{
+  "games_per_model": 8192,
+  "independent_deal_pairs": 4096,
+  "candidate_score": 0.78460693359375,
+  "incumbent_score": 0.77923583984375,
+  "candidate_minus_incumbent": 0.00537109375,
+  "paired95ci": [
+    -0.004643367939296662,
+    0.015385555439296662
+  ],
+  "practical_retention_margin": 0.02,
+  "practical_retention_pass": true,
+  "superiority_on_this_opponent_proven": false,
+  "gpu_evaluation_seconds": 140.77955713600386,
+  "remote_file_checksums_verified": true,
+  "no_optional_stopping": true,
+  "scope": "Fixed fresh replication, shared deals and swapped seats; per-deal average difference. Retention permits at most2pp score loss, not equality proof. Margin set before thisreplication, not at outset of campaign."
+}

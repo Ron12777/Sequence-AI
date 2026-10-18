@@ -1,0 +1,404 @@
+{
+  "utc": "2026-10-17T22:50:04.379349+00:00",
+  "processes": [
+    {
+      "pid": 333187,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/campaign_watchdog.py",
+        "--instance",
+        "56415071",
+        "--stop-at",
+        "2026-10-17T23:55:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 333505,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/train_exact_multigpu.py",
+        "--output-dir",
+        "campaign/exact/sustained",
+        "--reference",
+        "artifacts/checkpoints/gru-four-hour.pt",
+        "--devices",
+        "0,1",
+        "--shared-update-devices",
+        "0,1",
+        "--block-seconds",
+        "600",
+        "--evaluation-games",
+        "256",
+        "--stop-at",
+        "2026-10-17T23:30:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 333506,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/tmp/run-final-development-suite.py",
+        "--root",
+        "/workspace/sequence",
+        "--cnn-only",
+        ""
+      ]
+    },
+    {
+      "pid": 559734,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/workspace/sequence/scripts/train_exact_multigpu.py",
+        "--worker",
+        "--output-dir",
+        "/workspace/sequence/campaign/exact/sustained",
+        "--reference",
+        "/workspace/sequence/artifacts/checkpoints/gru-four-hour.pt",
+        "--stop-at",
+        "2026-10-17T23:30:00Z",
+        "--block-seconds",
+        "600.0",
+        "--evaluation-games",
+        "256",
+        "--worker-slot",
+        "0",
+        "--worker-device",
+        "0,1",
+        "--contender",
+        "cnn_ppo",
+        "--parent-pid",
+        "333505",
+        "--shared-update-devices",
+        "0,1",
+        "--stop-file",
+        "/workspace/sequence/campaign/exact/sustained/worker_control/0-1792277119409129644.stop",
+        ""
+      ]
+    }
+  ],
+  "checkpoint_metadata": {
+    "recipe": {
+      "contenders": [
+        "cnn_ppo",
+        "transformer_ppo",
+        "cnn_rnad"
+      ],
+      "games_per_iteration": 2048,
+      "batch_size": 1024,
+      "epochs": 2,
+      "trunk_lr": 1e-05,
+      "new_lr": 0.0001,
+      "minimum_lr_fraction": 0.3,
+      "schedule_training_seconds": 10800,
+      "entropy_initial": 0.003,
+      "entropy_final": 0.002,
+      "ppo_clip": 0.1,
+      "target_kl": 0.01,
+      "value_coefficient": 0.5,
+      "gradient_clip": 1.0,
+      "opponents": "50% current self-play,25% frozen GRU reference,25% historical exact policy; balanced learner seats",
+      "historical_pool_size": 3,
+      "checkpoint_seconds": 60,
+      "seed": 2100000001,
+      "monitor_seed": 2100000000001,
+      "final_confirmation_seed_reserved": 9100000000001,
+      "replay": "none; fresh on-policy trajectories per update",
+      "returns": "terminal outcome from each acting player's perspective, undiscounted",
+      "rnad_games_per_minibatch": 32,
+      "rnad_reference_interval": 4000,
+      "rnad_eta": 0.2,
+      "rnad_target_avg": 0.001,
+      "rnad_gradient_clip": 10000.0,
+      "rnad_opponents": "100% current policy both-player self-play; complete episodes",
+      "common_pretraining_checkpoint_sha256": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1",
+      "reference_sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb"
+    },
+    "variant": "cnn",
+    "algorithm": "ppo",
+    "contender": "cnn_ppo",
+    "iterations": 4657,
+    "games": 9537536,
+    "positions": 352311916,
+    "updates": 692772,
+    "training_seconds": 20338.47452712219,
+    "blocks": 41,
+    "execution_accounting": {
+      "segments": [
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 12616.348260448169,
+          "wall_seconds": 601.5682515939989,
+          "allocated_gpu_seconds": 1203.1365031879977,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 13217.91651124219,
+          "wall_seconds": 600.9658504429972,
+          "allocated_gpu_seconds": 1201.9317008859944,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 13818.882361055177,
+          "wall_seconds": 602.6726289699727,
+          "allocated_gpu_seconds": 1205.3452579399454,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 14421.554989405151,
+          "wall_seconds": 50.19780291500501,
+          "allocated_gpu_seconds": 100.39560583001003,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 14471.752791710169,
+          "wall_seconds": 600.5177570790111,
+          "allocated_gpu_seconds": 1201.0355141580221,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 15072.270548189175,
+          "wall_seconds": 603.6844404099975,
+          "allocated_gpu_seconds": 1207.368880819995,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 15675.95498800918,
+          "wall_seconds": 441.9717009829765,
+          "allocated_gpu_seconds": 883.943401965953,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 16117.926688122185,
+          "wall_seconds": 601.7495091160235,
+          "allocated_gpu_seconds": 1203.499018232047,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 16719.676196678192,
+          "wall_seconds": 362.6736213400145,
+          "allocated_gpu_seconds": 725.347242680029,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 17082.34981735819,
+          "wall_seconds": 602.8181214289798,
+          "allocated_gpu_seconds": 1205.6362428579596,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 17685.167938197177,
+          "wall_seconds": 600.7068019789876,
+          "allocated_gpu_seconds": 1201.4136039579753,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 18285.874739226158,
+          "wall_seconds": 601.9430188900151,
+          "allocated_gpu_seconds": 1203.8860377800302,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 18887.817757656157,
+          "wall_seconds": 603.8236047149985,
+          "allocated_gpu_seconds": 1207.647209429997,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 19491.641361991176,
+          "wall_seconds": 602.0208598460013,
+          "allocated_gpu_seconds": 1204.0417196920025,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        },
+        {
+          "mode": "update_data_parallel",
+          "visible_device_indices": [
+            0,
+            1
+          ],
+          "allocated_gpu_count": 2,
+          "training_seconds_start": 20093.662221117178,
+          "wall_seconds": 244.81230718499864,
+          "allocated_gpu_seconds": 489.6246143699973,
+          "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+          "parallel_minimum_batch": 1024,
+          "global_batch_size": 1024,
+          "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+        }
+      ]
+    }
+  },
+  "latest_metrics": {
+    "training_seconds": 20376.471930115193,
+    "games": 9558016,
+    "updates": 694214,
+    "iteration_seconds": 3.8008064680034295,
+    "policy_entropy": 0.26345420566697914,
+    "approximate_kl": 0.0004473562809531965,
+    "loss": 0.4309686482366588,
+    "rollout_value_explained_variance": 0.129668028025699,
+    "parallel_update_gpu_count": 2
+  },
+  "mean_last100_cycle_seconds": 3.8140119638195027,
+  "finite_metrics": true,
+  "pauses": [],
+  "state": {
+    "status": "training",
+    "reason": null,
+    "failure": null,
+    "workers": {
+      "0": {
+        "contender": "cnn_ppo",
+        "device": "0,1",
+        "started_epoch": 1792277119.4090555,
+        "stop_sent": false,
+        "pid": 559734
+      }
+    },
+    "completed_blocks": 5,
+    "last_completed": [
+      {
+        "slot": 0,
+        "contender": "cnn_ppo",
+        "exit_code": 0
+      }
+    ],
+    "paused_slots": [],
+    "controller": "multi_gpu",
+    "stop_at": "2026-10-17T23:30:00Z",
+    "updated_utc": "2026-10-17T22:45:19.409536+00:00"
+  },
+  "final_confirmation_exists": false,
+  "waiter_sha256": "ce6b6017f7c2c003e5e38911b9330fd25f13a2321c05b6ae681f01679ddbf1ba",
+  "confirmation_runner_sha256": "0414890280c95d72ec91ac49f2330666273a4ef38ddc4835434ca20e9789c1c9"
+}

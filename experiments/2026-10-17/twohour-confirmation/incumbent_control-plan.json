@@ -1,0 +1,31 @@
+{
+  "candidate": {
+    "checkpoint": "campaign/exact/milestones/cnn_ppo-mixed-1h.pt",
+    "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb"
+  },
+  "opponents": [
+    {
+      "label": "original_search_128",
+      "kind": "champion",
+      "checkpoint": "artifacts/checkpoints/overnight-round0.pt",
+      "sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+      "games": 2048,
+      "seed": 2700200000001,
+      "simulations": 128
+    },
+    {
+      "label": "heldout_baseline_32",
+      "kind": "champion",
+      "checkpoint": "artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "games": 1024,
+      "seed": 2700300000001,
+      "simulations": 32
+    }
+  ],
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Incumbent heldout control on identical fresh paired deals as selected2h candidate; paired difference assesses retained strength."
+}

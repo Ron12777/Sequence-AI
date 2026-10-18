@@ -1,0 +1,37 @@
+{
+  "recipe": {
+    "iterations": 8,
+    "depth": 2,
+    "seed": 20261017,
+    "width": 128,
+    "lr": 0.0003,
+    "replay_capacity": 4096,
+    "updates_every_episodes": 4,
+    "batches_per_update": 8,
+    "inputs": 897,
+    "types": 21
+  },
+  "game": {
+    "variant": 0,
+    "private_hand_types_per_player": 21,
+    "compatible_private_deals": 375,
+    "public_nodes": 12985,
+    "terminal_nodes": 11560,
+    "pool": [
+      "10D",
+      "2H",
+      "5H",
+      "10C",
+      "3H",
+      "AD"
+    ],
+    "physical_copies_per_identity": 2,
+    "scope": "Synthetic restricted Sequence endgame; not full-game training or deployment"
+  },
+  "episodes": 4,
+  "training_seconds": 0.5224166449625045,
+  "pid": 2,
+  "device": "cpu",
+  "status": "complete",
+  "replay_beliefs": 8
+}

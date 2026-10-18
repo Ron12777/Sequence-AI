@@ -1,0 +1,11 @@
+{
+  "reason": "Transition to sustained training with preserved optimizers and matched long budgets",
+  "previous_controller_pid": 1448,
+  "comparison_status": "completed",
+  "retained": {
+    "path": "campaign/retained_round3.pt",
+    "sha256": "91e0333bf413ec67f671a538be55f8252a02d0b2fc810af701c73c9e2e6dd4ae"
+  },
+  "stopped": true,
+  "unix": 1792191024.698275
+}

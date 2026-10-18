@@ -1,0 +1,22 @@
+{
+  "candidate": {
+    "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/exact-cnn-onehour.pt",
+    "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb"
+  },
+  "opponents": [
+    {
+      "label": "heldout_baseline_32",
+      "kind": "champion",
+      "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "games": 8192,
+      "seed": 2800300000001,
+      "simulations": 32
+    }
+  ],
+  "device": "cpu",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Fixed8192-game fresh paired heldout replication for candidate and incumbent after ambiguous1024game screen. Assess practical retention with predeclared2percentagepoint margin on paired candidate-minus-incumbent95percent lowerbound; report raw effect and interval. No optional stopping or more games selected from interim results. Final campaign seeds untouched."
+}

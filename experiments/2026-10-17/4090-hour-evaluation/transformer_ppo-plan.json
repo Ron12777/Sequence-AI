@@ -1,0 +1,29 @@
+{
+  "candidate": {
+    "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/exact-4090-hour/transformer_ppo-4090-1h.pt",
+    "sha256": "c830bc1a56546b2a10830c38e87b70197909e121bc57a138a8f0e46c6538c430"
+  },
+  "opponents": [
+    {
+      "label": "validated_exact_cnn_1h",
+      "kind": "exact",
+      "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/exact-cnn-onehour.pt",
+      "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb",
+      "games": 4096,
+      "seed": 2400100000001
+    },
+    {
+      "label": "retained_cnn_7h48",
+      "kind": "history",
+      "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/board-pre-migration-final.pt",
+      "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+      "games": 2048,
+      "seed": 2400200000001
+    }
+  ],
+  "device": "cpu",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Developmental matched additional RTX4090-hour controls; inherited RTX5090 budgets differ. Original threshold2 RNaD, not corrected continuation. Fresh paired deals; no final confirmation seeds; evaluation CPU cost separate from training."
+}

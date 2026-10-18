@@ -1,68 +1,60 @@
-"""
-Export the trained PyTorch model to ONNX format for browser inference.
-"""
-import sys
+"""Export and validate a checkpoint before replacing a browser ONNX artifact."""
+
+import argparse
+import os
 from pathlib import Path
+import sys
+import tempfile
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 import torch
-import numpy as np
-from src.model import load_model, SequenceNet
+from src.model import load_model, STATE_CHANNELS
 
-def export_to_onnx():
-    """Export the trained model to ONNX format."""
-    
-    models_dir = Path(__file__).parent.parent / "models"
-    checkpoint_path = models_dir / "latest.pt"
-    output_path = Path(__file__).parent.parent / "web" / "static" / "model.onnx"
-    
-    if not checkpoint_path.exists():
-        print(f"Error: No model found at {checkpoint_path}")
-        return False
-    
-    print(f"Loading model from {checkpoint_path}...")
-    model, device, _ = load_model(str(checkpoint_path), device='cpu', compile_model=False)
+
+def export_to_onnx(checkpoint_path=None, output_path=None):
+    import onnx
+
+    checkpoint_path = Path(checkpoint_path or ROOT / "models/latest.pt")
+    output_path = Path(output_path or ROOT / "web/static/model.onnx")
+    if not checkpoint_path.is_file():
+        raise FileNotFoundError(f"No checkpoint at {checkpoint_path}")
+    model, _, _ = load_model(checkpoint_path, device="cpu", compile_model=False)
     model.eval()
-    
-    # Create dummy input matching the expected shape: (batch, 8, 10, 10)
-    dummy_input = torch.randn(1, 8, 10, 10, device='cpu')
-    
-    print(f"Exporting to ONNX at {output_path}...")
-    
-    # Export to ONNX using legacy API (avoids onnxscript dependency)
-    torch.onnx.export(
-        model,
-        dummy_input,
-        str(output_path),
-        export_params=True,
-        opset_version=12,
-        do_constant_folding=True,
-        input_names=['input'],
-        output_names=['policy', 'value'],
-        dynamic_axes={
-            'input': {0: 'batch_size'},
-            'policy': {0: 'batch_size'},
-            'value': {0: 'batch_size'}
-        },
-        dynamo=False  # Use legacy exporter
-    )
-    
-    print(f"✓ Model exported to {output_path}")
-    print(f"  File size: {output_path.stat().st_size / 1024 / 1024:.2f} MB")
-    
-    # Verify the export structure
-    print("\nVerifying ONNX export...")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(dir=output_path.parent, suffix=".onnx")
+    os.close(fd)
     try:
-        import onnx
-        onnx_model = onnx.load(str(output_path))
-        onnx.checker.check_model(onnx_model)
-        print("✓ ONNX model is valid!")
-    except ImportError:
-        print("(onnx package not available for validation, but export complete)")
-    
+        torch.onnx.export(
+            model,
+            torch.zeros(1, STATE_CHANNELS, 10, 10),
+            temporary,
+            export_params=True,
+            opset_version=12,
+            do_constant_folding=True,
+            input_names=["input"],
+            output_names=["policy", "value"],
+            dynamic_axes={
+                "input": {0: "batch_size"},
+                "policy": {0: "batch_size"},
+                "value": {0: "batch_size"},
+            },
+            dynamo=False,
+        )
+        onnx.checker.check_model(onnx.load(temporary))
+        os.replace(temporary, output_path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    print(
+        f"Validated ONNX model saved to {output_path} ({output_path.stat().st_size:,} bytes)"
+    )
     return True
-    
+
+
 if __name__ == "__main__":
-    export_to_onnx()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkpoint", type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    export_to_onnx(args.checkpoint, args.output)

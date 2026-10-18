@@ -1,0 +1,38 @@
+{
+  "purpose": "Bounded full-rollout-plus-update migration profile; not a strength result",
+  "rows": {
+    "cnn_ppo": {
+      "single_5090_seconds": 5.435834624804556,
+      "dual_4090_concurrent_seconds": [
+        5.640881133993389,
+        4.7569673499965575
+      ]
+    },
+    "transformer_ppo": {
+      "single_5090_seconds": 12.57258931407705,
+      "dual_4090_concurrent_seconds": [
+        16.573273907997645,
+        17.709901911002817
+      ]
+    },
+    "cnn_rnad": {
+      "single_5090_seconds": 6.382689470890909,
+      "dual_4090_concurrent_seconds": [
+        6.715543399011949,
+        6.786658696975792
+      ]
+    }
+  },
+  "estimated_equal_mix_aggregate_throughput_ratio": 1.6768484609303749,
+  "hourly_cost_ratio": 1.436902966314731,
+  "estimated_equal_mix_throughput_per_dollar_ratio": 1.1669879596887738,
+  "limitations": [
+    "One profile cycle per contender per device; not a sustained benchmark.",
+    "Overlap differs between contenders; warmup and contention can affect timing.",
+    "Hardware-specific training budgets remain separate; no architecture quality inference."
+  ],
+  "remote_regression_tests": {
+    "passed": 58,
+    "seconds": 27.73
+  }
+}

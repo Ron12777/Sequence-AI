@@ -1,0 +1,334 @@
+{
+  "checked_utc": "2026-10-17T16:43:00Z",
+  "state": {
+    "status": "training",
+    "reason": null,
+    "failure": null,
+    "workers": {
+      "1": {
+        "contender": "transformer_ppo",
+        "device": "1",
+        "started_epoch": 1792255119.6637292,
+        "stop_sent": false,
+        "pid": 1268
+      },
+      "0": {
+        "contender": "cnn_ppo",
+        "device": "0",
+        "started_epoch": 1792255134.1970787,
+        "stop_sent": false,
+        "pid": 1275
+      }
+    },
+    "completed_blocks": 8,
+    "last_completed": [
+      {
+        "slot": 1,
+        "contender": "cnn_ppo",
+        "exit_code": 0
+      },
+      {
+        "slot": 0,
+        "contender": "cnn_rnad",
+        "exit_code": 0
+      }
+    ],
+    "paused_slots": [],
+    "controller": "multi_gpu",
+    "stop_at": "2026-10-17T21:00:00Z",
+    "updated_utc": "2026-10-17T16:38:54.197631+00:00"
+  },
+  "contenders": {
+    "cnn_ppo": {
+      "latest": {
+        "games": 1370112,
+        "positions": 51990917,
+        "decisions": 102380,
+        "decisive_games": 2046,
+        "opponent_moves": 25545,
+        "rollout_seconds": 0.8769739420094993,
+        "environment_seconds": 0.31626811614842154,
+        "inference_seconds": 0.5035351567785256,
+        "games_per_second": 2335.303139460689,
+        "return_mean": 0.026667533442378044,
+        "return_variance": 0.9973366260528564,
+        "old_value_mse": 0.8885669112205505,
+        "max_legal_actions": 202,
+        "data_policy_version": "current frozen learner for entire rollout; no replay",
+        "loss": 0.43638368578333603,
+        "policy_loss": -0.004150886807014774,
+        "value_loss": 0.8834091664144867,
+        "approximate_kl": 0.0010352879724355023,
+        "policy_entropy": 0.4339395083094898,
+        "position_entropy": 0.4313243211884248,
+        "card_given_position_entropy": 0.0026151871210650392,
+        "clip_fraction": 0.0537562779592056,
+        "gradient_norm": 3.431619990813105,
+        "updates": 102224,
+        "epochs_started": 2,
+        "kl_early_stop": false,
+        "update_seconds": 3.796582474024035,
+        "samples_per_fresh_position": 2.0,
+        "rollout_value_explained_variance": 0.10937095473655756,
+        "variant": "cnn",
+        "algorithm": "ppo",
+        "contender": "cnn_ppo",
+        "iterations": 669,
+        "training_seconds": 3285.13936483016,
+        "blocks": 6,
+        "iteration_seconds": 4.676918813987868,
+        "trunk_learning_rate": 8.523780445393044e-06,
+        "new_learning_rate": 8.523780445393044e-05,
+        "entropy_coefficient": 0.0026962536313761883,
+        "regularization_eta": 0.0,
+        "opponent_distribution": "50% current self-play,25% frozen GRU reference,25% historical exact policy; balanced learner seats"
+      },
+      "last20_means": {
+        "iteration_seconds": 4.660806501751358,
+        "rollout_seconds": 0.9080098276448553,
+        "update_seconds": 3.7493973352015018,
+        "approximate_kl": 0.0010147526384349603,
+        "policy_entropy": 0.43014940906012133,
+        "rollout_value_explained_variance": 0.10726438720574596,
+        "gradient_norm": 3.2817985494670117
+      },
+      "metrics_finite": true,
+      "evaluations": [
+        {
+          "seconds": 650.5549988881685,
+          "score": 0.55859375,
+          "ci": [
+            0.5104438006467149,
+            0.6067436993532851
+          ]
+        },
+        {
+          "seconds": 1255.0600130441599,
+          "score": 0.548828125,
+          "ci": [
+            0.4966802758196579,
+            0.6009759741803421
+          ]
+        },
+        {
+          "seconds": 1857.2727771421487,
+          "score": 0.49609375,
+          "ci": [
+            0.44934454420137004,
+            0.54284295579863
+          ]
+        },
+        {
+          "seconds": 2459.149086307152,
+          "score": 0.47265625,
+          "ci": [
+            0.42367000454490406,
+            0.521642495455096
+          ]
+        },
+        {
+          "seconds": 3060.078590462159,
+          "score": 0.54296875,
+          "ci": [
+            0.4919517058241132,
+            0.5939857941758868
+          ]
+        }
+      ],
+      "reference_rotations_total": 0
+    },
+    "transformer_ppo": {
+      "latest": {
+        "games": 440320,
+        "positions": 16680361,
+        "decisions": 102371,
+        "decisive_games": 2046,
+        "opponent_moves": 25615,
+        "rollout_seconds": 3.056417651998345,
+        "environment_seconds": 0.3622368550277315,
+        "inference_seconds": 2.6339254749182146,
+        "games_per_second": 670.0654927381989,
+        "return_mean": 0.017249464988708496,
+        "return_variance": 0.9977481961250305,
+        "old_value_mse": 0.934802234172821,
+        "max_legal_actions": 202,
+        "data_policy_version": "current frozen learner for entire rollout; no replay",
+        "loss": 0.43798571864763897,
+        "policy_loss": -0.0014188984610761205,
+        "value_loss": 0.881415376663208,
+        "approximate_kl": 0.001352977105610383,
+        "policy_entropy": 0.4798833751678467,
+        "position_entropy": 0.4756686455011368,
+        "card_given_position_entropy": 0.0042147296667098995,
+        "clip_fraction": 0.06973105331261953,
+        "gradient_norm": 3.2371392679214477,
+        "updates": 32806,
+        "epochs_started": 2,
+        "kl_early_stop": false,
+        "update_seconds": 13.677455717988778,
+        "samples_per_fresh_position": 2.0,
+        "rollout_value_explained_variance": 0.06414767712916514,
+        "variant": "transformer",
+        "algorithm": "ppo",
+        "contender": "transformer_ppo",
+        "iterations": 215,
+        "training_seconds": 3090.512777100579,
+        "blocks": 5,
+        "iteration_seconds": 16.73740063200239,
+        "trunk_learning_rate": 8.691706579218172e-06,
+        "new_learning_rate": 8.69170657921817e-05,
+        "entropy_coefficient": 0.002715391426134482,
+        "regularization_eta": 0.0,
+        "opponent_distribution": "50% current self-play,25% frozen GRU reference,25% historical exact policy; balanced learner seats"
+      },
+      "last20_means": {
+        "iteration_seconds": 16.8135189113018,
+        "rollout_seconds": 3.0574629519484007,
+        "update_seconds": 13.752545146347256,
+        "approximate_kl": 0.0012268168590555905,
+        "policy_entropy": 0.477170513111447,
+        "rollout_value_explained_variance": 0.09114388628342132,
+        "gradient_norm": 3.3057327794637703
+      },
+      "metrics_finite": true,
+      "evaluations": [
+        {
+          "seconds": 608.1162682152353,
+          "score": 0.53515625,
+          "ci": [
+            0.48880365120503755,
+            0.5815088487949625
+          ]
+        },
+        {
+          "seconds": 1216.922461437527,
+          "score": 0.53515625,
+          "ci": [
+            0.48880365120503755,
+            0.5815088487949625
+          ]
+        },
+        {
+          "seconds": 2251.6042799365823,
+          "score": 0.48828125,
+          "ci": [
+            0.4403234017492083,
+            0.5362390982507917
+          ]
+        },
+        {
+          "seconds": 2854.321594396577,
+          "score": 0.484375,
+          "ci": [
+            0.43583837454224106,
+            0.5329116254577589
+          ]
+        }
+      ],
+      "reference_rotations_total": 0
+    },
+    "cnn_rnad": {
+      "latest": {
+        "games": 933888,
+        "positions": 51306666,
+        "decisions": 119961,
+        "decisive_games": 2037,
+        "opponent_moves": 0,
+        "rollout_seconds": 1.0181008009822108,
+        "environment_seconds": 0.40665473593981005,
+        "inference_seconds": 0.4723864559782669,
+        "games_per_second": 2011.5886344693924,
+        "return_mean": 0.008952910080552101,
+        "return_variance": 0.9907418489456177,
+        "old_value_mse": 0.8767178058624268,
+        "max_legal_actions": 202,
+        "data_policy_version": "current frozen learner for entire rollout; no replay",
+        "critic_loss": 0.9931374373845756,
+        "nerd_loss": 0.07412360911257565,
+        "entropy": 1.812378417700529,
+        "regularizer_kl": 0.018987814750289544,
+        "value_target_abs": 0.7460477156564593,
+        "reference_alpha": 0.592,
+        "loss": 1.0672610378824174,
+        "gradient_norm": 86.8416748046875,
+        "reference_rotations": 0,
+        "updates": 29184,
+        "update_seconds": 6.5725324410013855,
+        "reference_steps": 29184,
+        "samples_per_fresh_position": 1.0,
+        "variant": "cnn",
+        "algorithm": "rnad",
+        "contender": "cnn_rnad",
+        "iterations": 456,
+        "training_seconds": 3198.183671977138,
+        "blocks": 5,
+        "iteration_seconds": 7.596579296019627,
+        "trunk_learning_rate": 8.597736402581728e-06,
+        "new_learning_rate": 8.597736402581728e-05,
+        "entropy_coefficient": 0.0,
+        "regularization_eta": 0.2,
+        "opponent_distribution": "100% current policy both-player self-play; complete episodes"
+      },
+      "last20_means": {
+        "iteration_seconds": 7.619391532301961,
+        "rollout_seconds": 1.0474823143988032,
+        "update_seconds": 6.5661414004542165,
+        "entropy": 1.8001298901624978,
+        "regularizer_kl": 0.022655789322016062,
+        "critic_loss": 0.981493779248558,
+        "gradient_norm": 76.47227888703347
+      },
+      "metrics_finite": true,
+      "evaluations": [
+        {
+          "seconds": 601.5151872960851,
+          "score": 0.49609375,
+          "ci": [
+            0.44453673264951465,
+            0.5476507673504853
+          ]
+        },
+        {
+          "seconds": 1382.350604493171,
+          "score": 0.54296875,
+          "ci": [
+            0.5022567959091778,
+            0.5836807040908222
+          ]
+        },
+        {
+          "seconds": 1989.450740418164,
+          "score": 0.50390625,
+          "ci": [
+            0.4611159485714524,
+            0.5466965514285476
+          ]
+        },
+        {
+          "seconds": 2592.294960349158,
+          "score": 0.5,
+          "ci": [
+            0.44901463078474624,
+            0.5509853692152538
+          ]
+        },
+        {
+          "seconds": 3198.1854411751556,
+          "score": 0.5,
+          "ci": [
+            0.4565195310386104,
+            0.5434804689613896
+          ]
+        }
+      ],
+      "reference_rotations_total": 7
+    }
+  },
+  "observer_pid": 1318,
+  "observer_log": "",
+  "observer_live": true,
+  "mean_util_last300samples": {
+    "0": 74.34333333333333,
+    "1": 88.7
+  }
+}

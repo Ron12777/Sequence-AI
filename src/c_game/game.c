@@ -12,6 +12,9 @@
 // -----------------------------------------------------------------------------
 #define BOARD_SIZE 10
 #define NUM_POSITIONS 100
+#define MAX_HAND_SIZE 7
+#define STATE_CHANNELS (4 + MAX_HAND_SIZE)
+#define STATE_TENSOR_SIZE (STATE_CHANNELS * NUM_POSITIONS)
 #define MAX_MOVES 150
 #define FREE -1
 #define EMPTY 0
@@ -76,6 +79,9 @@ typedef struct MCTSNode {
     // Embed move inline to avoid separate allocation
     CMove move_from_parent;
     bool has_move;
+
+    int hand[7];
+    int hand_size;
 } MCTSNode;
 
 // Arena allocator for MCTS nodes - eliminates malloc overhead
@@ -170,16 +176,16 @@ static inline bool is_jack(int card) {
     return ((card % 13) + 1) == 11;
 }
 
-static inline bool is_red_jack(int card) {
+static inline bool is_two_eyed_jack(int card) {
     if (!is_jack(card)) return false;
     int suit = card / 13;
-    return (suit == 1 || suit == 2); // Diamonds, Hearts
+    return (suit == 0 || suit == 1); // Clubs, Diamonds
 }
 
-static inline bool is_black_jack(int card) {
+static inline bool is_one_eyed_jack(int card) {
     if (!is_jack(card)) return false;
     int suit = card / 13;
-    return (suit == 0 || suit == 3); // Clubs, Spades
+    return (suit == 2 || suit == 3); // Hearts, Spades
 }
 
 int check_win(const int8_t* board) {
@@ -302,14 +308,14 @@ int generate_moves(const GameState* state, const int* hand, int hand_size, CMove
     for (int i = 0; i < hand_size; i++) {
         int card = hand[i];
         
-        if (is_red_jack(card)) {
+        if (is_two_eyed_jack(card)) {
             for (int j = 0; j < NUM_POSITIONS; j++) {
                 if (state->board[j] == EMPTY) {
                     moves_out[count++] = (CMove){card, (int8_t)(j/10), (int8_t)(j%10), false};
                     if (count >= MAX_MOVES) return count;
                 }
             }
-        } else if (is_black_jack(card)) {
+        } else if (is_one_eyed_jack(card)) {
             for (int j = 0; j < NUM_POSITIONS; j++) {
                 if (state->board[j] == opponent) {
                     moves_out[count++] = (CMove){card, (int8_t)(j/10), (int8_t)(j%10), true};
@@ -353,7 +359,13 @@ void apply_move_inplace(GameState* state, const CMove* move) {
 // -----------------------------------------------------------------------------
 
 // Create node using arena allocator (fast path)
-MCTSNode* create_node_arena(NodeArena* arena, const GameState* state, MCTSNode* parent, CMove* move) {
+static void sample_hand(RngState* rng, int hand_size, int* hand_out) {
+    for (int i = 0; i < hand_size; i++) {
+        hand_out[i] = (int)(fast_rand(rng) % 52);
+    }
+}
+
+MCTSNode* create_node_arena(NodeArena* arena, const GameState* state, MCTSNode* parent, CMove* move, const int* hand, int hand_size) {
     MCTSNode* node = arena_alloc_node(arena);
     if (!node) return NULL;
     
@@ -372,6 +384,11 @@ MCTSNode* create_node_arena(NodeArena* arena, const GameState* state, MCTSNode* 
     } else {
         node->has_move = false;
     }
+
+    node->hand_size = hand_size > 7 ? 7 : hand_size;
+    if (hand && node->hand_size > 0) {
+        memcpy(node->hand, hand, node->hand_size * sizeof(int));
+    }
     
     return node;
 }
@@ -389,6 +406,7 @@ MCTSNode* create_node(const GameState* state, MCTSNode* parent, CMove* move) {
     node->total_value = 0.0f;
     node->is_expanded = false;
     node->num_children = 0;
+    node->hand_size = 0;
     
     if (move) {
         node->move_from_parent = *move;
@@ -398,6 +416,55 @@ MCTSNode* create_node(const GameState* state, MCTSNode* parent, CMove* move) {
     }
     
     return node;
+}
+
+static void fill_state_tensor(const GameState* state, const int* hand, int hand_size, float* buffer) {
+    memset(buffer, 0, STATE_TENSOR_SIZE * sizeof(float));
+
+    int p = state->current_player;
+    int opp = 3 - p;
+
+    for (int i = 0; i < 100; i++) {
+        int8_t v = state->board[i];
+        if (v == p) buffer[i] = 1.0f;
+        if (v == opp) buffer[100 + i] = 1.0f;
+        if (v == FREE) buffer[200 + i] = 1.0f;
+        if (v == EMPTY) buffer[300 + i] = 1.0f;
+    }
+
+    int channels = hand_size < MAX_HAND_SIZE ? hand_size : MAX_HAND_SIZE;
+    for (int i = 0; i < channels; i++) {
+        int card = hand[i];
+        int channel_offset = (4 + i) * NUM_POSITIONS;
+
+        if (is_two_eyed_jack(card)) {
+            for (int idx = 0; idx < NUM_POSITIONS; idx++) {
+                if (state->board[idx] == EMPTY) {
+                    buffer[channel_offset + idx] = 1.0f;
+                }
+            }
+            continue;
+        }
+
+        if (is_one_eyed_jack(card)) {
+            for (int idx = 0; idx < NUM_POSITIONS; idx++) {
+                if (state->board[idx] == opp) {
+                    buffer[channel_offset + idx] = 1.0f;
+                }
+            }
+            continue;
+        }
+
+        int n = LAYOUT_COUNTS[card];
+        for (int k = 0; k < n; k++) {
+            int r = LAYOUT_MAP[card][k][0];
+            int c = LAYOUT_MAP[card][k][1];
+            int idx = r * 10 + c;
+            if (state->board[idx] == EMPTY) {
+                buffer[channel_offset + idx] = 1.0f;
+            }
+        }
+    }
 }
 
 // Free tree - only needed for non-arena nodes
@@ -445,10 +512,10 @@ static PyObject* GameState_apply_move(PyGameState* self, PyObject* args) {
     bool valid = false;
     if (!self->state.game_over) {
         if (m.is_removal) {
-            if (is_black_jack(card) && self->state.board[idx] == (3 - self->state.current_player)) valid = true;
+            if (is_one_eyed_jack(card) && self->state.board[idx] == (3 - self->state.current_player)) valid = true;
         } else {
             if (self->state.board[idx] == EMPTY) {
-                if (is_red_jack(card)) {
+                if (is_two_eyed_jack(card)) {
                     valid = true;
                 } else if (!is_jack(card)) {
                     valid = true;
@@ -507,7 +574,7 @@ typedef struct {
     PyObject_HEAD
     MCTSNode* root;
     NodeArena arena;           // Arena allocator for fast node allocation
-    int root_hand[7];
+    int root_hand[MAX_HAND_SIZE];
     int root_hand_size;
     RngState rng_state;
 } CMCTS;
@@ -540,6 +607,12 @@ static PyObject* CMCTS_reset(CMCTS* self, PyObject* args) {
     
     if (!PyArg_ParseTuple(args, "y*Oi", &board_buf, &py_hand, &player)) return NULL;
     
+    self->root_hand_size = (int)PyList_Size(py_hand);
+    if (self->root_hand_size > MAX_HAND_SIZE) self->root_hand_size = MAX_HAND_SIZE;
+    for(int i=0; i<self->root_hand_size; i++) {
+        self->root_hand[i] = (int)PyLong_AsLong(PyList_GetItem(py_hand, i));
+    }
+
     arena_reset(&self->arena);
     
     GameState state;
@@ -550,20 +623,14 @@ static PyObject* CMCTS_reset(CMCTS* self, PyObject* args) {
     int w = check_win(state.board);
     if (w > 0) { state.winner = w; state.game_over = true; }
     
-    self->root = create_node_arena(&self->arena, &state, NULL, NULL);
-    
-    self->root_hand_size = (int)PyList_Size(py_hand);
-    if (self->root_hand_size > 7) self->root_hand_size = 7;
-    for(int i=0; i<self->root_hand_size; i++) {
-        self->root_hand[i] = (int)PyLong_AsLong(PyList_GetItem(py_hand, i));
-    }
+    self->root = create_node_arena(&self->arena, &state, NULL, NULL, self->root_hand, self->root_hand_size);
     
     PyBuffer_Release(&board_buf);
     Py_RETURN_NONE;
 }
 
 // Select Leaf
-// Returns (node_capsule, tensor_bytes, is_terminal, value, player_at_leaf)
+// Returns (node_capsule, tensor_bytes, value, is_terminal)
 static PyObject* CMCTS_select_leaf(CMCTS* self, PyObject* Py_UNUSED(ignored)) {
     MCTSNode* node = self->root;
     
@@ -611,20 +678,9 @@ static PyObject* CMCTS_select_leaf(CMCTS* self, PyObject* Py_UNUSED(ignored)) {
         return Py_BuildValue("NOfi", capsule, Py_None, val, 1);
     }
     
-    // Create Tensor (8x10x10 = 800 floats)
-    float buffer[800];
-    memset(buffer, 0, sizeof(buffer));
-    
-    int p = node->state.current_player;
-    int opp = 3 - p;
-    
-    for (int i = 0; i < 100; i++) {
-        int8_t v = node->state.board[i];
-        if (v == p) buffer[i] = 1.0f;
-        if (v == opp) buffer[100 + i] = 1.0f;
-        if (v == FREE) buffer[200 + i] = 1.0f;
-        if (v == EMPTY) buffer[300 + i] = 1.0f;
-    }
+    // Create Tensor (11x10x10 = 1100 floats)
+    float buffer[STATE_TENSOR_SIZE];
+    fill_state_tensor(&node->state, node->hand, node->hand_size, buffer);
     
     return Py_BuildValue("NNfi", capsule, PyBytes_FromStringAndSize((char*)buffer, sizeof(buffer)), 0.0f, 0);
 }
@@ -642,19 +698,8 @@ static PyObject* CMCTS_backpropagate(CMCTS* self, PyObject* args) {
     Py_BEGIN_ALLOW_THREADS
     
     if (!node->is_expanded && !node->state.game_over) {
-        int hand[7];
-        int sz = 0;
-        
-        if (node == self->root) {
-            sz = self->root_hand_size;
-            memcpy(hand, self->root_hand, sz * sizeof(int));
-        } else {
-            sz = 5;
-            for(int i=0; i<5; i++) hand[i] = fast_rand(&self->rng_state) % 52; 
-        }
-        
         CMove moves[MAX_MOVES];
-        int n_moves = generate_moves(&node->state, hand, sz, moves);
+        int n_moves = generate_moves(&node->state, node->hand, node->hand_size, moves);
         
         if (n_moves > 0) {
             node->children = arena_alloc_children(&self->arena, n_moves);
@@ -663,12 +708,18 @@ static PyObject* CMCTS_backpropagate(CMCTS* self, PyObject* args) {
             if (node->children && node->priors) {
                 node->num_children = n_moves;
                 
-                float sum_p = 1e-6f;
+                float sum_p = 0.0f;
                 for(int i=0; i<n_moves; i++) {
                     int idx = moves[i].row * 10 + moves[i].col;
-                    float p = expf(policy[idx]); 
+                    float p = policy[idx];
+                    if (!isfinite(p) || p < 0.0f) p = 0.0f;
                     node->priors[i] = p;
                     sum_p += p;
+                }
+
+                if (sum_p <= 1e-8f) {
+                    sum_p = (float)n_moves;
+                    for(int i=0; i<n_moves; i++) node->priors[i] = 1.0f;
                 }
                 
                 for(int i=0; i<n_moves; i++) {
@@ -676,7 +727,12 @@ static PyObject* CMCTS_backpropagate(CMCTS* self, PyObject* args) {
                     
                     GameState next = node->state;
                     apply_move_inplace(&next, &moves[i]);
-                    node->children[i] = create_node_arena(&self->arena, &next, node, &moves[i]);
+
+                    int child_hand[7];
+                    sample_hand(&self->rng_state, self->root_hand_size, child_hand);
+                    node->children[i] = create_node_arena(
+                        &self->arena, &next, node, &moves[i], child_hand, self->root_hand_size
+                    );
                 }
             }
         }
@@ -736,13 +792,29 @@ static PyObject* CMCTS_get_action(CMCTS* self, PyObject* args) {
     // Build policy vector for training
     float policy[100];
     memset(policy, 0, sizeof(policy));
-    int total_visits = root->visits - 1;
-    if (total_visits < 1) total_visits = 1;
-    
+    int total_visits = 0;
     for(int i=0; i<root->num_children; i++) {
-        CMove* cm = &root->children[i]->move_from_parent;
-        int idx = cm->row * 10 + cm->col;
-        policy[idx] = (float)root->children[i]->visits / total_visits;
+        total_visits += root->children[i]->visits;
+    }
+
+    if (total_visits > 0) {
+        for(int i=0; i<root->num_children; i++) {
+            CMove* cm = &root->children[i]->move_from_parent;
+            int idx = cm->row * 10 + cm->col;
+            policy[idx] += (float)root->children[i]->visits / total_visits;
+        }
+    } else {
+        float prior_sum = 0.0f;
+        for(int i=0; i<root->num_children; i++) prior_sum += root->priors[i];
+        bool use_uniform = prior_sum <= 1e-8f;
+        if (use_uniform) prior_sum = (float)root->num_children;
+
+        for(int i=0; i<root->num_children; i++) {
+            CMove* cm = &root->children[i]->move_from_parent;
+            int idx = cm->row * 10 + cm->col;
+            float p = use_uniform ? 1.0f : root->priors[i];
+            policy[idx] += p / prior_sum;
+        }
     }
     
     // Return: (card, row, col, is_removal, policy_bytes)

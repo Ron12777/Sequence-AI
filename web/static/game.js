@@ -5,7 +5,8 @@
 
 // Game state
 let game = null;
-let mcts = null;
+let aiPlayer = null;
+let modelError = null;
 let onnxSession = null;
 let selectedCard = null;
 let hoveredCard = null;
@@ -51,7 +52,7 @@ function resetEvalBar() {
         evalBarFill.style.height = '50%';
     }
     if (evalText) {
-        evalText.textContent = 'Win Prob';
+        evalText.textContent = 'Model estimate';
     }
 }
 
@@ -106,14 +107,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const judgeDepthSlider = document.getElementById('judgeDepth');
     const judgeDepthValue = document.getElementById('judgeDepthValue');
 
-    function getDifficultyLabel(depth) {
-        if (depth <= 5) return 'Instant';
-        if (depth <= 15) return 'Super Easy';
-        if (depth <= 30) return 'Easy';
-        if (depth <= 75) return 'Medium';
-        if (depth <= 150) return 'Hard';
-        if (depth <= 300) return 'Very Hard';
-        return 'Extreme';
+    function getDifficultyLabel(simulations) {
+        if (simulations <= 15) return 'Light search';
+        if (simulations <= 75) return 'Standard search';
+        if (simulations <= 300) return 'Extended search';
+        return 'Maximum search';
     }
 
     function updateDepthDisplay() {
@@ -192,20 +190,54 @@ let cancelAiLoop = false;
 async function loadModel() {
     try {
         console.log('Loading ONNX model...');
-        onnxSession = await ort.InferenceSession.create('model.onnx');
+        // Static hosting cannot use WASM threads without cross-origin isolation.
+        ort.env.wasm.numThreads = globalThis.crossOriginIsolated
+            ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
+        const response = await fetch('model.json', {cache: 'no-store'});
+        if (!response.ok) throw new Error('Could not load model configuration');
+        const config = await response.json();
+        if (!['direct', 'search'].includes(config.playMode)) throw new Error('Invalid model play mode');
+        onnxSession = await ort.InferenceSession.create(config.model);
+        if (config.playMode === 'search' &&
+            (onnxSession.inputNames.length !== 1 || onnxSession.inputNames[0] !== 'input')) {
+            throw new Error('Search requires a board model with one input');
+        }
         console.log('✓ ONNX model loaded');
 
-        mcts = new MCTS(onnxSession, 50);
+        aiPlayer = config.playMode === 'direct'
+            ? new DirectPlayer(onnxSession, ort, config) : new MCTS(onnxSession, 128);
+        document.body.classList.toggle('direct-policy', aiPlayer instanceof DirectPlayer);
     } catch (e) {
-        console.warn('Could not load ONNX model, using random policy:', e);
-        mcts = new MCTS(null, 50); // Fallback to random
+        modelError = new Error('AI unavailable: ' + e.message);
+        aiPlayer = null;
+        showAiError(modelError);
     }
+}
+
+function showAiError(error) {
+    const message = document.getElementById('aiError');
+    if (message) {
+        message.textContent = error ? error.message : '';
+        message.hidden = !error;
+    }
+}
+
+async function chooseAiMove(position, onProgress = null) {
+    if (!aiPlayer) throw modelError || new Error('AI is not loaded');
+    showAiError(null);
+    if (aiPlayer instanceof DirectPlayer) {
+        const result = await aiPlayer.chooseMove(position);
+        if (onProgress) onProgress(1, 1, result.policy, result.value);
+        return result;
+    }
+    return aiPlayer.search(position, onProgress);
 }
 
 /**
  * Start a new game
  */
 function newGame() {
+    showAiError(modelError);
     cancelAiLoop = true; // Stop any ongoing AI vs AI match
     game = new SequenceGame();
     // Keep Analysis Mode if active
@@ -267,7 +299,7 @@ function newGame() {
 
     // Rename main slider to just "Depth" or "AI Depth"
     const depthTitle = document.getElementById('depthTitle');
-    if (depthTitle) depthTitle.textContent = "Depth";
+    if (depthTitle) depthTitle.textContent = "Search simulations";
 
     // Show Watch AI button again
     const watchAiBtn = document.getElementById('watchAiBtn');
@@ -330,7 +362,7 @@ async function watchAiVsAi() {
 
     // Update Slider Titles
     const depthTitle = document.getElementById('depthTitle');
-    if (depthTitle) depthTitle.textContent = "Blue Depth";
+    if (depthTitle) depthTitle.textContent = "Blue simulations";
 
     while (!game.gameOver && !cancelAiLoop) {
         // AI 1 Turn
@@ -362,7 +394,7 @@ function sleep(ms) {
  * Run Judge Evaluation (Pre-Move)
  */
 async function runJudgeEval() {
-    if (!mcts || !game || game.gameOver) return;
+    if (!aiPlayer || !game || game.gameOver) return;
 
     // Only run if eval bar is enabled
     if (!showEvalBar || !showEvalBar.checked) {
@@ -370,10 +402,14 @@ async function runJudgeEval() {
         return;
     }
 
-    // if (evalText) evalText.textContent = "Judging...";
+    if (aiPlayer instanceof DirectPlayer) {
+        try { updateEvalBar((await chooseAiMove(game)).value); }
+        catch (error) { showAiError(error); }
+        return;
+    }
 
     const judgeSlider = document.getElementById('judgeDepth');
-    let judgeSims = judgeSlider ? parseInt(judgeSlider.value) : 50;
+    let judgeSims = judgeSlider ? parseInt(judgeSlider.value) : 128;
 
     const prevPlayer = (game.currentPlayer === 1) ? 2 : 1;
     let prevPlayerDepth = 0;
@@ -400,17 +436,17 @@ async function runJudgeEval() {
     }
 
     // Save old sims
-    const oldSims = mcts.numSimulations;
-    mcts.numSimulations = judgeSims;
+    const oldSims = aiPlayer.numSimulations;
+    aiPlayer.numSimulations = judgeSims;
 
     try {
-        await mcts.search(game, (current, total, policy, value) => {
+        await chooseAiMove(game, (current, total, policy, value) => {
             updateEvalBar(value);
         });
     } catch (e) {
         console.error("Judge error:", e);
     } finally {
-        mcts.numSimulations = oldSims;
+        aiPlayer.numSimulations = oldSims;
     }
 }
 
@@ -429,8 +465,10 @@ function updateEvalBar(value) {
         p1Advantage = -value;
     }
 
-    // Map [-1, 1] to [0%, 100%] width for Red Overlay
-    const redPercent = ((p1Advantage + 1) / 2) * 100;
+    // Regularized critics can exceed [-1,1] and are not win probabilities.
+    const unboundedValue = aiPlayer instanceof DirectPlayer && aiPlayer.valueMode === 'unbounded';
+    const displayAdvantage = unboundedValue ? Math.tanh(p1Advantage) : p1Advantage;
+    const redPercent = ((displayAdvantage + 1) / 2) * 100;
     const clamped = Math.max(0, Math.min(100, redPercent));
 
     // Set both width (desktop) and height (mobile vertical bar)
@@ -442,7 +480,9 @@ function updateEvalBar(value) {
 
     // Text: "Red 60%" or "Blue 60%"
     if (evalText) {
-        if (clamped > 50) {
+        if (unboundedValue) {
+            evalText.textContent = `${p1Advantage >= 0 ? 'Red' : 'Blue'} +${Math.abs(p1Advantage).toFixed(2)} value`;
+        } else if (clamped > 50) {
             evalText.textContent = `Red ${Math.round(clamped)}%`;
         } else {
             evalText.textContent = `Blue ${Math.round(100 - clamped)}%`;
@@ -469,7 +509,7 @@ async function triggerAiTurn() {
     // Determine simulations based on current player
     // If Watch Mode and P1 turn -> use P1 slider
     // All other cases (P2 or Human vs AI where AI is P2) -> use default slider
-    let simulations = 50;
+    let simulations = 128;
 
     const depthSlider = document.getElementById('depth');
     const depthP1Slider = document.getElementById('depthP1');
@@ -480,7 +520,7 @@ async function triggerAiTurn() {
         simulations = parseInt(depthSlider.value);
     }
 
-    mcts.numSimulations = simulations;
+    if (aiPlayer && !(aiPlayer instanceof DirectPlayer)) aiPlayer.numSimulations = simulations;
 
     // Force paint before starting heavy calculation
     await new Promise(r => setTimeout(r, 50));
@@ -495,7 +535,7 @@ async function triggerAiTurn() {
     }
 
     try {
-        const result = await mcts.search(game, (current, total, policy, value) => {
+        const result = await chooseAiMove(game, (current, total, policy, value) => {
             if (aiProgressBar) aiProgressBar.style.width = Math.floor((current / total) * 100) + '%';
             if (aiProgressText) aiProgressText.textContent = `${current}/${total}`;
 
@@ -529,7 +569,7 @@ async function triggerAiTurn() {
             renderTopMoves(result.policy);
         }
     } catch (e) {
-        console.error('MCTS error:', e);
+        showAiError(e);
         if (aiProgressText) aiProgressText.textContent = "Error: " + e.message;
     }
 
@@ -1009,32 +1049,38 @@ async function getHint() {
     if (game.gameOver || game.currentPlayer !== 1) return;
 
     const depthSlider = document.getElementById('depth');
-    mcts.numSimulations = depthSlider ? parseInt(depthSlider.value) : 50;
+    if (aiPlayer && !(aiPlayer instanceof DirectPlayer)) aiPlayer.numSimulations = depthSlider ? parseInt(depthSlider.value) : 128;
 
     if (aiProgressContainer) {
         aiProgressContainer.classList.add('visible');
         aiProgressText.textContent = 'Analyzing...';
     }
 
-    const result = await mcts.search(game, (current, total) => {
-        const pct = Math.floor((current / total) * 100);
-        if (aiProgressBar) aiProgressBar.style.width = pct + '%';
-    });
+    try {
+        const result = await chooseAiMove(game, (current, total) => {
+            const pct = Math.floor((current / total) * 100);
+            if (aiProgressBar) aiProgressBar.style.width = pct + '%';
+        });
 
-    if (aiProgressContainer) {
-        aiProgressContainer.classList.remove('visible');
-    }
-
-    if (result.move) {
-        selectedCard = result.move.card;
-        renderP1Hand();
-        renderBoard();
-
-        // Highlight the suggested cell
-        const cell = document.querySelector(`.cell[data-row="${result.move.row}"][data-col="${result.move.col}"]`);
-        if (cell) {
-            cell.classList.add('best-move');
+        if (aiProgressContainer) {
+            aiProgressContainer.classList.remove('visible');
         }
+
+        if (result.move) {
+            selectedCard = result.move.card;
+            renderP1Hand();
+            renderBoard();
+
+            // Highlight the suggested cell
+            const cell = document.querySelector(`.cell[data-row="${result.move.row}"][data-col="${result.move.col}"]`);
+            if (cell) {
+                cell.classList.add('best-move');
+            }
+        }
+    } catch (error) {
+        showAiError(error);
+    } finally {
+        if (aiProgressContainer) aiProgressContainer.classList.remove('visible');
     }
 }
 
@@ -1132,6 +1178,7 @@ function toggleAnalysisMode() {
 
 function toggleTurn() {
     if (!game) return;
+    game.publicHistoryComplete = false;
     game.currentPlayer = (game.currentPlayer === 1) ? 2 : 1;
     updateStatus();
     renderBoard(); // Update valid moves highlight
@@ -1139,6 +1186,7 @@ function toggleTurn() {
 }
 
 function handleAnalysisCellClick(row, col) {
+    game.publicHistoryComplete = false;
     // Cycle: EMPTY -> P1 -> P2 -> FREE -> EMPTY
     const current = game.board[row][col];
     let nextState;
@@ -1203,6 +1251,7 @@ function closeCardPicker() {
 
 function selectCard(cardStr) {
     if (!cardPickerTarget || !game) return;
+    game.publicHistoryComplete = false;
 
     const { player, index } = cardPickerTarget;
     if (game.hands[player]) {
@@ -1312,7 +1361,7 @@ async function showBestMove() {
 
     // Use current settings
     const depthSlider = document.getElementById('depth');
-    mcts.numSimulations = depthSlider ? parseInt(depthSlider.value) : 50;
+    if (aiPlayer && !(aiPlayer instanceof DirectPlayer)) aiPlayer.numSimulations = depthSlider ? parseInt(depthSlider.value) : 128;
 
     isThinking = true;
     updateStatus(); // Update UI to show "Thinking..."
@@ -1323,7 +1372,7 @@ async function showBestMove() {
     }
 
     try {
-        const result = await mcts.search(game, (current, total, policy, value) => {
+        const result = await chooseAiMove(game, (current, total, policy, value) => {
             const pct = Math.floor((current / total) * 100);
             if (aiProgressBar) aiProgressBar.style.width = pct + '%';
 
@@ -1338,7 +1387,7 @@ async function showBestMove() {
             renderTopMoves(result.policy);
         }
     } catch (e) {
-        console.error("Analysis Error:", e);
+        showAiError(e);
     }
 
     isThinking = false;

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "finetune32",
+    "epochs": 64,
+    "simulations": 32,
+    "lr": 0.0003,
+    "noise": 0.25,
+    "fresh": false
+  },
+  {
+    "name": "finetune64",
+    "epochs": 64,
+    "simulations": 64,
+    "lr": 0.0001,
+    "noise": 0.25,
+    "fresh": false
+  },
+  {
+    "name": "fresh96",
+    "epochs": 128,
+    "simulations": 32,
+    "lr": 0.001,
+    "noise": 0.25,
+    "fresh": true,
+    "filters": 96,
+    "blocks": 4
+  },
+  {
+    "name": "finetune_low_noise",
+    "epochs": 64,
+    "simulations": 32,
+    "lr": 0.0001,
+    "noise": 0.1,
+    "fresh": false
+  },
+  {
+    "name": "fresh_small64",
+    "epochs": 96,
+    "simulations": 64,
+    "lr": 0.0007,
+    "noise": 0.25,
+    "fresh": true,
+    "filters": 64,
+    "blocks": 3
+  },
+  {
+    "name": "fresh128",
+    "epochs": 128,
+    "simulations": 32,
+    "lr": 0.001,
+    "noise": 0.25,
+    "fresh": true,
+    "filters": 128,
+    "blocks": 6
+  }
+]

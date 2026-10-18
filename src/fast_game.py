@@ -1,115 +1,105 @@
-"""
-Fast Sequence game wrapper for the C extension.
-"""
+"""Python card/deck interface backed by the Rust rules engine."""
+
 import numpy as np
-from typing import List, Dict, Optional
-import c_sequence
-from .game import SequenceGame, Move, ChipState
-from .cards import Card, Deck, get_cards_per_player
+import sequence_native
+from .cards import Card, Deck
+from .game import SequenceGame, Move
+
 
 class FastSequenceGame:
-    """
-    High-performance wrapper around the C GameState.
-    Syncs Python-side hand state with C-side board state.
-    """
-    def __init__(self):
-        self.c_state = c_sequence.GameState()
-        self.hands: Dict[int, List[Card]] = {1: [], 2: []}
-        self.deck = Deck(num_decks=2)
-        
-    @property
-    def current_player(self) -> int:
-        return self.c_state.get_info()[0]
-        
-    @property
-    def winner(self) -> int:
-        return self.c_state.get_info()[1]
-        
-    @property
-    def game_over(self) -> bool:
-        return bool(self.c_state.get_info()[2])
+    MAX_HAND_SIZE = 7
+    STATE_CHANNELS = 11
 
-    def reset(self, num_players: int = 2):
-        """Reset game to initial state."""
-        self.c_state = c_sequence.GameState()
-        self.deck = Deck(num_decks=2)
-        
-        # Deal cards
-        cards_per_player = get_cards_per_player(num_players)
-        self.hands = {
-            1: self.deck.draw_many(cards_per_player),
-            2: self.deck.draw_many(cards_per_player)
+    def __init__(self):
+        reference = SequenceGame()
+        self.board_layout = reference.board_layout
+        self.card_to_positions = reference.card_to_positions
+        self.reset()
+
+    @property
+    def current_player(self):
+        return self.c_state.get_info()[0]
+
+    @property
+    def winner(self):
+        return self.c_state.get_info()[1] or None
+
+    @property
+    def game_over(self):
+        return self.c_state.get_info()[2]
+
+    @property
+    def board(self):
+        return np.frombuffer(self.c_state.get_tensor(), dtype=np.int8).reshape(10, 10)
+
+    @property
+    def completed_sequences(self):
+        return {
+            p + 1: [{divmod(i, 10) for i in seq} for seq in seqs]
+            for p, seqs in enumerate(self.c_state.get_sequences())
         }
 
-    def make_move(self, move: Move) -> bool:
+    def reset(self, num_players=2):
+        if num_players != 2:
+            raise ValueError("Only two-player games are supported")
+        self.c_state = sequence_native.GameState()
+        self.deck = Deck()
+        self.discard_piles = {1: [], 2: []}
+        self.hands = {1: self.deck.draw_many(7), 2: self.deck.draw_many(7)}
+
+    def get_legal_moves(self, player=None):
+        player = self.current_player if player is None else player
+        if player != self.current_player:
+            raise ValueError("Native legal moves require the current player")
+        return [
+            Move(Card.from_int(card), r, c, removal)
+            for card, r, c, removal in self.c_state.get_legal_moves(
+                [card.to_int() for card in self.hands[player]]
+            )
+        ]
+
+    def make_move(self, move):
         player = self.current_player
-        
-        success = self.c_state.apply_move(
-            move.card.to_int(),
-            move.row,
-            move.col,
-            1 if move.is_removal else 0
-        )
-        
-        if not success:
+        if move.card not in self.hands[player]:
             return False
-            
+        if not self.c_state.apply_move(
+            move.card.to_int(), move.row, move.col, int(move.is_removal)
+        ):
+            return False
         self.hands[player].remove(move.card)
-        new_card = self.deck.draw()
-        if new_card:
-            self.hands[player].append(new_card)
-            
+        self.discard_piles[player].append(move.card)
+        while (card := self.deck.draw()) is not None:
+            if card.is_jack() or any(
+                self.board[r, c] == 0 for r, c in self.card_to_positions[card]
+            ):
+                self.hands[player].append(card)
+                break
+            self.discard_piles[player].append(card)
         return True
 
-    def get_state_tensor(self, player: int) -> np.ndarray:
-        opponent = 3 - player
-        board_bytes = self.c_state.get_tensor()
-        board = np.frombuffer(board_bytes, dtype=np.int8).reshape(10, 10)
-        
-        tensor = np.zeros((8, 10, 10), dtype=np.float32)
-        
-        tensor[0] = (board == player).astype(np.float32)
-        tensor[1] = (board == opponent).astype(np.float32)
-        tensor[2] = (board == -1).astype(np.float32)  # FREE
-        tensor[3] = (board == 0).astype(np.float32)   # EMPTY
-        
-        if not hasattr(self, '_pos_map'):
-            dummy = SequenceGame()
-            self._pos_map = dummy.card_to_positions
+    def get_state_tensor(self, player):
+        data = self.c_state.state_tensor(
+            [c.to_int() for c in self.hands[player]], player
+        )
+        return np.frombuffer(data, dtype=np.float32).reshape(11, 10, 10).copy()
 
-        hand = self.hands[player]
-        for i, card in enumerate(hand[:4]):
-            if card.is_jack():
-                continue
-            positions = self._pos_map.get(card, [])
-            for r, c in positions:
-                if board[r, c] == 0:
-                    tensor[4 + i, r, c] = 1.0
-                    
-        return tensor
+    get_state_numpy = get_state_tensor
 
-    def get_state_numpy(self, player: int) -> np.ndarray:
-        """Alias for get_state_tensor since it already returns numpy."""
-        return self.get_state_tensor(player)
-
-    def get_result(self, player: int) -> float:
-        """Get game result from player's perspective."""
-        if not self.game_over:
+    def get_result(self, player):
+        if not self.game_over or self.winner is None:
             return 0.0
-        if self.winner == player:
-            return 1.0
-        elif self.winner != 0:
-            return -1.0
-        return 0.0
+        return 1.0 if self.winner == player else -1.0
 
-    def clone(self) -> 'FastSequenceGame':
-        """Deep copy."""
-        new_game = FastSequenceGame.__new__(FastSequenceGame)
-        new_game.c_state = self.c_state.copy()
-        new_game.hands = {k: list(v) for k, v in self.hands.items()}
-        new_game.deck = Deck.__new__(Deck)
-        new_game.deck.cards = list(self.deck.cards)
-        new_game.deck.num_decks = self.deck.num_decks
-        if hasattr(self, '_pos_map'):
-            new_game._pos_map = self._pos_map
-        return new_game
+    def clone(self):
+        result = self.__class__.__new__(self.__class__)
+        result.board_layout = self.board_layout
+        result.card_to_positions = self.card_to_positions
+        result.c_state = self.c_state.copy()
+        result.hands = {p: list(hand) for p, hand in self.hands.items()}
+        result.discard_piles = {
+            p: list(cards) for p, cards in self.discard_piles.items()
+        }
+        result.deck = Deck.__new__(Deck)
+        result.deck.num_decks = self.deck.num_decks
+        result.deck.cards = list(self.deck.cards)
+        return result

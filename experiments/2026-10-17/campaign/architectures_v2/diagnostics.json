@@ -1,0 +1,21 @@
+{
+  "original": {
+    "positions": 28047,
+    "heldout_policy_cross_entropy": 1.6397785003560916,
+    "heldout_value_mse": 0.8381053867299965,
+    "total_loss": 2.477883887086088
+  },
+  "board": {
+    "positions": 28047,
+    "heldout_policy_cross_entropy": 1.6069076700754954,
+    "heldout_value_mse": 0.9468383043722856,
+    "total_loss": 2.553745974447781
+  },
+  "joint_attention": {
+    "positions": 28047,
+    "heldout_policy_cross_entropy": 1.606391080064128,
+    "heldout_value_mse": 0.936419884797345,
+    "total_loss": 2.5428109648614727,
+    "mean_policy_kl_after_public_history_ablation": 1.2483669256110555e-06
+  }
+}

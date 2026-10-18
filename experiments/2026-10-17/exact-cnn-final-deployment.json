@@ -1,0 +1,41 @@
+{
+  "deployed_utc": "2026-10-17T23:36:15.022777+00:00",
+  "scope": "Local static files only; no public push",
+  "checkpoint_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+  "onnx_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+  "deployed_model": "web/static/model-exact-0bd3130842892f06.onnx",
+  "manifest": {
+    "model": "model-exact-0bd3130842892f06.onnx",
+    "policyKind": "exact_sequence_policy",
+    "playMode": "direct",
+    "actionEncoding": "card_id * 100 + row * 10 + col",
+    "variant": "cnn",
+    "valueMode": "bounded",
+    "historyArchitecture": "board",
+    "observationMode": "board_hand"
+  },
+  "manifest_sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f",
+  "asset_cache_versions": {
+    "game_engine.js": "324f370d5a5a1062",
+    "direct_player.js": "7a3bc458213c3683",
+    "game.js": "0fcbc0e0fee63ad5",
+    "style.css": "7cfcb63081261844"
+  },
+  "rollback_directory": "artifacts/rollback/exact-final-2026-10-17",
+  "rollback_sha256": {
+    "model.json": "bcc1a1275b2bfacea104d0e6cb5aa7daef3f58eff239a198e74e076702fce592",
+    "model.onnx": "d6e8a786804aa82b19a8c273e1c04af540843e6eae87ee24785497a96fff5fb0",
+    "index.html": "fecb96aeedf4d58d52078023abb1c5c82f988adfc5428454f36b07dd8a6f7982"
+  },
+  "previous_model_retained_unchanged": true,
+  "rendered_validation": "passed",
+  "rendered_validation_report": "experiments/2026-10-17/exact-cnn-final-rendered-browser-validation.json",
+  "rendered_report_sha256": "c4dff95b6f8d649d2a7236be0f8f52d85126230d438755e5660e3255914452b1",
+  "served_model_hash_verified": true,
+  "same_session_reload_verified": true,
+  "search_calls": 0,
+  "runtime_errors": [],
+  "known_browser_diagnostic": "Missing favicon.ico produced one HTTP404 console message; no application, inference, or JavaScript errors",
+  "public_deployment": false,
+  "rollback_instructions": "Restore model.json and index.html from rollback_directory; original model.onnx remains present and unchanged."
+}

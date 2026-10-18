@@ -1,0 +1,60 @@
+[
+  {
+    "name": "ensemble_finetune32",
+    "epochs": 64,
+    "simulations": 32,
+    "lr": 0.0003,
+    "noise": 0.25,
+    "fresh": false,
+    "search_mode": "ensemble"
+  },
+  {
+    "name": "ensemble_finetune64",
+    "epochs": 64,
+    "simulations": 64,
+    "lr": 0.0001,
+    "noise": 0.25,
+    "fresh": false,
+    "search_mode": "ensemble"
+  },
+  {
+    "name": "ensemble_finetune128",
+    "epochs": 32,
+    "simulations": 128,
+    "lr": 0.0001,
+    "noise": 0.25,
+    "fresh": false,
+    "search_mode": "ensemble"
+  },
+  {
+    "name": "ensemble_fresh96",
+    "epochs": 64,
+    "simulations": 64,
+    "lr": 0.001,
+    "noise": 0.25,
+    "fresh": true,
+    "filters": 96,
+    "blocks": 4,
+    "search_mode": "ensemble"
+  },
+  {
+    "name": "ensemble_low_noise",
+    "epochs": 48,
+    "simulations": 64,
+    "lr": 0.0001,
+    "noise": 0.1,
+    "fresh": false,
+    "search_mode": "ensemble"
+  },
+  {
+    "name": "ensemble_fresh128",
+    "epochs": 64,
+    "simulations": 64,
+    "lr": 0.001,
+    "noise": 0.25,
+    "fresh": true,
+    "filters": 128,
+    "blocks": 6,
+    "search_mode": "ensemble"
+  }
+]

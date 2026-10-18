@@ -1,0 +1,423 @@
+{
+  "purpose": "Frozen CPU diagnostic, not evaluation or recipe change",
+  "seed": 7300000000001,
+  "games": 64,
+  "positions": 3628,
+  "rollout": {
+    "games": 64,
+    "positions": 3628,
+    "decisions": 3628,
+    "decisive_games": 63,
+    "opponent_moves": 0,
+    "rollout_seconds": 1.1740628150000703,
+    "environment_seconds": 0.01371452704188414,
+    "inference_seconds": 1.1515260013111401,
+    "games_per_second": 54.51156376160007,
+    "return_mean": 0.009371554479002953,
+    "return_variance": 0.9723487496376038,
+    "old_value_mse": 0.8828423619270325,
+    "max_legal_actions": 200,
+    "data_policy_version": "current frozen learner for entire rollout; no replay"
+  },
+  "state_distribution": "Fresh R-NaD checkpoint self-play; both policies measured on identical visited observations",
+  "checkpoint_sha256": {
+    "common": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1",
+    "rnad": "785cd51540a567381f84ed9c38f2ee68447f5e079b86644461aa15244f30cc44"
+  },
+  "rnad_metadata": {
+    "recipe": {
+      "contenders": [
+        "cnn_ppo",
+        "transformer_ppo",
+        "cnn_rnad"
+      ],
+      "games_per_iteration": 2048,
+      "batch_size": 1024,
+      "epochs": 2,
+      "trunk_lr": 1e-05,
+      "new_lr": 0.0001,
+      "minimum_lr_fraction": 0.3,
+      "schedule_training_seconds": 10800,
+      "entropy_initial": 0.003,
+      "entropy_final": 0.002,
+      "ppo_clip": 0.1,
+      "target_kl": 0.01,
+      "value_coefficient": 0.5,
+      "gradient_clip": 1.0,
+      "opponents": "50% current self-play,25% frozen GRU reference,25% historical exact policy; balanced learner seats",
+      "historical_pool_size": 3,
+      "checkpoint_seconds": 60,
+      "seed": 2100000001,
+      "monitor_seed": 2100000000001,
+      "final_confirmation_seed_reserved": 9100000000001,
+      "replay": "none; fresh on-policy trajectories per update",
+      "returns": "terminal outcome from each acting player's perspective, undiscounted",
+      "rnad_games_per_minibatch": 32,
+      "rnad_reference_interval": 4000,
+      "rnad_eta": 0.2,
+      "rnad_target_avg": 0.001,
+      "rnad_gradient_clip": 10000.0,
+      "rnad_opponents": "100% current policy both-player self-play; complete episodes",
+      "common_pretraining_checkpoint_sha256": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1",
+      "reference_sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb"
+    },
+    "variant": "cnn",
+    "algorithm": "rnad",
+    "contender": "cnn_rnad",
+    "iterations": 512,
+    "games": 1048576,
+    "positions": 58024420,
+    "updates": 32768,
+    "training_seconds": 3627.8357611201354,
+    "blocks": 6
+  },
+  "common_policy": {
+    "legal_actions": {
+      "count": 3628,
+      "mean": 15.23180815876516,
+      "min": 1.0,
+      "p10": 7.0,
+      "p50": 11.0,
+      "p90": 19.0,
+      "p95": 54.0,
+      "p99": 105.0,
+      "max": 200.0
+    },
+    "centered_legal_logits": {
+      "count": 55261,
+      "mean": -2.188474067710009e-08,
+      "min": -15.950698852539062,
+      "p10": -5.592082500457764,
+      "p50": -0.8226643800735474,
+      "p90": 6.913215160369873,
+      "p95": 9.586435317993164,
+      "p99": 14.726589393615724,
+      "max": 35.478294372558594
+    },
+    "top_centered_logit": {
+      "count": 3628,
+      "mean": 10.311091123072815,
+      "min": 0.0,
+      "p10": 5.191122579574585,
+      "p50": 10.039710521697998,
+      "p90": 15.653735733032228,
+      "p95": 17.9787805557251,
+      "p99": 22.09925231933594,
+      "max": 35.478294372558594
+    },
+    "top_action_probability": {
+      "count": 3628,
+      "mean": 0.8428217106413552,
+      "min": 0.26044631004333496,
+      "p10": 0.541277140378952,
+      "p50": 0.9326242804527283,
+      "p90": 0.9998324513435364,
+      "p95": 0.9999877154827118,
+      "p99": 1.0,
+      "max": 1.0
+    },
+    "exact_action_entropy": {
+      "count": 3628,
+      "mean": 0.4197879323133858,
+      "min": -0.0,
+      "p10": 0.0017322398838587108,
+      "p50": 0.29034756124019623,
+      "p90": 1.0369775295257568,
+      "p95": 1.251440048217773,
+      "p99": 1.6515853607654574,
+      "max": 2.305964708328247
+    },
+    "position_entropy": {
+      "count": 3628,
+      "mean": 0.41040275511460755,
+      "min": -0.0,
+      "p10": 0.0017131793545559048,
+      "p50": 0.27067482471466064,
+      "p90": 1.0196146249771125,
+      "p95": 1.228878712654113,
+      "p99": 1.583767206668854,
+      "max": 2.083942413330078
+    },
+    "card_given_position_entropy": {
+      "count": 3628,
+      "mean": 0.009385177217060291,
+      "min": -3.5762786865234375e-07,
+      "p10": -5.960464477539063e-08,
+      "p50": 0.0,
+      "p90": 5.960464477539063e-08,
+      "p95": 0.001309286803007098,
+      "p99": 0.30980308532714873,
+      "max": 0.6239991188049316
+    },
+    "value": {
+      "count": 3628,
+      "mean": 0.06867188160738198,
+      "min": -0.848307728767395,
+      "p10": -0.3629114061594009,
+      "p50": 0.07655693963170052,
+      "p90": 0.489049330353737,
+      "p95": 0.6014785587787622,
+      "p99": 0.7828037530183793,
+      "max": 0.917815089225769
+    },
+    "unregularized_terminal_outcome_mse": 0.8709439039230347,
+    "thresholds": {
+      "2.0": {
+        "fraction_top_actions_at_or_above": 0.9950385689735413,
+        "mean_policy_mass_at_or_above": 0.9824716448783875,
+        "fraction_legal_logits_at_or_above": 0.2896798849105835,
+        "fraction_legal_logits_at_or_below_negative": 0.39056476950645447
+      },
+      "4.0": {
+        "fraction_top_actions_at_or_above": 0.9539691209793091,
+        "mean_policy_mass_at_or_above": 0.9317008256912231,
+        "fraction_legal_logits_at_or_above": 0.1904236227273941,
+        "fraction_legal_logits_at_or_below_negative": 0.20584137737751007
+      },
+      "8.0": {
+        "fraction_top_actions_at_or_above": 0.6896361708641052,
+        "mean_policy_mass_at_or_above": 0.66751629114151,
+        "fraction_legal_logits_at_or_above": 0.07622011750936508,
+        "fraction_legal_logits_at_or_below_negative": 0.02254754677414894
+      }
+    }
+  },
+  "rnad_policy": {
+    "legal_actions": {
+      "count": 3628,
+      "mean": 15.23180815876516,
+      "min": 1.0,
+      "p10": 7.0,
+      "p50": 11.0,
+      "p90": 19.0,
+      "p95": 54.0,
+      "p99": 105.0,
+      "max": 200.0
+    },
+    "centered_legal_logits": {
+      "count": 55261,
+      "mean": -1.2591671312466453e-09,
+      "min": -3.609959363937378,
+      "p10": -1.3764371871948242,
+      "p50": -0.1907747983932495,
+      "p90": 1.5990370512008667,
+      "p95": 1.978239893913269,
+      "p99": 3.140863370895386,
+      "max": 14.66797161102295
+    },
+    "top_centered_logit": {
+      "count": 3628,
+      "mean": 2.242724776999099,
+      "min": 0.0,
+      "p10": 1.137250506877899,
+      "p50": 2.032355308532715,
+      "p90": 3.474906373023987,
+      "p95": 4.345990371704097,
+      "p99": 6.510750079154969,
+      "max": 14.66797161102295
+    },
+    "top_action_probability": {
+      "count": 3628,
+      "mean": 0.4070041456260814,
+      "min": 0.02462461218237877,
+      "p10": 0.20265201479196548,
+      "p50": 0.34950999915599823,
+      "p90": 0.7331896245479584,
+      "p95": 0.8665424585342402,
+      "p99": 0.9930717998743057,
+      "max": 1.0
+    },
+    "exact_action_entropy": {
+      "count": 3628,
+      "mean": 1.8101355905298802,
+      "min": -0.0,
+      "p10": 1.032836949825287,
+      "p50": 1.8363624811172485,
+      "p90": 2.3442229986190797,
+      "p95": 3.070528888702391,
+      "p99": 4.081345400810242,
+      "max": 4.7042622566223145
+    },
+    "position_entropy": {
+      "count": 3628,
+      "mean": 1.8008498431799072,
+      "min": -0.0,
+      "p10": 1.0324560761451722,
+      "p50": 1.8360492587089539,
+      "p90": 2.3250951766967782,
+      "p95": 2.985790538787841,
+      "p99": 3.9566349482536314,
+      "max": 4.0306396484375
+    },
+    "card_given_position_entropy": {
+      "count": 3628,
+      "mean": 0.009285747349972858,
+      "min": -4.76837158203125e-07,
+      "p10": -1.1920928955078125e-07,
+      "p50": 0.0,
+      "p90": 2.384185791015625e-07,
+      "p95": 0.08729553222656168,
+      "p99": 0.19486561536788952,
+      "max": 0.7320418357849121
+    },
+    "value": {
+      "count": 3628,
+      "mean": 0.018922677149640882,
+      "min": -0.8559746146202087,
+      "p10": -0.42067731320858,
+      "p50": 0.011168952099978924,
+      "p90": 0.47548855245113386,
+      "p95": 0.588216951489448,
+      "p99": 0.8008179658651352,
+      "max": 0.9239640831947327
+    },
+    "unregularized_terminal_outcome_mse": 0.8828423619270325,
+    "thresholds": {
+      "2.0": {
+        "fraction_top_actions_at_or_above": 0.5201212763786316,
+        "mean_policy_mass_at_or_above": 0.2928191125392914,
+        "fraction_legal_logits_at_or_above": 0.0479542538523674,
+        "fraction_legal_logits_at_or_below_negative": 0.007527912966907024
+      },
+      "4.0": {
+        "fraction_top_actions_at_or_above": 0.06394708156585693,
+        "mean_policy_mass_at_or_above": 0.05615583434700966,
+        "fraction_legal_logits_at_or_above": 0.0042525469325482845,
+        "fraction_legal_logits_at_or_below_negative": 0.0
+      },
+      "8.0": {
+        "fraction_top_actions_at_or_above": 0.004961411468684673,
+        "mean_policy_mass_at_or_above": 0.004953008145093918,
+        "fraction_legal_logits_at_or_above": 0.00032572701456956565,
+        "fraction_legal_logits_at_or_below_negative": 0.0
+      }
+    }
+  },
+  "warm_start_drift": {
+    "mean_kl_common_to_rnad": 0.7896640300750732,
+    "mean_kl_rnad_to_common": 2.7465033531188965,
+    "top_exact_action_agreement": 0.7213340401649475
+  },
+  "neurd": {
+    "status": "complete",
+    "config": {
+      "eta": 0.2,
+      "c": 1.0,
+      "rho": "infinity",
+      "lambda_": 1.0,
+      "nerd_threshold": 2.0,
+      "nerd_clip": 10000.0,
+      "target_avg": 0.001,
+      "reference_interval": 4000
+    },
+    "learner_steps": 32768,
+    "reference_alpha": 0.384,
+    "scope": "Fresh frozen on-policy complete games; no optimizer; does not reproduce stale minibatches",
+    "value_target": {
+      "count": 3628,
+      "mean": 0.007909807795504684,
+      "min": -1.0877937078475952,
+      "p10": -1.0086809992790222,
+      "p50": 0.003432083874940872,
+      "p90": 1.0059790372848512,
+      "p95": 1.0147699117660522,
+      "p99": 1.0401618266105652,
+      "max": 1.0870285034179688
+    },
+    "value_target_variance": 0.9655827879905701,
+    "critic_target_mse_per_state": 0.8771331310272217,
+    "critic_target_explained_variance": 0.09172797203063965,
+    "selected_behavior_probability": {
+      "count": 3628,
+      "mean": 0.2787451419934154,
+      "min": 0.0010589088778942823,
+      "p10": 0.03278491944074631,
+      "p50": 0.1908269301056862,
+      "p90": 0.6901423871517182,
+      "p95": 0.8565977782011032,
+      "p99": 0.9930717998743057,
+      "max": 1.0
+    },
+    "selected_current_over_behavior": {
+      "count": 3628,
+      "mean": 1.0000000083459646,
+      "min": 0.999999463558197,
+      "p10": 0.9999998807907104,
+      "p50": 1.0,
+      "p90": 1.0000001192092896,
+      "p95": 1.0000001192092896,
+      "p99": 1.0000003576278687,
+      "max": 1.000001072883606
+    },
+    "current_to_regularization_references_weighted_kl": 0.014316599816083908,
+    "force_gating": {
+      "advantage_abs": {
+        "count": 55261,
+        "mean": 1.6281750387782152,
+        "min": 0.0,
+        "p10": 0.4743373394012451,
+        "p50": 0.9420645236968994,
+        "p90": 1.3771401643753052,
+        "p95": 1.651702642440796,
+        "p99": 16.789202880859378,
+        "max": 867.3051147460938
+      },
+      "fraction_legal_advantages_clipped": 0.0,
+      "thresholds": {
+        "2.0": {
+          "mean_positive_force_before_gate_per_state": 12.241671562194824,
+          "mean_negative_force_abs_before_gate_per_state": 12.558378219604492,
+          "mean_blocked_positive_force_per_state": 0.4028353989124298,
+          "mean_blocked_negative_force_abs_per_state": 0.05412214249372482,
+          "mean_signed_blocked_force_per_state": 0.348713219165802,
+          "positive_force_abs_blocked_fraction": 0.03290688991546631,
+          "negative_force_abs_blocked_fraction": 0.00430964445695281,
+          "top_positive_force_abs_blocked_fraction": 0.4610471725463867,
+          "fraction_top_positive_events_blocked": 0.5306994318962097,
+          "mean_log_top_probability_sgd_proxy": -0.1326874941587448,
+          "fraction_negative_log_top_probability_sgd_proxy": 0.482083797454834
+        },
+        "4.0": {
+          "mean_positive_force_before_gate_per_state": 12.241671562194824,
+          "mean_negative_force_abs_before_gate_per_state": 12.558378219604492,
+          "mean_blocked_positive_force_per_state": 0.006673290394246578,
+          "mean_blocked_negative_force_abs_per_state": 0.0,
+          "mean_signed_blocked_force_per_state": 0.006673290394246578,
+          "positive_force_abs_blocked_fraction": 0.0005451289471238852,
+          "negative_force_abs_blocked_fraction": 0.0,
+          "top_positive_force_abs_blocked_fraction": 0.012049556709825993,
+          "fraction_top_positive_events_blocked": 0.07955151796340942,
+          "mean_log_top_probability_sgd_proxy": -0.00911626871675253,
+          "fraction_negative_log_top_probability_sgd_proxy": 0.4831863343715668
+        },
+        "8.0": {
+          "mean_positive_force_before_gate_per_state": 12.241671562194824,
+          "mean_negative_force_abs_before_gate_per_state": 12.558378219604492,
+          "mean_blocked_positive_force_per_state": 2.591027623566333e-06,
+          "mean_blocked_negative_force_abs_per_state": 0.0,
+          "mean_signed_blocked_force_per_state": 2.591027623566333e-06,
+          "positive_force_abs_blocked_fraction": 2.1165635644138092e-07,
+          "negative_force_abs_blocked_fraction": 0.0,
+          "top_positive_force_abs_blocked_fraction": 4.9748960009310395e-06,
+          "fraction_top_positive_events_blocked": 0.008542445488274097,
+          "mean_log_top_probability_sgd_proxy": -0.007466931361705065,
+          "fraction_negative_log_top_probability_sgd_proxy": 0.4831863343715668
+        }
+      }
+    },
+    "proxy_limitation": "Logit-space SGD direction only, not a prediction of the shared network's Adam step; no strength claim"
+  },
+  "parameters_and_buffers_unchanged": true,
+  "optimizer_constructed": false,
+  "optimizer_steps": 0,
+  "device": "cpu",
+  "source_sha256": {
+    "scripts/diagnose_rnad_policy.py": "07e9ad7666117de5e1334c94c13359e95dd2ee851afe84f905b3079eb11ac24b",
+    "src/rnad.py": "42f04b7d1c4718ba6a6090b1aa8ef58309ceade116e0a657285ff3004530e2b1",
+    "src/exact_policy.py": "92bc7bfcd7a714acbf528c835b27f3229118590cd4b31647b037147f0ec776b9",
+    "scripts/train_exact_policy.py": "2c40f33913c69a41a07e8eb3d2bd4e38c1cc4b30150e59a5ddfea1a3002558ae"
+  },
+  "torch_version": "2.8.0+cu128",
+  "numpy_version": "2.3.2",
+  "sampled_actions_sha256": "8afaa5dcbc84f9b40f15a77cbc8398de40826265053207a93e706beb080e7892"
+}

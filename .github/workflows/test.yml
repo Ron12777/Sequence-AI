@@ -1,0 +1,25 @@
+name: Test
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: rustup update stable --no-self-update
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install -r requirements.txt pytest ruff .
+      - run: python -m pytest -q
+        env:
+          OMP_NUM_THREADS: '1'
+      - run: node tests/browser.test.cjs
+      - run: ruff check src scripts tests web/app.py --select F
+      - run: cargo fmt --manifest-path native/Cargo.toml --check
+      - run: cargo clippy --manifest-path native/Cargo.toml -- -D warnings

@@ -1,0 +1,20 @@
+{
+  "candidate": {
+    "checkpoint": "/workspace/sequence/campaign/exact/final-development/checkpoints/cnn_ppo-final.pt",
+    "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45"
+  },
+  "incumbent": {
+    "checkpoint": "/workspace/sequence/campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+    "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8"
+  },
+  "selection_reason": "Final CNN scored 55.0903 percent versus 2h incumbent on fixed 4096 developmental games, compared with 51.6602 percent for saved 3h CNN; selected before reserved confirmation outcomes.",
+  "protocol": {
+    "head_to_head_games": 8192,
+    "search128_games_each": 2048,
+    "baseline32_games_each": 8192,
+    "retention_margin": 0.02,
+    "reserved_seed_base": 9100000000001,
+    "maximum_gpu_seconds": 360
+  },
+  "no_reselection_or_sample_extension": true
+}

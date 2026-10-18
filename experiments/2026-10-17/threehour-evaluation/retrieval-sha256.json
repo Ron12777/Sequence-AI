@@ -1,0 +1,14 @@
+{
+  "cnn_ppo_greedy-plan.json": "2321477d54b39d0487df6200d0846d4b35c316608913332f442a374d87b32b52",
+  "transformer_ppo_greedy-plan.json": "d2cc86f833910edbe325297b280681567b2627d3e65cda3d006b672116adf19e",
+  "cnn_rnad_greedy-plan.json": "d23bb1f08c7af7eebfaafb483787a8944923672880f6fdb0bbe3f48e8ca72a7f",
+  "cnn_rnad_sample1-plan.json": "8c53a1b8ccd2d9134a6b2c3955269bacde3163d661c847e28b909116fd72dd20",
+  "cnn_rnad_sample2-plan.json": "69c97072044a6f78bf5951c24b98d1c9296d40cc9cd60fb800ac467a1b3aa9e0",
+  "checkpoint-metadata.json": "ba2f50148f157a15bf2fac7fd01ad68ad9a764b97c78006e49325dda60e52632",
+  "cnn_ppo_greedy.json": "fc905574adba6670b7907c08d20e9b229c2f86c8109503d08a27bb750d6e50ac",
+  "transformer_ppo_greedy.json": "02f51e61e7b34e0acd3a7358a545790b826ad89c12da8235bcecc6fc0ad0b71a",
+  "cnn_rnad_greedy.json": "250d345413a8ef41405004875e152947dd8f33f5d907300c092829cfc69c95bd",
+  "cnn_rnad_sample1.json": "1c94efc9ce94054c8aa1713e045055507cf023b19ecb8b298cbedcd0f790e4a3",
+  "cnn_rnad_sample2.json": "9835e143abc9ae9c2fd935e0c5bcb5be1718996025293e64d981758d3591740f",
+  "suite-complete.json": "f9c4a81735984b69b4b06c063aeab6c194d3e44be2ce03887ebc69412e53ef7e"
+}

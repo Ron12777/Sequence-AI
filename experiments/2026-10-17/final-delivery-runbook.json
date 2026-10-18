@@ -1,0 +1,26 @@
+{
+  "latest_user_deadlines": {
+    "training_stop_utc": "2026-10-17T23:30:00Z",
+    "operational_delivery_target_utc": "2026-10-18T00:00:00Z",
+    "watchdog_stop_utc": "2026-10-17T23:55:00Z"
+  },
+  "steps": [
+    "Inspect sole final-development waiter3314 output at natural training shutdown. Do not interrupt training before23:30 or repeat completed developmental suites.",
+    "Choose exactly one candidate from fixed final-development comparisons and freeze its SHA/path before reserved confirmation. If no developmental challenger merits confirmation, use validated2hCNN.",
+    "Launch prepared final-confirmation runner once; fixed8192headtohead,2048search128 and8192baseline32 permodel with paired retention gates. Do not change sample sizes or reselect using final outcomes.",
+    "Retrieve chosen candidate and selected finalcontinuation/evidence while confirmation runs. SHA-verify against remote. Run selected export/runtime and staged renderedbrowser checks locally; do not promote until all confirmation gates pass.",
+    "Deliver winning validated weights, or retain2hCNN if any gate fails. Preserve previous rollback and latestcontinuation separately. Use uniquehashedONNXfilename/cacheversions for local staticUI. Publichosting and legacyFlaskAPI are separate.",
+    "Retrieve/checksum all required selectedcontinuation/provenance/evidence, refresh providerbilling, destroy soleinstance56415071 before00UTC October18. Watchdog23:55 stops but does not destroy; verify destruction/API no taskrental remains.",
+    "Report actual comparisons, compute/accounting limitations, deployment and rentalstate. Remove heartbeat after completion."
+  ],
+  "prepared_evidence": [
+    "campaign.json",
+    "same-cnn-dp-numerics.json",
+    "shared-update-verified.json",
+    "threehour-comparison-summary.json",
+    "twohour-confirmation-summary.json"
+  ],
+  "training_mode": "OneCNN/Adam; both4090s share weightupdates; globalbatch1024 unchanged; rolloutGPU0. No other contender training.",
+  "final_confirmation_runner": "experiments/2026-10-17/run-final-confirmation-suite.py; tested11CPUtests andstagedverified at/tmp/run-final-confirmation-suite.py, SHA0414890280c95d72ec91ac49f2330666273a4ef38ddc4835434ca20e9789c1c9",
+  "timing_estimate": "Prior fixedconfirmation components suggest about4\u20135minutes GPUtime, not guarantee. Prepare plans before21:30 and overlap safe retrieval/export with remote confirmation to protect shutdown margin."
+}

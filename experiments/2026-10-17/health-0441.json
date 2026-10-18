@@ -1,0 +1,490 @@
+{
+  "utc": "2026-10-17T04:41:29.027954+00:00",
+  "state": {
+    "status": "running",
+    "pid": 7983,
+    "stage": "training",
+    "active_architecture": "gru",
+    "history": [
+      {
+        "architecture": "board",
+        "iterations": 384,
+        "games": 196608,
+        "positions": 8213636,
+        "updates": 16396,
+        "training_seconds": 1802.1626188440714,
+        "blocks": 1,
+        "evaluation_seconds": 6.623305313056335,
+        "checkpoint_sha256": "efa17d07e2848e620378787bcb66e6eed3125bc4159c3a6fad49b11833042cc3",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.54296875,
+          "greedy": 0.78515625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 366,
+        "games": 187392,
+        "positions": 7887670,
+        "updates": 15762,
+        "training_seconds": 1801.496816040948,
+        "blocks": 1,
+        "evaluation_seconds": 6.975470288889483,
+        "checkpoint_sha256": "2d6600597298edc074565586c87a1799d9931b123d595e700cfb2c84ac442c65",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.525390625,
+          "greedy": 0.791015625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 721,
+        "games": 369152,
+        "positions": 15183294,
+        "updates": 30396,
+        "training_seconds": 3605.973812269047,
+        "blocks": 2,
+        "evaluation_seconds": 39.24986202898435,
+        "checkpoint_sha256": "dbfe1319e2b2caed1c384ebb0f351bba0125f4875d5699561943c527170b48b6",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5634765625,
+          "greedy": 0.8046875,
+          "champion_search": 0.4921875,
+          "heldout_baseline": 0.6982421875
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 791,
+        "games": 404992,
+        "positions": 16552277,
+        "updates": 33094,
+        "training_seconds": 3605.0717464319896,
+        "blocks": 2,
+        "evaluation_seconds": 33.55218393402174,
+        "checkpoint_sha256": "7f77b3ded835b60ea93eb6f0125459999b2360dcc20479d009ee5ca95e94f45f",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5556640625,
+          "greedy": 0.8203125,
+          "champion_search": 0.486328125,
+          "heldout_baseline": 0.75390625
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 1212,
+        "games": 620544,
+        "positions": 25100783,
+        "updates": 50130,
+        "training_seconds": 5408.476935822051,
+        "blocks": 3,
+        "evaluation_seconds": 7.180589270079508,
+        "checkpoint_sha256": "c28b4eafcd08c92e54c542ec74ae84b5242f5bdb29be2bfb0f005e4bec951eb7",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.58203125,
+          "greedy": 0.837890625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 1100,
+        "games": 563200,
+        "positions": 22894915,
+        "updates": 45782,
+        "training_seconds": 5409.478973621037,
+        "blocks": 3,
+        "evaluation_seconds": 6.545966444071382,
+        "checkpoint_sha256": "1014eb312f835ac2d01bbd95becf59a4c6c39d6f25a21dabe49eae75a57114ef",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5625,
+          "greedy": 0.814453125
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 1647,
+        "games": 843264,
+        "positions": 33859790,
+        "updates": 67586,
+        "training_seconds": 7209.161839362234,
+        "blocks": 4,
+        "evaluation_seconds": 34.172538297018036,
+        "checkpoint_sha256": "8048a01c5725ca209ef1426ec228ec85e0fa393c75c6b51d6d5d77d2465e19c3",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6044921875,
+          "greedy": 0.833984375,
+          "champion_search": 0.5302734375,
+          "heldout_baseline": 0.7529296875
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 1492,
+        "games": 763904,
+        "positions": 30794850,
+        "updates": 61534,
+        "training_seconds": 7213.143520290032,
+        "blocks": 4,
+        "evaluation_seconds": 33.49684706190601,
+        "checkpoint_sha256": "63c0efcf79237f1ba019f22d2ce55cee50156104c78b072dc2f4008bddef4cb2",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5712890625,
+          "greedy": 0.845703125,
+          "champion_search": 0.5634765625,
+          "heldout_baseline": 0.72265625
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 2079,
+        "games": 1064448,
+        "positions": 42483275,
+        "updates": 84874,
+        "training_seconds": 9009.451708386187,
+        "blocks": 5,
+        "evaluation_seconds": 6.542820326983929,
+        "checkpoint_sha256": "b31cc822775b5e3c23008142e3fcf47c8605ee5c61b8113f4bc46d409fbdef18",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.61328125,
+          "greedy": 0.857421875
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 1885,
+        "games": 965120,
+        "positions": 38660349,
+        "updates": 77276,
+        "training_seconds": 9013.322526299162,
+        "blocks": 5,
+        "evaluation_seconds": 7.222748219035566,
+        "checkpoint_sha256": "52d81f474668f9d73a21dda78fe3709b699c2e62b445695e51812f1b9bca0efd",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5703125,
+          "greedy": 0.857421875
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 2495,
+        "games": 1277440,
+        "positions": 50746639,
+        "updates": 101484,
+        "training_seconds": 10813.1065207941,
+        "blocks": 6,
+        "evaluation_seconds": 32.56135896104388,
+        "checkpoint_sha256": "82a205f63210192749af8d7c54d0c6d0dc7789935cc5fb9623b6f33297034efc",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6044921875,
+          "greedy": 0.8515625,
+          "champion_search": 0.552734375,
+          "heldout_baseline": 0.75390625
+        }
+      }
+    ]
+  },
+  "processes": "    609 Ss   python -u scripts/campaign_watchdog.py --instance 56294531 --stop-at 2026-10-17T15:45:00Z\n   7983 Rsl  python -u scripts/sustained_selfplay.py --champion campaign/champion.pt --baseline campaign/baseline.pt --output-dir campaign/sustained_v2 --stop-at 2026-10-17T15:00:00Z --controller-lock campaign/controller.lock --block-seconds 1800 --evaluation-games 512 --games-per-iteration 512",
+  "models": {
+    "board": {
+      "saved": {
+        "architecture": "board",
+        "iterations": 2495,
+        "games": 1277440,
+        "positions": 50746639,
+        "updates": 101484,
+        "training_seconds": 10813.1065207941,
+        "blocks": 6
+      },
+      "latest": {
+        "games": 1277440,
+        "positions": 50746639,
+        "decisive_games": 511,
+        "rollout_seconds": 3.3377246181480587,
+        "opponent_moves": 6752,
+        "loss": 0.42901465222239493,
+        "approximate_kl": 0.0006976442427088613,
+        "updates": 101484,
+        "value_loss": 0.8655455753207206,
+        "policy_entropy": 0.4657853372395039,
+        "architecture": "board",
+        "iterations": 2495,
+        "training_seconds": 10813.106285426999,
+        "blocks": 5,
+        "learning_rate": 0.000007527157448244164,
+        "entropy_coefficient": 0.0020617300553403563,
+        "iteration_seconds": 4.210613240953535
+      },
+      "last20": {
+        "approximate_kl": 0.00070517037221137,
+        "value_loss": 0.8870853646099568,
+        "policy_entropy": 0.4635163608193398,
+        "iteration_seconds": 4.053177022805903,
+        "rollout_seconds": 3.2303723302320577
+      },
+      "evaluations": [
+        {
+          "architecture": "board",
+          "iterations": 2495,
+          "games": 1277440,
+          "positions": 50746639,
+          "updates": 101484,
+          "training_seconds": 10813.1065207941,
+          "blocks": 6,
+          "evaluations": [
+            {
+              "games": 512,
+              "wins": 309,
+              "losses": 202,
+              "draws": 1,
+              "score": 0.6044921875,
+              "paired_score_95ci": [
+                0.5706018225610067,
+                0.6383825524389933
+              ],
+              "seed": 1000000000001,
+              "opponent": "champion",
+              "opponent_simulations": 0,
+              "candidate_simulations": 0,
+              "seconds": 2.010579295223579,
+              "candidate_seconds": 0.8361695476341993,
+              "candidate_moves": 13676,
+              "label": "champion_direct"
+            },
+            {
+              "games": 512,
+              "wins": 436,
+              "losses": 76,
+              "draws": 0,
+              "score": 0.8515625,
+              "paired_score_95ci": [
+                0.8205348165295229,
+                0.8825901834704771
+              ],
+              "seed": 1000000100001,
+              "opponent": "greedy",
+              "opponent_simulations": 0,
+              "candidate_simulations": 0,
+              "seconds": 3.6235307240858674,
+              "candidate_seconds": 0.7899151099845767,
+              "candidate_moves": 12406,
+              "label": "greedy"
+            },
+            {
+              "games": 512,
+              "wins": 283,
+              "losses": 229,
+              "draws": 0,
+              "score": 0.552734375,
+              "paired_score_95ci": [
+                0.5183948632524913,
+                0.5870738867475087
+              ],
+              "seed": 1000000200001,
+              "opponent": "champion",
+              "opponent_simulations": 128,
+              "candidate_simulations": 0,
+              "seconds": 18.931160259991884,
+              "candidate_seconds": 0.9774951671715826,
+              "candidate_moves": 13496,
+              "label": "champion_search"
+            },
+            {
+              "games": 512,
+              "wins": 385,
+              "losses": 125,
+              "draws": 2,
+              "score": 0.75390625,
+              "paired_score_95ci": [
+                0.7201430913111164,
+                0.7876694086888836
+              ],
+              "seed": 1000000300001,
+              "opponent": "champion",
+              "opponent_simulations": 32,
+              "candidate_simulations": 0,
+              "seconds": 6.629648312926292,
+              "candidate_seconds": 0.9221139072906226,
+              "candidate_moves": 13655,
+              "label": "heldout_baseline"
+            }
+          ],
+          "evaluation_seconds": 32.56135896104388,
+          "checkpoint_sha256": "82a205f63210192749af8d7c54d0c6d0dc7789935cc5fb9623b6f33297034efc",
+          "monitoring_only": true,
+          "production_promoted": false
+        }
+      ],
+      "gpu_util": [
+        {
+          "block": 1,
+          "mean": 8.869565217391305
+        },
+        {
+          "block": 2,
+          "mean": 8.676143386897404
+        },
+        {
+          "block": 3,
+          "mean": 8.724201474201474
+        },
+        {
+          "block": 4,
+          "mean": 9.26531862745098
+        },
+        {
+          "block": 5,
+          "mean": 9.83435207823961
+        },
+        {
+          "block": 6,
+          "mean": 8.41172839506173
+        }
+      ]
+    },
+    "gru": {
+      "saved": {
+        "architecture": "gru",
+        "iterations": 1978,
+        "games": 1012736,
+        "positions": 40509571,
+        "updates": 80996,
+        "training_seconds": 9449.94697793806,
+        "blocks": 5
+      },
+      "latest": {
+        "games": 1019392,
+        "positions": 40767102,
+        "decisive_games": 512,
+        "rollout_seconds": 3.098182311980054,
+        "opponent_moves": 6706,
+        "loss": 0.4305021360516548,
+        "approximate_kl": 0.0007707154569033037,
+        "updates": 81514,
+        "value_loss": 0.8725278705358506,
+        "policy_entropy": 0.5288059011101722,
+        "architecture": "gru",
+        "iterations": 1991,
+        "training_seconds": 9508.106610628078,
+        "blocks": 5,
+        "learning_rate": 0.000008036264503614168,
+        "entropy_coefficient": 0.0021750228452677117,
+        "iteration_seconds": 4.369194761151448
+      },
+      "last20": {
+        "approximate_kl": 0.0007685466584885491,
+        "value_loss": 0.8907772479245537,
+        "policy_entropy": 0.527057619898727,
+        "iteration_seconds": 4.575701949303038,
+        "rollout_seconds": 3.4081863971776327
+      },
+      "evaluations": [
+        {
+          "architecture": "gru",
+          "iterations": 1885,
+          "games": 965120,
+          "positions": 38660349,
+          "updates": 77276,
+          "training_seconds": 9013.322526299162,
+          "blocks": 5,
+          "evaluations": [
+            {
+              "games": 512,
+              "wins": 291,
+              "losses": 219,
+              "draws": 2,
+              "score": 0.5703125,
+              "paired_score_95ci": [
+                0.5356987845333405,
+                0.6049262154666595
+              ],
+              "seed": 1000000000001,
+              "opponent": "champion",
+              "opponent_simulations": 0,
+              "candidate_simulations": 0,
+              "seconds": 2.34816848882474,
+              "candidate_seconds": 1.0138012757524848,
+              "candidate_moves": 13853,
+              "label": "champion_direct"
+            },
+            {
+              "games": 512,
+              "wins": 439,
+              "losses": 73,
+              "draws": 0,
+              "score": 0.857421875,
+              "paired_score_95ci": [
+                0.8276658399602769,
+                0.8871779100397231
+              ],
+              "seed": 1000000100001,
+              "opponent": "greedy",
+              "opponent_simulations": 0,
+              "candidate_simulations": 0,
+              "seconds": 4.089773155981675,
+              "candidate_seconds": 1.0488983513787389,
+              "candidate_moves": 12432,
+              "label": "greedy"
+            }
+          ],
+          "evaluation_seconds": 7.222748219035566,
+          "checkpoint_sha256": "52d81f474668f9d73a21dda78fe3709b699c2e62b445695e51812f1b9bca0efd",
+          "monitoring_only": true,
+          "production_promoted": false
+        }
+      ],
+      "gpu_util": [
+        {
+          "block": 1,
+          "mean": 14.213717085119413
+        },
+        {
+          "block": 2,
+          "mean": 13.431468961278426
+        },
+        {
+          "block": 3,
+          "mean": 13.578914919852034
+        },
+        {
+          "block": 4,
+          "mean": 13.896615384615385
+        },
+        {
+          "block": 5,
+          "mean": 14.065805658056581
+        }
+      ]
+    }
+  },
+  "rentals": [
+    {
+      "id": 56294531,
+      "actual_status": "running",
+      "gpu_name": "RTX 4090",
+      "dph_total": 0.4681481481481482,
+      "disk_space": 40
+    }
+  ]
+}

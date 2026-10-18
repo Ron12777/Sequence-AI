@@ -1,0 +1,21 @@
+{
+  "candidate": {
+    "checkpoint": "/workspace/sequence/campaign/exact/final-development/checkpoints/cnn_ppo-final.pt",
+    "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45"
+  },
+  "opponents": [
+    {
+      "label": "validated_cnn_2h",
+      "kind": "exact",
+      "checkpoint": "/workspace/sequence/campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+      "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+      "games": 4096,
+      "seed": 3100100000001
+    }
+  ],
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Developmental final-checkpoint selection only; common fresh paired deals, fixed2hCNN, reserved9100000000001 final confirmation seeds untouched. No automatic promotion."
+}

@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "model": "cnn",
+      "provider": "onnxruntime-web WASM",
+      "maxAbsoluteError": {
+        "logits": 1.4901161193847656e-08,
+        "value": 0
+      }
+    },
+    {
+      "model": "transformer",
+      "provider": "onnxruntime-web WASM",
+      "maxAbsoluteError": {
+        "logits": 1.1175870895385742e-07,
+        "value": 0
+      }
+    }
+  ],
+  "timestamp_utc": "2026-10-17T14:37:37.937096+00:00",
+  "runtime_version": "onnxruntime-web@1.18.0",
+  "execution": "Actual browser WASM backend inside isolated Node VM; not a rendered browser UI test",
+  "scope": "Synthetic nonzero-head CNN and transformer fixtures, batch2, variable legal actions, padding and public history; no selected production model tested",
+  "browser_tests": 16,
+  "python_browser_tests": 5,
+  "deployment_changed": false,
+  "sha256": {
+    "ort.min.js": "74945866728300a05746a37387ac48863a8be5cdc3760304b47d0136d7d0dc5b",
+    "ort-wasm-simd.wasm": "f533b5f21790563d7556c611c3835ac65848ee326da2689aac54ed7d9cc8c6a4",
+    "cnn.onnx": "8cadea7d9a54793e7946c3017c214569c75c65fac17940728a746edeb6d5da87",
+    "cnn.inputs.json": "30228b0e8c3a6cd8a1da4aec0b01f7d6162f4793e68b8c9fb5fd39d084e703b4",
+    "transformer.onnx": "fb937b3193935f16c1e83ed19f1acadccc2900a4764c031280c1563331585d13",
+    "transformer.inputs.json": "ff5b8536d6b0d2b285108a0258796c4efb62feba033bbe82e943cbf39bdf3089"
+  }
+}

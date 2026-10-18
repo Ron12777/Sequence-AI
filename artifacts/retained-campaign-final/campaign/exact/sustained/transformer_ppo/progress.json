@@ -1,0 +1,11 @@
+{
+  "variant": "transformer",
+  "algorithm": "ppo",
+  "contender": "transformer_ppo",
+  "iterations": 727,
+  "games": 1488896,
+  "positions": 56061185,
+  "updates": 110236,
+  "training_seconds": 11633.365663606586,
+  "blocks": 21
+}

@@ -1,0 +1,10 @@
+{
+  "model": "model-exact-0bd3130842892f06.onnx",
+  "policyKind": "exact_sequence_policy",
+  "playMode": "direct",
+  "actionEncoding": "card_id * 100 + row * 10 + col",
+  "variant": "cnn",
+  "valueMode": "bounded",
+  "historyArchitecture": "board",
+  "observationMode": "board_hand"
+}

@@ -1,0 +1,37 @@
+{
+  "threads": 2,
+  "purpose": "Matched four allocated RTX4090 training-hour CNN/GRU comparison. Shared warmstart; one training seed each. Fresh paired head-to-head plus common reference deals. Final reserved seeds untouched.",
+  "candidate": {
+    "checkpoint": "artifacts/checkpoints/board-four-hour.pt",
+    "sha256": "8d3af846086fea02e4a2a19315e8c318d81ccc982f740d2640ee783aa591713e"
+  },
+  "opponents": [
+    {
+      "label": "matched_gru_four_hour",
+      "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+      "sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+      "kind": "history",
+      "simulations": 0,
+      "games": 4096,
+      "seed": 1200000000001
+    },
+    {
+      "label": "original_champion_search",
+      "checkpoint": "artifacts/checkpoints/overnight-round0.pt",
+      "sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+      "kind": "champion",
+      "simulations": 128,
+      "games": 2048,
+      "seed": 1100001000001
+    },
+    {
+      "label": "heldout_baseline",
+      "checkpoint": "artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "kind": "champion",
+      "simulations": 32,
+      "games": 512,
+      "seed": 1100002000001
+    }
+  ]
+}

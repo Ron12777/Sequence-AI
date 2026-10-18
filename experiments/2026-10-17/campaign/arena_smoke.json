@@ -1,0 +1,27 @@
+{
+  "games": 8,
+  "wins": 3,
+  "losses": 4,
+  "draws": 1,
+  "score": 0.4375,
+  "paired_score_95ci": [
+    0.1292150938931111,
+    0.7457849061068889
+  ],
+  "outcomes": [
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    1.0,
+    0.5
+  ],
+  "seed": 17,
+  "simulations": 8,
+  "seconds": 1.0257738081272691,
+  "mean_moves": 63.75,
+  "candidate": "models/latest.pt",
+  "champion": "models/latest.pt"
+}

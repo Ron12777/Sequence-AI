@@ -1,0 +1,148 @@
+{
+  "architectures": {
+    "board": {
+      "checkpoint": {
+        "checkpoint": "artifacts/checkpoints/board-six-hour.pt",
+        "sha256": "f3da1fe231e59b12437386f77f06f2f5d687514500f88f3ca572906e4b562284"
+      },
+      "training_seconds": 21629.158779826015,
+      "allocated_gpu_hours": 6.008099661062782,
+      "allocated_training_cost_usd": 2.812680730216058,
+      "evaluations": [
+        {
+          "label": "matched_gru_six_hour",
+          "games": 4096,
+          "wins": 2078,
+          "losses": 2014,
+          "draws": 4,
+          "score": 0.5078125,
+          "paired_score_95ci": [
+            0.49595728425704355,
+            0.5196677157429564
+          ]
+        },
+        {
+          "label": "validated_gru_four_hour",
+          "games": 2048,
+          "wins": 1036,
+          "losses": 1010,
+          "draws": 2,
+          "score": 0.50634765625,
+          "paired_score_95ci": [
+            0.4885800533082902,
+            0.5241152591917098
+          ]
+        },
+        {
+          "label": "board_four_hour",
+          "games": 2048,
+          "wins": 1057,
+          "losses": 991,
+          "draws": 0,
+          "score": 0.51611328125,
+          "paired_score_95ci": [
+            0.49909411824154304,
+            0.533132444258457
+          ]
+        },
+        {
+          "label": "original_champion_search",
+          "games": 2048,
+          "wins": 1151,
+          "losses": 894,
+          "draws": 3,
+          "score": 0.562744140625,
+          "paired_score_95ci": [
+            0.5446876114760857,
+            0.5808006697739143
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "games": 512,
+          "wins": 402,
+          "losses": 109,
+          "draws": 1,
+          "score": 0.7861328125,
+          "paired_score_95ci": [
+            0.7534932348335425,
+            0.8187723901664575
+          ]
+        }
+      ]
+    },
+    "gru": {
+      "checkpoint": {
+        "checkpoint": "artifacts/checkpoints/gru-six-hour.pt",
+        "sha256": "03c92f1466bdea40bca75e1358a659dcc44f85c074b258d764db5346c25711e2"
+      },
+      "training_seconds": 21626.545404450502,
+      "allocated_gpu_hours": 6.007373723458473,
+      "allocated_training_cost_usd": 2.81234088387093,
+      "evaluations": [
+        {
+          "label": "validated_gru_four_hour",
+          "games": 2048,
+          "wins": 1042,
+          "losses": 1004,
+          "draws": 2,
+          "score": 0.50927734375,
+          "paired_score_95ci": [
+            0.49256501146559123,
+            0.5259896760344087
+          ]
+        },
+        {
+          "label": "original_champion_search",
+          "games": 2048,
+          "wins": 1164,
+          "losses": 880,
+          "draws": 4,
+          "score": 0.5693359375,
+          "paired_score_95ci": [
+            0.5506632705927741,
+            0.5880086044072259
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "games": 512,
+          "wins": 391,
+          "losses": 118,
+          "draws": 3,
+          "score": 0.7666015625,
+          "paired_score_95ci": [
+            0.7323016110888059,
+            0.8009015139111941
+          ]
+        }
+      ]
+    }
+  },
+  "paired_reference_differences": [
+    {
+      "opponent": "original_champion_search",
+      "games": 2048,
+      "cnn_minus_gru_score": -0.006591796875,
+      "paired_95ci": [
+        -0.02924169621991528,
+        0.01605810246991528
+      ]
+    },
+    {
+      "opponent": "heldout_baseline",
+      "games": 512,
+      "cnn_minus_gru_score": 0.01953125,
+      "paired_95ci": [
+        -0.023285269553328235,
+        0.062347769553328235
+      ]
+    }
+  ],
+  "caveats": [
+    "Exclusive allocated RTX4090 time includes CPU-bound self-play; not active GPU kernel hours.",
+    "Incremental training cost excludes shared pretraining, tuning, evaluation and rental overhead.",
+    "One training seed per architecture; no inference of asymptotic ceilings.",
+    "Same architectures as four-hour timing comparison; latency was not remeasured here."
+  ]
+}

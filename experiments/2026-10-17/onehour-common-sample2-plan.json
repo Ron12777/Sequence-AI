@@ -1,0 +1,23 @@
+{
+  "candidate": {
+    "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/exact-common-warm.pt",
+    "sha256": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1"
+  },
+  "opponents": [
+    {
+      "label": "retained_cnn_7h48",
+      "kind": "history",
+      "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/board-pre-migration-final.pt",
+      "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+      "games": 512,
+      "seed": 2200100000001
+    }
+  ],
+  "device": "cpu",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Shared initialization stochastic control on same256deal pairs as onehour samplediagnostic; no GPU training interruption",
+  "candidate_action_mode": "sample",
+  "action_seed": 311072
+}

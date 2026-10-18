@@ -1,0 +1,51 @@
+{
+  "transport": "shared",
+  "wall_seconds": 81.7937466208823,
+  "metrics": [
+    {
+      "epoch": 1,
+      "games": 1024,
+      "decisive_games": 1024,
+      "replay_size": 42688,
+      "collect_seconds": 48.550215306924656,
+      "epoch_seconds": 49.28315877192654,
+      "overlap_training": false,
+      "inference_samples": 9452810,
+      "inference_batches": 3914,
+      "loss": 2.729341983795166,
+      "policy_loss": 1.920461043715477,
+      "value_loss": 0.8088809102773666,
+      "train_seconds": 0.46366273052990437
+    },
+    {
+      "epoch": 2,
+      "games": 1024,
+      "decisive_games": 1024,
+      "replay_size": 97707,
+      "collect_seconds": 9.120149429887533,
+      "epoch_seconds": 9.560089804930612,
+      "overlap_training": false,
+      "inference_samples": 11401433,
+      "inference_batches": 4704,
+      "loss": 2.644082337617874,
+      "policy_loss": 1.8613651096820831,
+      "value_loss": 0.7827172204852104,
+      "train_seconds": 0.11441485676914454
+    },
+    {
+      "epoch": 3,
+      "games": 1024,
+      "decisive_games": 1024,
+      "replay_size": 162514,
+      "collect_seconds": 16.26696551591158,
+      "epoch_seconds": 16.736324049066752,
+      "overlap_training": false,
+      "inference_samples": 14950976,
+      "inference_batches": 6171,
+      "loss": 2.658543348312378,
+      "policy_loss": 1.854742169380188,
+      "value_loss": 0.8038011193275452,
+      "train_seconds": 0.11523097706958652
+    }
+  ]
+}

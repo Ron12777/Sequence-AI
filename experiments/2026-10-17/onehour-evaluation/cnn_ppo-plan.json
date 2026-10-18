@@ -1,0 +1,39 @@
+{
+  "candidate": {
+    "checkpoint": "campaign/exact/milestones/cnn_ppo-mixed-1h.pt",
+    "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb"
+  },
+  "opponents": [
+    {
+      "label": "retained_cnn_7h48",
+      "kind": "history",
+      "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+      "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+      "games": 4096,
+      "seed": 2200100000001
+    },
+    {
+      "label": "original_search_128",
+      "kind": "champion",
+      "checkpoint": "artifacts/checkpoints/overnight-round0.pt",
+      "sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+      "games": 1024,
+      "seed": 2200200000001,
+      "simulations": 128
+    },
+    {
+      "label": "heldout_baseline_32",
+      "kind": "champion",
+      "checkpoint": "artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "games": 512,
+      "seed": 2200300000001,
+      "simulations": 32
+    }
+  ],
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Fresh paired one-hour developmental comparison; final seeds untouched; cumulative training time mixes5090 and4090; no automatic promotion"
+}

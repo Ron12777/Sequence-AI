@@ -1,0 +1,154 @@
+{
+  "common_initial_vs_retained": {
+    "games": 4096,
+    "score": 0.4884033203125,
+    "paired_score_95ci": [
+      0.47687981869172763,
+      0.49992682193327237
+    ]
+  },
+  "contenders": {
+    "cnn_ppo": {
+      "training_seconds": 3607.695656485157,
+      "comparisons": [
+        {
+          "label": "retained_cnn_7h48",
+          "games": 4096,
+          "score": 0.5152587890625,
+          "paired_score_95ci": [
+            0.5031092271600153,
+            0.5274083509649847
+          ]
+        },
+        {
+          "label": "original_search_128",
+          "games": 1024,
+          "score": 0.5771484375,
+          "paired_score_95ci": [
+            0.5519620565767219,
+            0.6023348184232781
+          ]
+        },
+        {
+          "label": "heldout_baseline_32",
+          "games": 512,
+          "score": 0.7763671875,
+          "paired_score_95ci": [
+            0.7431412780921296,
+            0.8095930969078704
+          ]
+        }
+      ],
+      "improvement_over_common_initial_on_same_deals": {
+        "score_difference": 0.02685546875,
+        "paired_deal_normal95ci": [
+          0.010958731146342524,
+          0.04275220635365748
+        ],
+        "independent_deal_pairs": 2048
+      },
+      "evaluation_seconds": 39.75568368201493,
+      "hardware_budget": {
+        "single5090_seconds": 1255.0600130441599,
+        "one4090_seconds": 2352.6356434409972,
+        "estimated_allocated_training_usd": 0.6026986317306605,
+        "cost_scope": "Allocated active training only; dualGPU node rate split evenly perGPU. Excludes sharedteacher/distillation,tuning,evaluation,migration,setup,idle and bandwidth; not final invoice."
+      }
+    },
+    "transformer_ppo": {
+      "training_seconds": 3661.6561108565656,
+      "comparisons": [
+        {
+          "label": "retained_cnn_7h48",
+          "games": 4096,
+          "score": 0.49560546875,
+          "paired_score_95ci": [
+            0.4839860126444841,
+            0.507224924855516
+          ]
+        },
+        {
+          "label": "original_search_128",
+          "games": 1024,
+          "score": 0.55517578125,
+          "paired_score_95ci": [
+            0.5293984417490356,
+            0.5809531207509644
+          ]
+        },
+        {
+          "label": "heldout_baseline_32",
+          "games": 512,
+          "score": 0.771484375,
+          "paired_score_95ci": [
+            0.7390450318731969,
+            0.8039237181268031
+          ]
+        }
+      ],
+      "improvement_over_common_initial_on_same_deals": {
+        "score_difference": 0.0072021484375,
+        "paired_deal_normal95ci": [
+          -0.007242922099738315,
+          0.021647218974738314
+        ],
+        "independent_deal_pairs": 2048
+      },
+      "evaluation_seconds": 42.97880351200001,
+      "hardware_budget": {
+        "single5090_seconds": 1635.5041665015742,
+        "one4090_seconds": 2026.1519443549914,
+        "estimated_allocated_training_usd": 0.6325502999644974,
+        "cost_scope": "Allocated active training only; dualGPU node rate split evenly perGPU. Excludes sharedteacher/distillation,tuning,evaluation,migration,setup,idle and bandwidth; not final invoice."
+      }
+    },
+    "cnn_rnad": {
+      "training_seconds": 3627.8357611201354,
+      "comparisons": [
+        {
+          "label": "retained_cnn_7h48",
+          "games": 4096,
+          "score": 0.468017578125,
+          "paired_score_95ci": [
+            0.4557201633093712,
+            0.4803149929406288
+          ]
+        },
+        {
+          "label": "original_search_128",
+          "games": 1024,
+          "score": 0.51904296875,
+          "paired_score_95ci": [
+            0.492807443507499,
+            0.545278493992501
+          ]
+        },
+        {
+          "label": "heldout_baseline_32",
+          "games": 512,
+          "score": 0.7451171875,
+          "paired_score_95ci": [
+            0.7130890201484846,
+            0.7771453548515154
+          ]
+        }
+      ],
+      "improvement_over_common_initial_on_same_deals": {
+        "score_difference": -0.0203857421875,
+        "paired_deal_normal95ci": [
+          -0.03695116769057465,
+          -0.003820316684425347
+        ],
+        "independent_deal_pairs": 2048
+      },
+      "evaluation_seconds": 40.898163704026956,
+      "hardware_budget": {
+        "single5090_seconds": 1382.350604493171,
+        "one4090_seconds": 2245.4851566269645,
+        "estimated_allocated_training_usd": 0.6129931729585237,
+        "cost_scope": "Allocated active training only; dualGPU node rate split evenly perGPU. Excludes sharedteacher/distillation,tuning,evaluation,migration,setup,idle and bandwidth; not final invoice."
+      }
+    }
+  },
+  "scope": "Developmental one-hour greedy policies, not architecture ceiling. Time is mixed5090/4090, shared pretraining excluded. Same fresh paired decks across candidates and common initialization. Supplement stochastic policy evaluation before judgingRNaD. Independent CNN confirmation pending."
+}

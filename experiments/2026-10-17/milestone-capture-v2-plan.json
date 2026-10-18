@@ -1,0 +1,21 @@
+{
+  "root": "/workspace/sequence/campaign/exact/sustained",
+  "output": "/workspace/sequence/campaign/exact/milestones-v2",
+  "deadline_epoch": 1792270800.0,
+  "thresholds": {
+    "cnn_ppo": {
+      "mixed-2h": 7200,
+      "mixed-3h": 10800
+    },
+    "transformer_ppo": {
+      "mixed-2h": 7200,
+      "mixed-3h": 10800
+    },
+    "cnn_rnad": {
+      "mixed-2h": 7200,
+      "mixed-3h": 10800,
+      "threshold8-1h": 9016.89391744716,
+      "threshold8-2h": 12616.89391744716
+    }
+  }
+}

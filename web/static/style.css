@@ -1651,3 +1651,7 @@ input:checked+.slider:before {
         max-height: 90vh;
     }
 }
+
+/* A direct policy has no search budget to adjust. */
+.direct-policy .depth-control { display: none !important; }
+#aiError { color: #ffb4ab; font-size: 0.9rem; }

@@ -1,0 +1,17 @@
+[package]
+name = "sequence-native"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.88"
+
+[lib]
+name = "sequence_native"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = { version = "0.23.5", features = ["extension-module", "abi3-py310"] }
+rand = "0.8.5"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

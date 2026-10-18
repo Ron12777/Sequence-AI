@@ -1,0 +1,37 @@
+{
+  "checkpoint_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+  "training_wall_seconds": 22750.368895523163,
+  "allocated_gpu_seconds": 32884.38954292814,
+  "hardware_segments": [
+    {
+      "hardware": "RTX5090",
+      "gpus": 1,
+      "wall_seconds": 1255.0600130441599
+    },
+    {
+      "hardware": "RTX4090",
+      "gpus": 1,
+      "wall_seconds": 11361.288234974
+    },
+    {
+      "hardware": "RTX4090",
+      "gpus": 2,
+      "wall_seconds": 10134.020647404977
+    }
+  ],
+  "games": 10846208,
+  "positions": 398980203,
+  "optimizer_updates": 784574,
+  "limitations": "Excludes inherited 7.48-hour CNN pretraining, shared exact-action distillation, tuning, evaluation and idle rental time. Allocated GPU time is not measured GPU busy time or equal FLOPs. Mixed hardware.",
+  "retention_audit": "184 files independently rehashed; all match. Final optimizer, Python/NumPy/CPU and two CUDA RNG states, historical pools, all three continuations and reference models preserved.",
+  "shared_teacher": {
+    "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+    "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+    "training_seconds": 26913.58923665015,
+    "lineage": "Verified exact-common-warm shared_distillation.teacher_sha256; not earlier board-four-hour checkpoint."
+  },
+  "shared_distillation": {
+    "elapsed_seconds_including_collection": 9.462135,
+    "collection_seconds": 1.415753
+  }
+}

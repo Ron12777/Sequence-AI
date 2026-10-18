@@ -1,0 +1,104 @@
+{
+  "scope": "Additional RTX4090 device-time approximately matched within60s; inherited RTX5090 budgets unequal. No equal-FLOP claim.",
+  "results": {
+    "cnn_ppo": {
+      "budget": {
+        "checkpoint": "artifacts/checkpoints/exact-4090-hour/cnn_ppo-4090-1h.pt",
+        "sha256": "4b33dd47b281e7d011917c2678790088571253b49f5693fd3c04bc04e8551cdd",
+        "verified": true,
+        "inherited5090_seconds": 1255.0600130441599,
+        "additional4090_seconds": 3659.857009672007,
+        "total_training_seconds": 4914.917022716167,
+        "allocated_training_cost_usd": 0.7948816906137997
+      },
+      "cpu_evaluation_seconds": 170.72007311391644,
+      "results": [
+        {
+          "label": "validated_exact_cnn_1h",
+          "games": 4096,
+          "score": 0.50830078125,
+          "paired_score_95ci": [
+            0.4971533128685999,
+            0.5194482496314001
+          ]
+        },
+        {
+          "label": "retained_cnn_7h48",
+          "games": 2048,
+          "score": 0.5302734375,
+          "paired_score_95ci": [
+            0.513018624839338,
+            0.547528250160662
+          ]
+        }
+      ]
+    },
+    "transformer_ppo": {
+      "budget": {
+        "checkpoint": "artifacts/checkpoints/exact-4090-hour/transformer_ppo-4090-1h.pt",
+        "sha256": "c830bc1a56546b2a10830c38e87b70197909e121bc57a138a8f0e46c6538c430",
+        "verified": true,
+        "inherited5090_seconds": 1635.5041665015742,
+        "additional4090_seconds": 3614.2603219510347,
+        "total_training_seconds": 5249.764488452609,
+        "allocated_training_cost_usd": 0.8660283731728047
+      },
+      "cpu_evaluation_seconds": 740.1785609599901,
+      "results": [
+        {
+          "label": "validated_exact_cnn_1h",
+          "games": 4096,
+          "score": 0.4920654296875,
+          "paired_score_95ci": [
+            0.48024180954074086,
+            0.5038890498342592
+          ]
+        },
+        {
+          "label": "retained_cnn_7h48",
+          "games": 2048,
+          "score": 0.502685546875,
+          "paired_score_95ci": [
+            0.4862756678423794,
+            0.5190954259076206
+          ]
+        }
+      ]
+    },
+    "cnn_rnad": {
+      "budget": {
+        "checkpoint": "artifacts/checkpoints/exact-4090-hour/cnn_rnad-4090-1h.pt",
+        "sha256": "41f45be70ac681df88664c597b9f5dff96f5305700bac58df5a0837e30c46676",
+        "verified": true,
+        "inherited5090_seconds": 1382.350604493171,
+        "additional4090_seconds": 3654.350907074986,
+        "total_training_seconds": 5036.701511568157,
+        "allocated_training_cost_usd": 0.8201196294801516
+      },
+      "cpu_evaluation_seconds": 160.0316736259265,
+      "results": [
+        {
+          "label": "validated_exact_cnn_1h",
+          "games": 4096,
+          "score": 0.427734375,
+          "paired_score_95ci": [
+            0.41533863661333503,
+            0.44013011338666497
+          ]
+        },
+        {
+          "label": "retained_cnn_7h48",
+          "games": 2048,
+          "score": 0.435302734375,
+          "paired_score_95ci": [
+            0.41846857426736545,
+            0.45213689448263455
+          ]
+        }
+      ]
+    }
+  },
+  "decision": "No promotion: CNN newer control50.83% vs champion has pairedCI49.72\u201351.94; transformer49.21% CI48.02\u201350.39; original threshold2 RNaD42.77% CI41.53\u201344.01. RNaDcontrol predates threshold8 correction; do not attribute this score to corrected recipe. Continue substantial training, assess2h/3h milestones and >=1h corrected RNaD separately.",
+  "gpu_training_interruption_seconds": 0,
+  "final_confirmation_seeds_used": false
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "architecture": "summary",
+    "epoch": 1,
+    "train_loss": 2.069534436943605,
+    "heldout_game_loss": 2.328463690621512,
+    "seconds": 0.8568874238990247
+  },
+  {
+    "architecture": "summary",
+    "epoch": 2,
+    "train_loss": 1.727519676857388,
+    "heldout_game_loss": 2.411071785858699,
+    "seconds": 1.6367194880731404
+  },
+  {
+    "architecture": "summary",
+    "epoch": 3,
+    "train_loss": 1.541890600292953,
+    "heldout_game_loss": 2.540885703904288,
+    "seconds": 2.4113874239847064
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "variant": "cnn",
+  "algorithm": "rnad",
+  "contender": "cnn_rnad",
+  "iterations": 1637,
+  "games": 3352576,
+  "positions": 187786466,
+  "updates": 104768,
+  "training_seconds": 11924.966634108161,
+  "blocks": 22,
+  "recipe_amendments": [
+    {
+      "utc": "2026-10-17T17:35:08.015703+00:00",
+      "parameter": "training_state.rnad.config.nerd_threshold",
+      "before": 2.0,
+      "after": 8.0,
+      "training_seconds_before": 5416.89391744716,
+      "learner_steps_before": 47424,
+      "reason": "Frozen64-game diagnostic: beta2 blocks46.1% of positive top-action force; beta8 nearly eliminates this gating. Warm top-centeredlogitmean10.31 collapsedto2.24; learned T1strengthregressed. Hypothesis-driven continuation correction, not a proven strength gain.",
+      "diagnostic_sha256": "9ad408b2598a5bb1cf16061acae887b741fabaec6cd3c85d9aa6674bce007687",
+      "preserved_control_sha256": "41f45be70ac681df88664c597b9f5dff96f5305700bac58df5a0837e30c46676"
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+{
+  "device": "cpu",
+  "gpu": null,
+  "torch_version": "2.14.1+cpu",
+  "games": 64,
+  "rollout": {
+    "games": 64,
+    "positions": 5154,
+    "decisions": 5154,
+    "decisive_games": 64,
+    "opponent_moves": 0,
+    "rollout_seconds": 0.28346068295650184,
+    "environment_seconds": 0.020153871038928628,
+    "inference_seconds": 0.2506213180022314,
+    "games_per_second": 225.78087138039194,
+    "return_mean": 0.006208769977092743,
+    "return_variance": 0.9999614357948303,
+    "old_value_mse": 1.0033488273620605,
+    "max_legal_actions": 202,
+    "data_policy_version": "current frozen learner for entire rollout; no replay"
+  },
+  "scan": {
+    "baseline": {
+      "median_seconds_two_players": 0.009762680041603744,
+      "seconds": [
+        0.009768489049747586,
+        0.009516734979115427,
+        0.009756871033459902,
+        0.009229209972545505,
+        0.009345658938400447,
+        0.009173291036859155,
+        0.010879121953621507,
+        0.011072256020270288,
+        0.01092217001132667,
+        0.01079166296403855
+      ]
+    },
+    "scripted": {
+      "median_seconds_two_players": 0.007532238028943539,
+      "seconds": [
+        0.007405485026538372,
+        0.007523003034293652,
+        0.007639435003511608,
+        0.00758590898476541,
+        0.007450085016898811,
+        0.007417754037305713,
+        0.00721395097207278,
+        0.007541473023593426,
+        0.007836672011762857,
+        0.007742190966382623
+      ]
+    }
+  },
+  "updates": [
+    {
+      "repeat": 0,
+      "variant": "baseline",
+      "seconds": 1.9710955009795725,
+      "metrics": {
+        "critic_loss": 1.9956503510475159,
+        "nerd_loss": -0.029937535524368286,
+        "entropy": 2.432355523109436,
+        "regularizer_kl": 2.9059934902875284e-08,
+        "value_target_abs": 0.9972639679908752,
+        "reference_alpha": 0.001,
+        "loss": 1.9657127857208252,
+        "gradient_norm": 2.495214343070984,
+        "reference_rotations": 0,
+        "updates": 2,
+        "update_seconds": 1.9707900210050866,
+        "reference_steps": 2,
+        "samples_per_fresh_position": 1.0
+      }
+    },
+    {
+      "repeat": 0,
+      "variant": "scripted",
+      "seconds": 1.85701883607544,
+      "metrics": {
+        "critic_loss": 1.9956503510475159,
+        "nerd_loss": -0.029937535524368286,
+        "entropy": 2.432355523109436,
+        "regularizer_kl": 2.9059934902875284e-08,
+        "value_target_abs": 0.9972639679908752,
+        "reference_alpha": 0.001,
+        "loss": 1.9657127857208252,
+        "gradient_norm": 2.495214343070984,
+        "reference_rotations": 0,
+        "updates": 2,
+        "update_seconds": 1.8567077020416036,
+        "reference_steps": 2,
+        "samples_per_fresh_position": 1.0
+      },
+      "max_weight_difference_vs_baseline": 0.0,
+      "max_metric_difference_vs_baseline": 0.0
+    },
+    {
+      "repeat": 1,
+      "variant": "baseline",
+      "seconds": 1.7942036850145087,
+      "metrics": {
+        "critic_loss": 1.9956503510475159,
+        "nerd_loss": -0.029937535524368286,
+        "entropy": 2.432355523109436,
+        "regularizer_kl": 2.9059934902875284e-08,
+        "value_target_abs": 0.9972639679908752,
+        "reference_alpha": 0.001,
+        "loss": 1.9657127857208252,
+        "gradient_norm": 2.495214343070984,
+        "reference_rotations": 0,
+        "updates": 2,
+        "update_seconds": 1.7910800599493086,
+        "reference_steps": 2,
+        "samples_per_fresh_position": 1.0
+      }
+    },
+    {
+      "repeat": 1,
+      "variant": "scripted",
+      "seconds": 1.8348922800505534,
+      "metrics": {
+        "critic_loss": 1.9956503510475159,
+        "nerd_loss": -0.029937535524368286,
+        "entropy": 2.432355523109436,
+        "regularizer_kl": 2.9059934902875284e-08,
+        "value_target_abs": 0.9972639679908752,
+        "reference_alpha": 0.001,
+        "loss": 1.9657127857208252,
+        "gradient_norm": 2.495214343070984,
+        "reference_rotations": 0,
+        "updates": 2,
+        "update_seconds": 1.8345983100589365,
+        "reference_steps": 2,
+        "samples_per_fresh_position": 1.0
+      },
+      "max_weight_difference_vs_baseline": 0.0,
+      "max_metric_difference_vs_baseline": 0.0
+    },
+    {
+      "repeat": 2,
+      "variant": "baseline",
+      "seconds": 1.8998465939657763,
+      "metrics": {
+        "critic_loss": 1.9956503510475159,
+        "nerd_loss": -0.029937535524368286,
+        "entropy": 2.432355523109436,
+        "regularizer_kl": 2.9059934902875284e-08,
+        "value_target_abs": 0.9972639679908752,
+        "reference_alpha": 0.001,
+        "loss": 1.9657127857208252,
+        "gradient_norm": 2.495214343070984,
+        "reference_rotations": 0,
+        "updates": 2,
+        "update_seconds": 1.8995465540792793,
+        "reference_steps": 2,
+        "samples_per_fresh_position": 1.0
+      }
+    },
+    {
+      "repeat": 2,
+      "variant": "scripted",
+      "seconds": 1.9500062150182202,
+      "metrics": {
+        "critic_loss": 1.9956503510475159,
+        "nerd_loss": -0.029937535524368286,
+        "entropy": 2.432355523109436,
+        "regularizer_kl": 2.9059934902875284e-08,
+        "value_target_abs": 0.9972639679908752,
+        "reference_alpha": 0.001,
+        "loss": 1.9657127857208252,
+        "gradient_norm": 2.495214343070984,
+        "reference_rotations": 0,
+        "updates": 2,
+        "update_seconds": 1.9497222299687564,
+        "reference_steps": 2,
+        "samples_per_fresh_position": 1.0
+      },
+      "max_weight_difference_vs_baseline": 0.0,
+      "max_metric_difference_vs_baseline": 0.0
+    }
+  ],
+  "update_median_seconds": {
+    "baseline": 1.8998465939657763,
+    "scripted": 1.85701883607544
+  },
+  "update_speedup": 1.0230626405388794,
+  "production_source_modified": false,
+  "scope": "fixed-data execution throughput, not model strength; CUDA nondeterminism is not disabled"
+}

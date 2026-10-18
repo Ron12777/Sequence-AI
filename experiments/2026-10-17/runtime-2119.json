@@ -1,0 +1,198 @@
+{
+  "utc_epoch": 1792272004.8003445,
+  "processes": [
+    {
+      "pid": 142694,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/campaign_watchdog.py",
+        "--instance",
+        "56415071",
+        "--stop-at",
+        "2026-10-17T22:25:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 142918,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/train_exact_multigpu.py",
+        "--output-dir",
+        "campaign/exact/sustained",
+        "--reference",
+        "artifacts/checkpoints/gru-four-hour.pt",
+        "--devices",
+        "0,1",
+        "--shared-update-devices",
+        "0,1",
+        "--block-seconds",
+        "600",
+        "--evaluation-games",
+        "256",
+        "--stop-at",
+        "2026-10-17T22:00:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 142919,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/tmp/run-final-development-suite.py",
+        "--root",
+        "/workspace/sequence",
+        "--cnn-only",
+        ""
+      ]
+    },
+    {
+      "pid": 142920,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/workspace/sequence/scripts/train_exact_multigpu.py",
+        "--worker",
+        "--output-dir",
+        "/workspace/sequence/campaign/exact/sustained",
+        "--reference",
+        "/workspace/sequence/artifacts/checkpoints/gru-four-hour.pt",
+        "--stop-at",
+        "2026-10-17T22:00:00Z",
+        "--block-seconds",
+        "600.0",
+        "--evaluation-games",
+        "256",
+        "--worker-slot",
+        "0",
+        "--worker-device",
+        "0,1",
+        "--contender",
+        "cnn_ppo",
+        "--parent-pid",
+        "142918",
+        "--shared-update-devices",
+        "0,1",
+        "--stop-file",
+        "/workspace/sequence/campaign/exact/sustained/worker_control/0-1792271469607742340.stop",
+        ""
+      ]
+    }
+  ],
+  "state": {
+    "status": "training",
+    "reason": null,
+    "failure": null,
+    "workers": {
+      "0": {
+        "contender": "cnn_ppo",
+        "device": "0,1",
+        "started_epoch": 1792271469.6077006,
+        "stop_sent": false,
+        "pid": 142920
+      }
+    },
+    "completed_blocks": 0,
+    "last_completed": [],
+    "paused_slots": [],
+    "controller": "multi_gpu",
+    "stop_at": "2026-10-17T22:00:00Z",
+    "updated_utc": "2026-10-17T21:11:09.608071+00:00"
+  },
+  "training_seconds": 14958.746446625184,
+  "games": 6686720,
+  "iterations": 3265,
+  "cuda_rng_count": 2,
+  "execution_segments": [
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 12616.348260448169,
+      "wall_seconds": 601.5682515939989,
+      "allocated_gpu_seconds": 1203.1365031879977,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    },
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 13217.91651124219,
+      "wall_seconds": 600.9658504429972,
+      "allocated_gpu_seconds": 1201.9317008859944,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    },
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 13818.882361055177,
+      "wall_seconds": 602.6726289699727,
+      "allocated_gpu_seconds": 1205.3452579399454,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    },
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 14421.554989405151,
+      "wall_seconds": 50.19780291500501,
+      "allocated_gpu_seconds": 100.39560583001003,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    },
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 14471.752791710169,
+      "wall_seconds": 486.9936556649918,
+      "allocated_gpu_seconds": 973.9873113299836,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    }
+  ],
+  "mean_cycle_seconds_last100": 4.0333647262470915,
+  "latest_metrics": {
+    "loss": 0.446079722414278,
+    "policy_entropy": 0.28497392265764,
+    "approximate_kl": 0.000501325513453108,
+    "rollout_value_explained_variance": 0.09722983089427029,
+    "gradient_norm": 4.177241580127037,
+    "parallel_update_gpu_count": 2
+  },
+  "pauses": [],
+  "final_waiter_log": "",
+  "final_suite_started": false
+}

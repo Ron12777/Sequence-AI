@@ -1,0 +1,136 @@
+{
+  "search_trials": [
+    {
+      "evidence": "experiments/2026-10-17/campaign/belief_screen32.json",
+      "games": 512,
+      "wins": 222,
+      "losses": 288,
+      "draws": 2,
+      "score": 0.435546875,
+      "paired_score_95ci": [
+        0.39850855099057175,
+        0.47258519900942825
+      ],
+      "seed": 32452843,
+      "simulations": 32,
+      "champion_simulations": 32,
+      "candidate_search": "belief",
+      "champion_search": "single",
+      "seconds": 13.495238529983908,
+      "mean_moves": 57.9296875
+    },
+    {
+      "evidence": "experiments/2026-10-17/campaign/belief_screen128.json",
+      "games": 512,
+      "wins": 249,
+      "losses": 263,
+      "draws": 0,
+      "score": 0.486328125,
+      "paired_score_95ci": [
+        0.4493767929382438,
+        0.5232794570617563
+      ],
+      "seed": 86028121,
+      "simulations": 128,
+      "champion_simulations": 128,
+      "candidate_search": "belief",
+      "champion_search": "single",
+      "seconds": 42.82819554512389,
+      "mean_moves": 57.447265625
+    },
+    {
+      "evidence": "experiments/2026-10-17/campaign/ensemble_screen32.json",
+      "games": 512,
+      "wins": 243,
+      "losses": 268,
+      "draws": 1,
+      "score": 0.4755859375,
+      "paired_score_95ci": [
+        0.43906893602895225,
+        0.5121029389710477
+      ],
+      "seed": 49979687,
+      "simulations": 32,
+      "champion_simulations": 32,
+      "candidate_search": "ensemble",
+      "champion_search": "single",
+      "seconds": 13.599404015112668,
+      "mean_moves": 57.568359375
+    },
+    {
+      "evidence": "experiments/2026-10-17/campaign/ensemble_screen128.json",
+      "games": 512,
+      "wins": 259,
+      "losses": 249,
+      "draws": 4,
+      "score": 0.509765625,
+      "paired_score_95ci": [
+        0.47591152561752537,
+        0.5436197243824746
+      ],
+      "seed": 67867967,
+      "simulations": 128,
+      "champion_simulations": 128,
+      "candidate_search": "ensemble",
+      "champion_search": "single",
+      "seconds": 42.607156035955995,
+      "mean_moves": 56.189453125
+    },
+    {
+      "evidence": "experiments/2026-10-17/campaign/ensemble_confirmation128.json",
+      "games": 2048,
+      "wins": 1028,
+      "losses": 1013,
+      "draws": 7,
+      "score": 0.503662109375,
+      "paired_score_95ci": [
+        0.48562919769757046,
+        0.5216950210524295
+      ],
+      "seed": 104395303,
+      "simulations": 128,
+      "champion_simulations": 128,
+      "candidate_search": "ensemble",
+      "champion_search": "single",
+      "seconds": 161.88288406911306,
+      "mean_moves": 56.939453125
+    },
+    {
+      "evidence": "experiments/2026-10-17/campaign/ensemble_new_champion128.json",
+      "games": 512,
+      "wins": 239,
+      "losses": 271,
+      "draws": 2,
+      "score": 0.46875,
+      "paired_score_95ci": [
+        0.43941311922631493,
+        0.49808688077368507
+      ],
+      "seed": 122949829,
+      "simulations": 128,
+      "champion_simulations": 128,
+      "candidate_search": "ensemble",
+      "champion_search": "single",
+      "seconds": 40.32314509199932,
+      "mean_moves": 53.638671875
+    }
+  ],
+  "selected_search": "four-deal ensemble",
+  "selection_basis": "User explicitly requested one four-deal production method. The original-weight 2048-game comparison was inconclusive (50.37%); the new-weight 512-game comparison favored single-deal (ensemble 46.875%). Do not claim universal strength improvement. Subsequent training and candidate selection use four-deal search consistently.",
+  "rejected_variant": "Per-simulation root-sampled information-history experiment removed from production source after inferior/inconclusive results. Raw evidence retained.",
+  "forced_win_override": "Removed at explicit user request before deployment.",
+  "current_model": {
+    "checkpoint": "artifacts/checkpoints/overnight-round0.pt",
+    "sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+    "confirmation_score_vs_previous": 0.6728515625,
+    "games": 1024,
+    "paired_score_95ci": [
+      0.6482924105753296,
+      0.6974107144246704
+    ],
+    "comparison_search": "single for both models, 32 simulations",
+    "onnx": "artifacts/overnight-round0.onnx"
+  },
+  "measurement_note": "Original training was paused for isolated search comparisons; its collection wall times include those pauses. Search comparisons have equal total simulation budgets, not a demonstrated equality of per-agent wall time.",
+  "architecture_next": "Assess public-history/discard-aware policy learning and policy-only play. ReBeL and CFR are research directions, not implemented features."
+}

@@ -1,0 +1,32 @@
+{
+  "pid": 3553,
+  "command": [
+    "timeout",
+    "--signal=INT",
+    "--kill-after=20",
+    "1200",
+    "python",
+    "-u",
+    "scripts/direct_selfplay.py",
+    "--init-from",
+    "campaign/architectures_v3_frozen/joint_attention.pt",
+    "--champion",
+    "campaign/architectures_v3_frozen/teacher.pt",
+    "--output-dir",
+    "campaign/history_ppo_long_v1",
+    "--iterations",
+    "256",
+    "--games-per-iteration",
+    "128",
+    "--evaluation-games",
+    "1024",
+    "--seed",
+    "1771713"
+  ],
+  "started_unix": 1792188442.490977,
+  "hard_timeout_seconds": 1200,
+  "expected_training_games": 32768,
+  "status": "running",
+  "champion_unchanged": true,
+  "note": "One bounded research training job alongside existing controller1448, not a second campaign controller. Evaluation seeds are allocated beyond every training seed."
+}

@@ -1,0 +1,172 @@
+{
+  "supervisor": {
+    "status": "training",
+    "reason": null,
+    "failure": null,
+    "workers": {
+      "0": {
+        "contender": "cnn_ppo",
+        "device": "0,1",
+        "started_epoch": 1792269602.5240119,
+        "stop_sent": false,
+        "pid": 4453
+      }
+    },
+    "completed_blocks": 0,
+    "last_completed": [],
+    "paused_slots": [],
+    "controller": "multi_gpu",
+    "stop_at": "2026-10-17T21:30:00Z",
+    "updated_utc": "2026-10-17T20:40:02.524515+00:00"
+  },
+  "checkpoint_training_seconds": 12616.348260448169,
+  "backup_training_seconds": 12616.348260448169,
+  "checkpoint_games": 5468160,
+  "cuda_rng_states": 1,
+  "execution_accounting": null,
+  "recent_metrics": [
+    {
+      "games": 5492736,
+      "positions": 205743626,
+      "decisions": 100211,
+      "decisive_games": 2045,
+      "opponent_moves": 25187,
+      "rollout_seconds": 0.8915402099955827,
+      "environment_seconds": 0.30645992609788664,
+      "inference_seconds": 0.5254736420756672,
+      "games_per_second": 2297.148212765577,
+      "return_mean": 0.003772126277908683,
+      "return_variance": 0.996640145778656,
+      "old_value_mse": 0.8799800872802734,
+      "max_legal_actions": 202,
+      "data_policy_version": "current frozen learner for entire rollout; no replay",
+      "loss": 0.4360849577430132,
+      "policy_loss": -0.0013562265966037238,
+      "value_loss": 0.8760927174542401,
+      "approximate_kl": 0.0004551263663341996,
+      "policy_entropy": 0.3025872799995783,
+      "position_entropy": 0.3001280680701539,
+      "card_given_position_entropy": 0.002459211929424389,
+      "clip_fraction": 0.023316400043817388,
+      "gradient_norm": 4.148274046343726,
+      "updates": 404536,
+      "epochs_started": 2,
+      "kl_early_stop": false,
+      "update_seconds": 2.982019197981572,
+      "samples_per_fresh_position": 2.0,
+      "rollout_value_explained_variance": 0.117053520075867,
+      "parallel_update_gpu_count": 2,
+      "parallel_forward_batches": 146,
+      "variant": "cnn",
+      "algorithm": "ppo",
+      "contender": "cnn_ppo",
+      "iterations": 2682,
+      "training_seconds": 12664.444307844184,
+      "blocks": 27,
+      "execution_accounting": {
+        "segments": [
+          {
+            "mode": "update_data_parallel",
+            "visible_device_indices": [
+              0,
+              1
+            ],
+            "allocated_gpu_count": 2,
+            "training_seconds_start": 12616.348260448169,
+            "wall_seconds": 48.096048316016095,
+            "allocated_gpu_seconds": 96.19209663203219,
+            "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+            "parallel_minimum_batch": 1024,
+            "global_batch_size": 1024,
+            "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+          }
+        ]
+      },
+      "iteration_seconds": 3.8767377810145263,
+      "selfplay_seed": 2126810001,
+      "trunk_learning_rate": 3e-06,
+      "new_learning_rate": 3e-05,
+      "entropy_coefficient": 0.002,
+      "regularization_eta": 0.0,
+      "opponent_distribution": "50% current self-play,25% frozen GRU reference,25% historical exact policy; balanced learner seats"
+    },
+    {
+      "games": 5494784,
+      "positions": 205819570,
+      "decisions": 101334,
+      "decisive_games": 2045,
+      "opponent_moves": 25390,
+      "rollout_seconds": 0.8955704680120107,
+      "environment_seconds": 0.308075582026504,
+      "inference_seconds": 0.5266665990639012,
+      "games_per_second": 2286.810556120899,
+      "return_mean": 0.0068998211063444614,
+      "return_variance": 0.9966341853141785,
+      "old_value_mse": 0.8906050324440002,
+      "max_legal_actions": 202,
+      "data_policy_version": "current frozen learner for entire rollout; no replay",
+      "loss": 0.44217662791411083,
+      "policy_loss": -0.0006311011034995318,
+      "value_loss": 0.8868241707483927,
+      "approximate_kl": 0.00045180183738314855,
+      "policy_entropy": 0.302177308400472,
+      "position_entropy": 0.29988835493723554,
+      "card_given_position_entropy": 0.002288953463236491,
+      "clip_fraction": 0.022863653289775052,
+      "gradient_norm": 4.161046435038249,
+      "updates": 404686,
+      "epochs_started": 2,
+      "kl_early_stop": false,
+      "update_seconds": 3.025134584022453,
+      "samples_per_fresh_position": 2.0,
+      "rollout_value_explained_variance": 0.10647580517784283,
+      "parallel_update_gpu_count": 2,
+      "parallel_forward_batches": 148,
+      "variant": "cnn",
+      "algorithm": "ppo",
+      "contender": "cnn_ppo",
+      "iterations": 2683,
+      "training_seconds": 12668.37226569117,
+      "blocks": 27,
+      "execution_accounting": {
+        "segments": [
+          {
+            "mode": "update_data_parallel",
+            "visible_device_indices": [
+              0,
+              1
+            ],
+            "allocated_gpu_count": 2,
+            "training_seconds_start": 12616.348260448169,
+            "wall_seconds": 52.02400597301312,
+            "allocated_gpu_seconds": 104.04801194602624,
+            "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+            "parallel_minimum_batch": 1024,
+            "global_batch_size": 1024,
+            "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+          }
+        ]
+      },
+      "iteration_seconds": 3.9239113130024634,
+      "selfplay_seed": 2126820001,
+      "trunk_learning_rate": 3e-06,
+      "new_learning_rate": 3e-05,
+      "entropy_coefficient": 0.002,
+      "regularization_eta": 0.0,
+      "opponent_distribution": "50% current self-play,25% frozen GRU reference,25% historical exact policy; balanced learner seats"
+    }
+  ],
+  "gpu_sample_means": {
+    "0": {
+      "util_percent": 54.0,
+      "memory_mb": 2554.0,
+      "power_watts": 134.72899999999998
+    },
+    "1": {
+      "util_percent": 47.6,
+      "memory_mb": 982.0,
+      "power_watts": 123.0305
+    }
+  },
+  "sample_count": 20
+}

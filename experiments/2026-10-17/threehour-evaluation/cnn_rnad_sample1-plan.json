@@ -1,0 +1,31 @@
+{
+  "candidate": {
+    "checkpoint": "campaign/exact/milestones-v2/cnn_rnad-mixed-3h.pt",
+    "sha256": "2b0b721312aed666909b1d40110daf95b7f12adcd22ddbfea43af3ee32084491"
+  },
+  "opponents": [
+    {
+      "label": "validated_cnn_2h",
+      "kind": "exact",
+      "checkpoint": "campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+      "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+      "games": 1024,
+      "seed": 3000100000001
+    },
+    {
+      "label": "previous_cnn_1h_anchor",
+      "kind": "exact",
+      "checkpoint": "campaign/exact/milestones/cnn_ppo-mixed-1h.pt",
+      "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb",
+      "games": 1024,
+      "seed": 3000200000001
+    }
+  ],
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "Developmental mixed-hardware three-hour comparison, common fresh paired deals. Shared pretraining separate; these are not equal FLOPs. RNaD includes threshold amendment; this is not its two-hour corrected-recipe milestone. No final seeds or automatic promotion.",
+  "candidate_action_mode": "sample",
+  "action_seed": 420071
+}

@@ -1,0 +1,25 @@
+{
+  "trainer_state": {
+    "status": "stopped",
+    "reason": "training_deadline",
+    "failure": null,
+    "workers": {},
+    "completed_blocks": 10,
+    "last_completed": [
+      {
+        "slot": 0,
+        "contender": "cnn_ppo",
+        "exit_code": 0
+      }
+    ],
+    "controller": "multi_gpu",
+    "stop_at": "2026-10-17T23:30:00Z",
+    "updated_utc": "2026-10-17T23:29:48.257916+00:00"
+  },
+  "source_sha256": {
+    "/tmp/run-final-confirmation-suite.py": "0414890280c95d72ec91ac49f2330666273a4ef38ddc4835434ca20e9789c1c9",
+    "/workspace/sequence/scripts/evaluate_exact_policy.py": "583873ecee908e5a745de5da622a506cec1d2e3e53e6d3f1d2f5be21a203a89c"
+  },
+  "started_utc": "2026-10-17T23:30:41.352393+00:00",
+  "device": "CUDA_VISIBLE_DEVICES=0"
+}

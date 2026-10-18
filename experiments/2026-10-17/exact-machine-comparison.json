@@ -1,0 +1,29 @@
+{
+  "scope": "Initial2048-game full rollout/update profiles; includes startup effects, not a sustained speed guarantee or strength comparison",
+  "old_hourly_usd": 1.8838518518518519,
+  "new_hourly_usd": 0.7366666666666668,
+  "price_reduction_fraction": 0.6089572192513368,
+  "results": {
+    "cnn_ppo": {
+      "old_cycle_seconds": 6.103295102249831,
+      "new_cycle_seconds": 5.603866165038198,
+      "relative_cycle_throughput": 1.089122210006996,
+      "relative_cycles_per_dollar": 2.785174061829856,
+      "new_peak_allocated_gib": 0.9647727012634277
+    },
+    "transformer_ppo": {
+      "old_cycle_seconds": 11.82831773487851,
+      "new_cycle_seconds": 12.769298817031085,
+      "relative_cycle_throughput": 0.9263091031359107,
+      "relative_cycles_per_dollar": 2.3688178090449954,
+      "new_peak_allocated_gib": 4.33253288269043
+    },
+    "cnn_rnad": {
+      "old_cycle_seconds": 7.003942344337702,
+      "new_cycle_seconds": 6.382689470890909,
+      "relative_cycle_throughput": 1.0973340276508983,
+      "relative_cycles_per_dollar": 2.806173855326058,
+      "new_peak_allocated_gib": 1.5718169212341309
+    }
+  }
+}

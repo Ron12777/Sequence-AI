@@ -1,0 +1,6 @@
+{
+  "contenders": [
+    "cnn_ppo"
+  ],
+  "reason": "User clarified focus all remaining training on CNN until21:30. Shared twoGPU feasibility being checked; preserve all prior checkpoints."
+}

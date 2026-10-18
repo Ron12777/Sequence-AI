@@ -22,11 +22,8 @@ class MCTSNode {
      * UCB1 score for selection
      */
     ucbScore(cPuct = 1.4) {
-        if (this.visits === 0) {
-            return Infinity;
-        }
-        const exploitation = this.value / this.visits;
-        const exploration = cPuct * this.prior * Math.sqrt(this.parent.visits) / (1 + this.visits);
+        const exploitation = this.visits ? this.value / this.visits : 0;
+        const exploration = cPuct * this.prior * Math.sqrt(Math.max(1, this.parent.visits)) / (1 + this.visits);
         return exploitation + exploration;
     }
 
@@ -53,7 +50,7 @@ class MCTSNode {
         let bestChild = null;
         let mostVisits = -1;
         for (const child of this.children) {
-            if (child.visits > mostVisits) {
+            if (child.visits > mostVisits || (child.visits === mostVisits && child.prior > (bestChild?.prior ?? -1))) {
                 mostVisits = child.visits;
                 bestChild = child;
             }
@@ -69,16 +66,15 @@ class MCTSNode {
         let totalVisits = 0;
 
         for (const child of this.children) {
-            if (!child.move.is_removal) {
-                const idx = child.move.row * 10 + child.move.col;
-                policy[idx] = child.visits;
-                totalVisits += child.visits;
-            }
+            const idx = child.move.row * 10 + child.move.col;
+            policy[idx] += child.visits;
+            totalVisits += child.visits;
         }
-
         if (totalVisits > 0) {
-            for (let i = 0; i < 100; i++) {
-                policy[i] /= totalVisits;
+            for (let i = 0; i < 100; i++) policy[i] /= totalVisits;
+        } else {
+            for (const child of this.children) {
+                policy[child.move.row * 10 + child.move.col] += child.prior;
             }
         }
 
@@ -90,7 +86,7 @@ class MCTSNode {
  * Deep clone a game state
  */
 function cloneGame(game) {
-    const clone = new SequenceGame();
+    const clone = Object.create(SequenceGame.prototype);
     clone.board = game.board.map(row => [...row]);
     clone.currentPlayer = game.currentPlayer;
     clone.deck = [...game.deck];
@@ -98,6 +94,9 @@ function cloneGame(game) {
         1: [...game.hands[1]],
         2: [...game.hands[2]]
     };
+    clone.discardPiles = {1: [...game.discardPiles[1]], 2: [...game.discardPiles[2]]};
+    clone.publicEvents = game.publicEvents.map(event => [...event]);
+    clone.publicHistoryComplete = game.publicHistoryComplete;
     clone.completedSequences = {
         1: game.completedSequences[1].map(seq => [...seq]),
         2: game.completedSequences[2].map(seq => [...seq])
@@ -107,36 +106,79 @@ function cloneGame(game) {
     return clone;
 }
 
+// Build the hidden multiset without inspecting actual hidden card identities.
+function unseenCards(game, observer) {
+    const counts = new Map();
+    for (const suit of SUITS) for (const rank of [...RANKS, 'J']) counts.set(rank + suit, 2);
+    for (const card of [...game.hands[observer], ...game.discardPiles[1], ...game.discardPiles[2]]) {
+        const remaining = (counts.get(card) ?? 0) - 1;
+        if (remaining < 0) throw new Error('Public card history exceeds two-deck counts');
+        counts.set(card, remaining);
+    }
+    return [...counts].flatMap(([card, count]) => Array(count).fill(card)).sort();
+}
+
+// Keep card identity when combining actions; only the training policy is spatial.
+function aggregateRoots(roots) {
+    const actions = new Map();
+    for (const root of roots) for (const child of root.children) {
+        const m = child.move;
+        const key = JSON.stringify([m.card, m.row, m.col, Boolean(m.is_removal)]);
+        if (!actions.has(key)) actions.set(key, {move: m, visits: 0, prior: 0});
+        const action = actions.get(key);
+        action.visits += child.visits;
+        action.prior += child.prior;
+    }
+    const total = [...actions.values()].reduce((n, a) => n + a.visits, 0);
+    const priorTotal = [...actions.values()].reduce((n, a) => n + a.prior, 0);
+    const policy = new Float32Array(100);
+    let best = null;
+    for (const action of actions.values()) {
+        action.weight = total ? action.visits / total : action.prior / Math.max(priorTotal, 1e-12);
+        policy[action.move.row * 10 + action.move.col] += action.weight;
+        if (!best || action.weight > best.weight ||
+            (action.weight === best.weight && action.prior > best.prior)) best = action;
+    }
+    return {move: best?.move ?? null, policy};
+}
+
 /**
  * MCTS Search
  */
 class MCTS {
-    constructor(onnxSession = null, numSimulations = 50) {
+    constructor(onnxSession = null, numSimulations = 128, numDeals = 4) {
         this.session = onnxSession;
         this.numSimulations = numSimulations;
+        this.numDeals = numDeals;
     }
 
     async search(game, progressCallback = null) {
-        const root = new MCTSNode(cloneGame(game), null, null, game.currentPlayer);
-
-        for (let i = 0; i < this.numSimulations; i++) {
-            await this.simulate(root);
-
-            if (progressCallback) {
-                const visits = root.visits || 1;
-                const avgValue = -(root.value / visits);
-                progressCallback(i + 1, this.numSimulations, root.getPolicy(), avgValue);
-            }
-
-            if (i % 5 === 0) {
-                await new Promise(resolve => setTimeout(resolve, 0));
-            }
+        if (!Number.isInteger(this.numSimulations) || this.numSimulations < 1 ||
+            !Number.isInteger(this.numDeals) || this.numDeals < 1 || this.numDeals > 32) {
+            throw new Error('Search needs positive simulations and 1–32 hidden deals');
         }
-
-        return {
-            move: root.getBestMove(),
-            policy: root.getPolicy()
-        };
+        const opponent = 3 - game.currentPlayer;
+        const handSize = game.hands[opponent].length;
+        const unseen = unseenCards(game, game.currentPlayer);
+        const count = Math.min(this.numDeals, this.numSimulations);
+        const roots = Array.from({length: count}, () => {
+            const position = cloneGame(game);
+            const hidden = shuffle(unseen);
+            position.hands[opponent] = hidden.slice(0, handSize);
+            position.deck = hidden.slice(handSize);
+            return new MCTSNode(position, null, null, opponent);
+        });
+        for (let i = 0; i < this.numSimulations; i++) {
+            await this.simulate(roots[i % roots.length]);
+            if (progressCallback) {
+                const summary = aggregateRoots(roots);
+                const visits = roots.reduce((n, root) => n + root.visits, 0);
+                const value = -roots.reduce((n, root) => n + root.value, 0) / Math.max(1, visits);
+                progressCallback(i + 1, this.numSimulations, summary.policy, value);
+            }
+            if (i % 5 === 0) await new Promise(resolve => setTimeout(resolve, 0));
+        }
+        return {...aggregateRoots(roots), deals: roots.length};
     }
 
     /**
@@ -183,7 +225,7 @@ class MCTS {
         } else {
             // Fallback: uniform priors, random value
             priors = new Float32Array(100).fill(1 / 100);
-            value = Math.random() * 2 - 1;
+            value = 0;
         }
 
         // Create child nodes
@@ -193,17 +235,24 @@ class MCTS {
 
             const child = new MCTSNode(childGame, node, move, node.game.currentPlayer);
 
-            // Set prior from policy
-            if (!move.is_removal) {
-                const idx = move.row * 10 + move.col;
-                child.prior = priors[idx];
-            } else {
-                child.prior = 0.01; // Small prior for removals
-            }
+            child.prior = priors[move.row * 10 + move.col];
 
             node.children.push(child);
         }
 
+        const counts = new Map();
+        for (const child of node.children) {
+            const idx = child.move.row * 10 + child.move.col;
+            counts.set(idx, (counts.get(idx) || 0) + 1);
+        }
+        let total = 0;
+        for (const child of node.children) {
+            child.prior /= counts.get(child.move.row * 10 + child.move.col);
+            total += child.prior;
+        }
+        for (const child of node.children) {
+            child.prior = total > 0 ? child.prior / total : 1 / node.children.length;
+        }
         node.isExpanded = true;
 
         // Backpropagate
@@ -222,13 +271,13 @@ class MCTS {
         }
 
         // Canonical form: If P2, rotate board 180 degrees
-        const isP2 = game.currentPlayer === 2;
+        const isP2 = false; // Training uses player-relative channels in fixed board coordinates.
 
         // Get state tensor (rotate if P2)
         const stateTensor = game.getStateTensor(game.currentPlayer, isP2);
 
-        // Create ONNX tensor - shape [1, 8, 10, 10]
-        const inputTensor = new ort.Tensor('float32', stateTensor, [1, 8, 10, 10]);
+        // Create ONNX tensor - shape [1, 11, 10, 10]
+        const inputTensor = new ort.Tensor('float32', stateTensor, [1, STATE_CHANNELS, 10, 10]);
 
         // Run inference
         const results = await this.session.run({ input: inputTensor });
@@ -271,5 +320,5 @@ function softmax(logits) {
 
 // Export
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { MCTS, MCTSNode, cloneGame };
+    module.exports = { MCTS, MCTSNode, cloneGame, unseenCards };
 }

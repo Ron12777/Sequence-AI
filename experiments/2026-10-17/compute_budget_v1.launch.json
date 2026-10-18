@@ -1,0 +1,28 @@
+{
+  "pid": 4558,
+  "command": [
+    "python",
+    "-u",
+    "scripts/compute_budget_experiments.py",
+    "--champion",
+    "campaign/champion.pt",
+    "--output-dir",
+    "campaign/compute_budget_v1",
+    "--controller-pid",
+    "1448",
+    "--seconds",
+    "180",
+    "--seeds",
+    "1200000001,1400000001",
+    "--evaluation-games",
+    "1024",
+    "--window-seconds",
+    "1800"
+  ],
+  "started_unix": 1792189435.8468752,
+  "maximum_seconds": 1800,
+  "training_budget_per_run_seconds": 180,
+  "runs": 6,
+  "status": "launched",
+  "resume_controller_pid": 1448
+}

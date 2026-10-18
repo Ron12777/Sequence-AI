@@ -1,0 +1,55 @@
+{
+  "threads": 2,
+  "purpose": "Matched six-hour CNN/GRU comparison and own learning-curve check; same reference/held-out deals as GRU; final reserved seeds untouched",
+  "candidate": {
+    "checkpoint": "artifacts/checkpoints/board-six-hour.pt",
+    "sha256": "f3da1fe231e59b12437386f77f06f2f5d687514500f88f3ca572906e4b562284"
+  },
+  "opponents": [
+    {
+      "label": "matched_gru_six_hour",
+      "checkpoint": "artifacts/checkpoints/gru-six-hour.pt",
+      "sha256": "03c92f1466bdea40bca75e1358a659dcc44f85c074b258d764db5346c25711e2",
+      "kind": "history",
+      "simulations": 0,
+      "games": 4096,
+      "seed": 1400000000001
+    },
+    {
+      "label": "validated_gru_four_hour",
+      "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+      "sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+      "kind": "history",
+      "simulations": 0,
+      "games": 2048,
+      "seed": 1400001000001
+    },
+    {
+      "label": "board_four_hour",
+      "checkpoint": "artifacts/checkpoints/board-four-hour.pt",
+      "sha256": "8d3af846086fea02e4a2a19315e8c318d81ccc982f740d2640ee783aa591713e",
+      "kind": "history",
+      "simulations": 0,
+      "games": 2048,
+      "seed": 1400002000001
+    },
+    {
+      "label": "original_champion_search",
+      "checkpoint": "artifacts/checkpoints/overnight-round0.pt",
+      "sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+      "kind": "champion",
+      "simulations": 128,
+      "games": 2048,
+      "seed": 1300001000001
+    },
+    {
+      "label": "heldout_baseline",
+      "checkpoint": "artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "kind": "champion",
+      "simulations": 32,
+      "games": 512,
+      "seed": 1300002000001
+    }
+  ]
+}

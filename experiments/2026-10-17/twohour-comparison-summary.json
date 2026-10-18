@@ -1,0 +1,81 @@
+{
+  "purpose": "Two-hour developmental checkpoint comparison; independent confirmation required for promotion",
+  "models": {
+    "cnn": {
+      "training_seconds": 7254.263982497156,
+      "5090_seconds": 1255.0600130441599,
+      "4090_seconds": 5999.203969452996,
+      "allocated_training_cost_usd": 1.1388042014704904,
+      "selfplay_games": 3072000,
+      "cpu_evaluation_seconds": 166.37755579303484,
+      "results": [
+        {
+          "label": "validated_exact_cnn_1h",
+          "games": 4096,
+          "score": 0.5152587890625,
+          "paired_score_95ci": [
+            0.5034195973727666,
+            0.5270979807522334
+          ]
+        },
+        {
+          "label": "retained_cnn_7h48",
+          "games": 2048,
+          "score": 0.5224609375,
+          "paired_score_95ci": [
+            0.5049244924755938,
+            0.5399973825244062
+          ]
+        }
+      ]
+    },
+    "transformer": {
+      "training_seconds": 7214.550657167594,
+      "5090_seconds": 1635.5041665015742,
+      "4090_seconds": 5579.04649066602,
+      "allocated_training_cost_usd": 1.1548842821330634,
+      "selfplay_games": 946176,
+      "cpu_evaluation_seconds": 756.1297878409969,
+      "results": [
+        {
+          "label": "validated_exact_cnn_1h",
+          "games": 4096,
+          "score": 0.4998779296875,
+          "paired_score_95ci": [
+            0.4880832569196072,
+            0.5116726024553928
+          ]
+        },
+        {
+          "label": "retained_cnn_7h48",
+          "games": 2048,
+          "score": 0.51171875,
+          "paired_score_95ci": [
+            0.49486194187850485,
+            0.5285755581214951
+          ]
+        }
+      ]
+    }
+  },
+  "paired_common_opponent_differences": [
+    {
+      "label": "validated_exact_cnn_1h",
+      "cnn_minus_transformer": 0.015380859375,
+      "paired95ci": [
+        -0.0011237188512570363,
+        0.03188543760125703
+      ]
+    },
+    {
+      "label": "retained_cnn_7h48",
+      "cnn_minus_transformer": 0.0107421875,
+      "paired95ci": [
+        -0.012407263527046918,
+        0.03389163852704692
+      ]
+    }
+  ],
+  "scope": "Shared distilled initialization and approximately equal cumulative allocated GPUtime; inherited5090duration differs, remainingtime4090. One trainingseed each; not equalFLOPs or architectureceiling.",
+  "cost_caveat": "Allocated trainingdevice cost only; excludes sharedpretraining, tuning, evaluation, idle, migration, bandwidth; not invoice."
+}

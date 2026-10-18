@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "timestamp_utc": "2026-10-17T18:47:06.363Z",
+  "model": "artifacts/exact-cnn-twohour.onnx",
+  "onnx_sha256": "e0e7c9c30bc09dd3308fb422c8a1edfa16e98b4ed102d7129a081049da621c89",
+  "checkpoint_sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+  "fixtures_sha256": "c18987159ff24f707b70cfce553457ed026ad2745cf0d2cdcc94ee42b2a95c09",
+  "runtime": "onnxruntime-web@1.18.0 WASM single thread in isolated Node VM",
+  "execution": "Actual browser WASM runtime and production DirectPlayer; not a rendered browser UI test",
+  "runtime_sha256": "74945866728300a05746a37387ac48863a8be5cdc3760304b47d0136d7d0dc5b",
+  "wasm_sha256": "f533b5f21790563d7556c611c3835ac65848ee326da2689aac54ed7d9cc8c6a4",
+  "engine_sha256": "3121a0b33763137e016736dc6de487883363fe5c134864d18073084def7e70aa",
+  "player_sha256": "b139fba2dac39084dae58dc7ee501fbea7f5d9a5d7fc8da7a20a24c23018f458",
+  "validator_sha256": "4bfa96d46ec002136d1c65660e5140cbb897a8920fc75d04f6a859f83ca81ab0",
+  "cpu": "Intel(R) Core(TM) 7 240H",
+  "node": "v24.19.0",
+  "states": 1016,
+  "games": 12,
+  "max_public_events": 101,
+  "exact_move_matches": 1016,
+  "normal_versus_jack_same_square": {
+    "states": 41,
+    "selected_normal": 41,
+    "selected_jack": 0
+  },
+  "total_selected_jack_moves": 24,
+  "event_kinds": [
+    0,
+    1,
+    2
+  ],
+  "max_absolute_error": {
+    "logits": 1.9550323486328125e-05,
+    "value": 8.940696716308594e-07,
+    "display_policy": 4.082918167114258e-06
+  },
+  "canonical_inputs_match_python": true,
+  "hidden_identity_invariance": true,
+  "inference_did_not_mutate_game": true,
+  "selected_card_spend_verified": true,
+  "milliseconds": {
+    "samples": 1014,
+    "median": 1.6175809999999728,
+    "p95": 1.8723740000000362,
+    "scope": "Observed full-game decisions with input parity assertions, excludes first two calls, UI/network/loading"
+  },
+  "deployment_changed": false,
+  "fixtures_compressed": "experiments/2026-10-17/exact-cnn-twohour-browser-fixtures.json.gz",
+  "fixtures_compressed_sha256": "96e6dac758cc5e9d2fcbdc1711c614d249030a02e8a91ea6e3af303dec40c0aa",
+  "fixture_generation": {
+    "script": "scripts/browser_exact_fixtures.py",
+    "games": 12,
+    "seed": 7100,
+    "script_sha256": "1028f1a411990af853b07cd46759bc177bffbd38cdbe7d6138fb6d910806f928"
+  }
+}

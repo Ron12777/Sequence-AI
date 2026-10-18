@@ -1,0 +1,71 @@
+{
+  "device": "local CPU",
+  "cpu": "Intel(R) Core(TM) 7 240H",
+  "torch": "2.14.1+cpu",
+  "threads": 1,
+  "scope": "Forward pass only, real public observations and exact legal actions; preprocessing and loading excluded. CPU PyTorch, not browser or CUDA. Alternating model order; same states per model.",
+  "state_count": 128,
+  "results": [
+    {
+      "model": "cnn",
+      "batch": 1,
+      "median_batch_ms": 0.8383690728805959,
+      "p95_batch_ms": 0.94668188248761,
+      "median_ms_per_position": 0.8383690728805959,
+      "samples": 128
+    },
+    {
+      "model": "transformer",
+      "batch": 1,
+      "median_batch_ms": 3.735508013051003,
+      "p95_batch_ms": 4.251632571686059,
+      "median_ms_per_position": 3.735508013051003,
+      "samples": 128
+    },
+    {
+      "model": "cnn",
+      "batch": 32,
+      "median_batch_ms": 15.272353019099683,
+      "p95_batch_ms": 15.896052692551166,
+      "median_ms_per_position": 0.4772610318468651,
+      "samples": 24
+    },
+    {
+      "model": "transformer",
+      "batch": 32,
+      "median_batch_ms": 140.54393349215388,
+      "p95_batch_ms": 147.29526950395666,
+      "median_ms_per_position": 4.391997921629809,
+      "samples": 24
+    },
+    {
+      "model": "cnn",
+      "batch": 128,
+      "median_batch_ms": 60.28101750416681,
+      "p95_batch_ms": 63.77070979215205,
+      "median_ms_per_position": 0.4709454492513032,
+      "samples": 24
+    },
+    {
+      "model": "transformer",
+      "batch": 128,
+      "median_batch_ms": 590.9474859945476,
+      "p95_batch_ms": 609.5816926506814,
+      "median_ms_per_position": 4.616777234332403,
+      "samples": 24
+    }
+  ],
+  "checkpoints": {
+    "cnn": {
+      "path": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/exact-twohour/cnn_ppo-mixed-2h.pt",
+      "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+      "parameters": 762410
+    },
+    "transformer": {
+      "path": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/exact-twohour/transformer_ppo-mixed-2h.pt",
+      "sha256": "3242969df2e07c93425fe7e54af16407837fa941024e29b8abb8567ab5253bbf",
+      "parameters": 875052
+    }
+  },
+  "models_unchanged": true
+}

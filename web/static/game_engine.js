@@ -19,6 +19,8 @@ const BOARD_LAYOUT = [
 
 const BOARD_SIZE = 10;
 const SEQUENCE_LENGTH = 5;
+const MAX_HAND_SIZE = 7;
+const STATE_CHANNELS = 4 + MAX_HAND_SIZE;
 
 // Chip states
 const ChipState = {
@@ -42,6 +44,14 @@ function isBlackJack(card) {
 
 function isJack(card) {
     return card.startsWith('J');
+}
+
+function cardToIndex(card) {
+    const suit = SUITS.indexOf(card.slice(-1));
+    const rank = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+        .indexOf(card.slice(0, -1));
+    if (suit < 0 || rank < 0) throw new Error('Invalid card: ' + card);
+    return suit * 13 + rank;
 }
 
 // Build card-to-position mapping
@@ -106,6 +116,9 @@ class SequenceGame {
         this.currentPlayer = 1;
         this.deck = createDeck();
         this.hands = { 1: [], 2: [] };
+        this.discardPiles = { 1: [], 2: [] };
+        this.publicEvents = [];
+        this.publicHistoryComplete = true;
         this.completedSequences = { 1: [], 2: [] };
         this.gameOver = false;
         this.winner = null;
@@ -130,7 +143,7 @@ class SequenceGame {
         const moves = [];
         const hand = this.hands[player];
 
-        for (const card of hand) {
+        for (const card of new Set(hand)) {
             if (isRedJack(card)) {
                 // Two-eyed Jack (Wild): place on any empty space
                 for (let r = 0; r < BOARD_SIZE; r++) {
@@ -179,13 +192,13 @@ class SequenceGame {
      * Check if a card can be played by the given player on current board
      */
     isCardPlayable(card, player) {
-        // Red Jack (Two-eyed): JD, JC - Wild
+        // Two-eyed Jack: JD, JC - Wild
         if (isRedJack(card)) {
             // Playable if there is ANY empty space
             return this.board.some(row => row.some(cell => cell === ChipState.EMPTY));
         }
 
-        // Black Jack (One-eyed): JH, JS - Remove
+        // One-eyed Jack: JH, JS - Remove
         if (isBlackJack(card)) {
             // Playable if there is ANY opponent chip that is not protected
             const opponent = 3 - player;
@@ -215,18 +228,15 @@ class SequenceGame {
      */
     drawPlayableCard(player) {
         // Safety count to prevent infinite loops (though deck size is finite)
-        let checks = 0;
-        const maxChecks = this.deck.length + 1;
 
         while (this.deck.length > 0) {
             const card = this.deck.pop();
-            checks++;
 
-            if (this.isCardPlayable(card, player)) {
+            if (isJack(card) || this.isCardPlayable(card, player)) {
                 return card;
             }
-            // Card is dead, discard it (loop continues)
-            // Ideally we might want to log this or animate it, but for logic fixes this is sufficient.
+            this.discardPiles[player].push(card);
+            this.publicEvents.push([cardToIndex(card), 100, player, 2]);
         }
         return null; // Deck empty
     }
@@ -244,8 +254,14 @@ class SequenceGame {
         const cardIndex = this.hands[player].indexOf(card);
         if (cardIndex === -1) return false;
 
+        if (!Number.isInteger(row) || !Number.isInteger(col) ||
+            !this.getLegalMoves(player).some(m => m.card === card && m.row === row &&
+                m.col === col && m.is_removal === Boolean(is_removal))) return false;
+
         // Remove card from hand
         this.hands[player].splice(cardIndex, 1);
+        this.discardPiles[player].push(card);
+        this.publicEvents.push([cardToIndex(card), row * 10 + col, player, Number(Boolean(is_removal))]);
 
         // Apply move
         if (is_removal) {
@@ -279,58 +295,19 @@ class SequenceGame {
     }
 
     findNewSequences(player, row, col) {
-        const directions = [[0, 1], [1, 0], [1, 1], [1, -1]];
-        const newSequences = [];
-
-        for (const [dr, dc] of directions) {
-            const seq = this.findSequenceInDirection(player, row, col, dr, dc);
-            if (seq && seq.length >= SEQUENCE_LENGTH) {
-                // Check not duplicate
-                const seqKey = [...seq].sort().join('|');
-                let isDuplicate = false;
-                for (const existing of this.completedSequences[player]) {
-                    const overlap = seq.filter(pos => existing.includes(pos));
-                    if (overlap.length > 1) {
-                        isDuplicate = true;
-                        break;
-                    }
-                }
-                if (!isDuplicate) {
-                    newSequences.push(seq.slice(0, SEQUENCE_LENGTH));
-                }
+        const found = [];
+        for (const [dr, dc] of [[0, 1], [1, 0], [1, 1], [1, -1]]) {
+            for (let offset = SEQUENCE_LENGTH - 1; offset >= 0; offset--) {
+                const cells = Array.from({length: SEQUENCE_LENGTH}, (_, k) =>
+                    [row + (k - offset) * dr, col + (k - offset) * dc]);
+                if (!cells.every(([r, c]) => r >= 0 && r < BOARD_SIZE && c >= 0 &&
+                    c < BOARD_SIZE && this.isPlayerChip(player, r, c))) continue;
+                const sequence = cells.map(([r, c]) => `${r},${c}`);
+                if ([...this.completedSequences[player], ...found].every(old =>
+                    sequence.filter(pos => old.includes(pos)).length <= 1)) found.push(sequence);
             }
         }
-
-        return newSequences;
-    }
-
-    findSequenceInDirection(player, row, col, dr, dc) {
-        const positions = [];
-
-        // Scan backward
-        let r = row - dr, c = col - dc;
-        while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-            if (this.isPlayerChip(player, r, c)) {
-                positions.unshift(`${r},${c}`);
-                r -= dr;
-                c -= dc;
-            } else break;
-        }
-
-        positions.push(`${row},${col}`);
-
-        // Scan forward
-        r = row + dr;
-        c = col + dc;
-        while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE) {
-            if (this.isPlayerChip(player, r, c)) {
-                positions.push(`${r},${c}`);
-                r += dr;
-                c += dc;
-            } else break;
-        }
-
-        return positions.length >= SEQUENCE_LENGTH ? positions : null;
+        return found;
     }
 
     isPlayerChip(player, row, col) {
@@ -340,23 +317,65 @@ class SequenceGame {
 
     /**
      * Convert game state to neural network input tensor
-     * Shape: [1, 8, 10, 10]
+     * Shape: [1, 11, 10, 10]
      */
-    getStateTensor(player, rotate = false) {
+    getHistoryInputs(player = this.currentPlayer) {
+        if (!this.publicHistoryComplete) {
+            throw new Error('This position has no complete move history. Start a new game to use the history model.');
+        }
+        if (player !== 1 && player !== 2) throw new Error('Invalid player');
+        if (this.publicEvents.length >= 128) throw new Error('Public history exceeds model capacity');
+        const context = new Float32Array(157);
+        for (const [offset, cards] of [[0, this.hands[player]],
+            [52, this.discardPiles[player]], [104, this.discardPiles[3 - player]]]) {
+            for (const card of cards) context[offset + cardToIndex(card)] += 0.5;
+        }
+        // Opponent hand size is public; its card identities and deck order are not inputs.
+        context[156] = this.hands[3 - player].length / 7;
+        const history = new BigInt64Array(128 * 4);
+        history.set([53n, 100n, 0n, 3n]);
+        this.publicEvents.forEach(([card, position, actor, kind], index) => {
+            history.set([BigInt(card + 1), BigInt(position), BigInt(Number(actor !== player)),
+                BigInt(kind)], (index + 1) * 4);
+        });
+        return {board: this.getStateTensor(player), context, history};
+    }
+
+    getExactInputs({allowIncompleteHistory = false} = {}) {
+        const player = this.currentPlayer;
+        if (this.hands[player].length > MAX_HAND_SIZE) {
+            throw new Error('Exact policy supports at most seven cards per hand');
+        }
+        let inputs;
+        if (!this.publicHistoryComplete && allowIncompleteHistory) {
+            // Explicit board-hand-only exports ignore all history and context
+            // beyond these own-card counts. Zero buffers fill unused ONNX
+            // inputs; they do not represent a reconstructed public history.
+            const context = new Float32Array(157);
+            for (const card of this.hands[player]) context[cardToIndex(card)] += 0.5;
+            inputs = {context, history: new BigInt64Array(128 * 4)};
+        } else {
+            inputs = this.getHistoryInputs(player);
+        }
+        inputs.board = this.getStateTensor(player, false, true);
+        const byId = new Map();
+        for (const move of this.getLegalMoves()) {
+            const id = cardToIndex(move.card) * 100 + move.row * 10 + move.col;
+            if (!byId.has(id)) byId.set(id, move);
+        }
+        const ids = Array.from(byId.keys()).sort((a, b) => a - b);
+        return {...inputs, actions: BigInt64Array.from(ids, BigInt),
+            moves: ids.map(id => byId.get(id))};
+    }
+
+    getStateTensor(player, rotate = false, canonicalHand = false) {
         const opponent = 3 - player;
-        const tensor = new Float32Array(8 * 10 * 10);
+        const tensor = new Float32Array(STATE_CHANNELS * 10 * 10);
 
         for (let r = 0; r < BOARD_SIZE; r++) {
             for (let c = 0; c < BOARD_SIZE; c++) {
                 const rawIdx = c + r * 10;
-                // If rotating (P2), map current (r,c) to the rotated position
-                // We fill the tensor at 'destIdx' with the value from 'rawIdx'
-                // Wait. We iterate board r,c. 
-                // If board[0][0] has a chip.
-                // In rotated view, that chip is at [9][9].
-                // So tensor index for [9][9] should get the value.
-                // Index 99.
-                // 99 = 99 - 0. Correct.
+                // Optional display rotation; model inference uses fixed coordinates.
                 const destIdx = rotate ? (99 - rawIdx) : rawIdx;
                 const state = this.board[r][c];
 
@@ -374,16 +393,19 @@ class SequenceGame {
             }
         }
 
-        // Channels 4-7: Playable positions for hand cards
-        const hand = this.hands[player];
-        for (let i = 0; i < Math.min(4, hand.length); i++) {
+        // Channels 4-10: Playable positions for each hand card
+        const hand = canonicalHand
+            ? [...this.hands[player]].sort((a, b) => cardToIndex(a) - cardToIndex(b))
+            : this.hands[player];
+        for (let i = 0; i < Math.min(MAX_HAND_SIZE, hand.length); i++) {
             const card = hand[i];
+            const channelOffset = (4 + i) * 100;
             const positions = CARD_POSITIONS[card] || [];
             for (const [r, c] of positions) {
                 if (this.board[r][c] === ChipState.EMPTY) {
                     const rawIdx = c + r * 10;
                     const destIdx = rotate ? (99 - rawIdx) : rawIdx;
-                    tensor[(4 + i) * 100 + destIdx] = 1;
+                    tensor[channelOffset + destIdx] = 1;
                 }
             }
             // Handle Jacks
@@ -393,7 +415,18 @@ class SequenceGame {
                         if (this.board[r][c] === ChipState.EMPTY) {
                             const rawIdx = c + r * 10;
                             const destIdx = rotate ? (99 - rawIdx) : rawIdx;
-                            tensor[(4 + i) * 100 + destIdx] = 1;
+                            tensor[channelOffset + destIdx] = 1;
+                        }
+                    }
+                }
+            } else if (isBlackJack(card)) {
+                const protected_ = this.getProtectedPositions(opponent);
+                for (let r = 0; r < BOARD_SIZE; r++) {
+                    for (let c = 0; c < BOARD_SIZE; c++) {
+                        if (this.board[r][c] === opponent && !protected_.has(`${r},${c}`)) {
+                            const rawIdx = c + r * 10;
+                            const destIdx = rotate ? (99 - rawIdx) : rawIdx;
+                            tensor[channelOffset + destIdx] = 1;
                         }
                     }
                 }
@@ -406,5 +439,5 @@ class SequenceGame {
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { SequenceGame, BOARD_LAYOUT, ChipState, CARD_POSITIONS };
+    module.exports = { SequenceGame, BOARD_LAYOUT, ChipState, CARD_POSITIONS, STATE_CHANNELS };
 }

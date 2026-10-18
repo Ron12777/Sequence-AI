@@ -1,0 +1,20 @@
+{
+  "device": "cpu",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "candidate": {
+    "checkpoint": "artifacts/checkpoints/exact-common-warm.pt",
+    "sha256": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1"
+  },
+  "opponents": [
+    {
+      "label": "incumbent_gru4h",
+      "kind": "history",
+      "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+      "sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+      "games": 1024,
+      "seed": 1800000000001
+    }
+  ]
+}

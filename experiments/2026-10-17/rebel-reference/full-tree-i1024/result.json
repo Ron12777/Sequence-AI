@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/tmp/sequence-rebel-build/recursive_eval",
+    "--num_faces",
+    "4",
+    "--num_dice",
+    "1",
+    "--subgame_iters",
+    "1024",
+    "--cfr"
+  ],
+  "elapsed_seconds": 0.2742585209198296,
+  "cpu_seconds": 0.26846,
+  "exit_code": 0,
+  "exploitability": {
+    "net": "",
+    "full_tree": "0.000577"
+  }
+}

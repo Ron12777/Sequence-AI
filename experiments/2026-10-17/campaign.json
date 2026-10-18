@@ -1,0 +1,3449 @@
+{
+  "deadline_local": "2026-10-17T20:00:00-04:00",
+  "deadline_utc": "2026-10-18T00:00:00Z",
+  "training_stop_utc": "2026-10-17T23:30:00Z",
+  "hourly_cap_usd": 2.5,
+  "max_instances": 1,
+  "automation_id": "sequence-ai-overnight-model-campaign",
+  "baseline": "artifacts/checkpoints/small-standard.pt",
+  "status": "complete; final CNN independently validated and deployed locally; rental destroyed; heartbeat deleted",
+  "instructions": "Latest user: TrainUntil7:30p.m.Toronto/23:30UTC October17. Continue sameCNN onexistingdual4090, one rental <=$2.50/hour. Finalizationfollows withcommunicated8p.m.Toronto/00UTC October18 operationaltarget. No migration or other contender training.",
+  "instance_id": 56415071,
+  "hourly_usd": 1.0585185185185186,
+  "gpu": "2x RTX4090 24GB",
+  "ssh": {
+    "host": "112.223.148.130",
+    "port": 40025,
+    "user": "root",
+    "key": "/home/rohan-mistry/.ssh/id_ed25519",
+    "known_hosts": "/tmp/sequence-known-hosts"
+  },
+  "remote_root": "/workspace/sequence",
+  "watchdog_stop_utc": "2026-10-17T23:55:00Z",
+  "controller_pid": null,
+  "watchdog_pid": null,
+  "telemetry_pid": 394,
+  "workers": 0,
+  "started_at_utc": "2026-10-16T20:37:19Z",
+  "baseline_sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+  "remote_state": "/workspace/sequence/campaign/exact/sustained/state.json",
+  "remote_champion": "/workspace/sequence/campaign/champion.pt",
+  "remote_controller_log": "/workspace/sequence/campaign/exact/controller.log",
+  "validation": {
+    "local_tests": "85 passed,2 CUDA-only skipped",
+    "remote_tests": "62 passed, 1 skipped before final added local test",
+    "cuda_smoke": "2 fine-tuning epochs completed",
+    "arena_smoke": "8 head-to-head games completed",
+    "watchdog": "instance-scoped read access verified; PID 609 running",
+    "full_training": "2 completed epochs, 1024 games per epoch, optimizer updates and checkpoint saved",
+    "initial_full_epoch_seconds": [
+      58.776029146043584,
+      13.516241365810856
+    ],
+    "initial_full_training_gpu_utilization": "Sampled 8\u201312%; CPU/IPC bottleneck remains. Review end-to-end throughput and GPU utilization during campaign; do not claim saturation.",
+    "ensemble_cuda_smoke": "2 completed fine-tuning epochs; 8 games each; 32 simulations total across four deals",
+    "round0_onnx_max_errors": [
+      7.62939453125e-06,
+      6.556510925292969e-07
+    ],
+    "ensemble_controller": "Legacy PID1448 intentionally stopped; sole active controller is sustained PID7983.",
+    "full_ensemble_training": "Legacy rounds1 and2 completed without promotion; round3 was intentionally stopped and its checkpoint retained before sustained training.",
+    "shared_inference_remote_tests": "7 passed",
+    "shared_inference_training": "Both queue and shared transport completed 3 epochs/3072 games; checkpoint reloads and finite parameters verified",
+    "architecture_remote_tests": "19passed onCUDAhost, including frozen evaluation buffers and exact optimizer/RNG resume; corrected sustained smoke completed4blocks",
+    "sustained_training": "Verified~13:55UTC sole7983 andextendedwatchdog102502; CNN25920s/3110400games,GRU27030s/2962432games. Existingtrainercontinues15UTC.",
+    "history_opponent_evaluation": "6passed1CUDA-onlyskip: identical history models split all paired deals exactly and preserve all model parameters/buffers. New history-opponent support and confirm_policy.py local only, not uploaded to live trainer.",
+    "replacement_gpu": "PyTorch2.8+cu128 verified CUDA matrixmultiply onRTXPRO6000Blackwell96GB,192CPUaffinitythreads. Watchdog812launched18:45UTC; verifyAPIlogduringdependencysetup.",
+    "replacement_setup": "Instance-scoped APIwatchdog812verified; CUDAworks; maturinRustbuildsuccessful;20native/exact tests passremote2.84s. Trainingnotyetstarted.",
+    "replacement_5090": "44 regression tests passed; all3 complete rollout+update profiles passed; watchdog387 API verified21:45UTC.",
+    "replacement_dual4090": "All36 selected files verified remotely;58 tests passed; both concurrent profiles complete; supervisor1092 with workers1093/1094 verified active; watchdog393 APIverified."
+  },
+  "throughput": {
+    "workers16_leaf_evaluations_per_second": 90714.63816100544,
+    "workers24_leaf_evaluations_per_second": 97920.31627529708,
+    "selfplay_gpu_util_percent_24_workers": 10.035714285714286,
+    "shared_leaf_evaluations_per_second": 188415.03461718326,
+    "shared_gpu_util_percent": 22.902439024390244,
+    "shared_training_speedup": 1.943419502432881,
+    "evidence": "experiments/2026-10-17/inference_transport_results.json",
+    "sustained_5090_transformer_sample": {
+      "samples_seconds": 60,
+      "gpu_util_mean_percent": 91.1,
+      "gpu_util_median_percent": 94,
+      "gpu_util_min_percent": 63,
+      "gpu_util_max_percent": 96,
+      "scope": "Latest60one-second samples during full sustained transformer rollout/update cycles, not just training kernels"
+    }
+  },
+  "controller_command": [
+    "/opt/conda/bin/python",
+    "-u",
+    "scripts/train_exact_multigpu.py",
+    "--output-dir",
+    "campaign/exact/sustained",
+    "--reference",
+    "artifacts/checkpoints/gru-four-hour.pt",
+    "--devices",
+    "0,1",
+    "--shared-update-devices",
+    "0,1",
+    "--block-seconds",
+    "600",
+    "--evaluation-games",
+    "256",
+    "--stop-at",
+    "2026-10-17T23:30:00Z"
+  ],
+  "source_sha256": {
+    "native/src/lib.rs": "5a202b7e068e588a4db281043b702739882c9b7e0a58bd728ce18019b9b364ff",
+    "native/src/ensemble.rs": "4c4ea8ee4197035467e0d446bea7f12ca6abf5f92a9338ce1ab092c1c738b3a6",
+    "src/belief.py": "81eefe72c569145a8d100277f4de09138a2490a94449d07bebd3b95f42981760",
+    "src/train.py": "4a25c9a4af0166eb764ea0898b35ef8c4e6c77f51ef78bdc6e17b56c94df403b",
+    "scripts/overnight.py": "6b253d5eaf92682167f6aced6522dcd9d53bc25d8e056f084322242c1a92ca36",
+    "scripts/arena.py": "fb03f26ddf48c47f8fcfcd0953cfd209ed38b6fe4dce547c9f27e559f6945390",
+    "scripts/evaluate.py": "e09d22267e6402f973328b68880581f0d44af88e00aa5bd383d01d0ce195d75a",
+    "src/inference_transport.py": "451b5301034f9a3bc6adc559de736b6a6b38943c308d53bf5fcc2f0e1619c2f3",
+    "scripts/benchmark.py": "8daeb307cd61a9a9126f60895206e92232209bb3eabeb9aba196c6521f59edea",
+    "src/history_policy.py": "0e79f57fda787e071ee017f69c10a50fedb328a0dff517deaa2a6d4376c8241f",
+    "scripts/architecture_experiments.py": "1bec41eecc773fecf2287ce2e86f37d4c169494f6841476b4e3c493a4170d910",
+    "scripts/direct_selfplay.py": "1cade6a4e589f3524e8eb626d5eacf21954a909381bf80a1cbf0fbc1b24b218b",
+    "scripts/compute_budget_experiments.py": "d5f5d23835391fde2e64ee244e33025d00b4d58bb72688a31c00bc16e7f14cf1",
+    "scripts/sustained_selfplay.py": "ed39501760da19e6401ea06a43b326ee3aa655e6f8d49611013020e2deedbeee",
+    "scripts/train_exact_policy.py": "03732203c9399367b24c2724107e95a3551c19f8033f72dc5cac32cd8a314287",
+    "scripts/train_exact_multigpu.py": "704630d09b04d5f62c74c90c092efc6b310851b2fef6672aa4be1018ae4cbcac"
+  },
+  "finalization": {
+    "training_stops_automatically": "2026-10-17T23:30:00Z",
+    "retrieve_by": "2026-10-17T23:50:00Z",
+    "watchdog_behavior": "Solewatchdog333187 verifiedinstance-scopedAPI; stops56415071at23:55UTC. Destroyafterverifiedretrievalby00UTC October18.",
+    "retrieve": "Retrieve selected champion, serious finalist weights and latest continuation states from campaign/exact/sustained, plus recipe, metrics, dispatch ledger and independent evaluation evidence. Preserve RNaD threshold2 control and amendment provenance; avoid all intermediate checkpoints. Verify each selected file SHA256 before destroying rental.",
+    "verify": "Match SHA256 against remote champion and recorded state before destroying instance. Export ONNX locally and compare numerics; use existing browser validation workflow.",
+    "local_checkpoint": "artifacts/checkpoints/exact-final/cnn_ppo-final.pt",
+    "local_onnx": "artifacts/exact-cnn-final.onnx",
+    "evidence_directory": "experiments/2026-10-17",
+    "fallback": "If no candidate passes promotion, retain and report the prior validated champion honestly. If instance was stopped before retrieval, briefly restart this same instance, retrieve/verify, then destroy.",
+    "shutdown": "Confirm no task instance remains and remove sequence-ai-overnight-model-campaign heartbeat after final report.",
+    "deadline_utc": "2026-10-18T00:00:00Z",
+    "selection_protocol": {
+      "development": "Compare final CNN continuation and saved3hCNN on fixed fresh developmental deals; select ONE candidate before reserved final confirmation. Transformer and RNaD preserved but training cancelled by user focus.",
+      "independent_confirmation": "For chosen candidate, fixed8192 paired complete games versus then-current independently validated champion; promote only if paired95percent score lower bound exceeds0.5. No increasing head-to-head sample size after seeing its result.",
+      "heldout_retention": "On identical fresh paired deals for candidate and incumbent, fixed2048 games each against originalsearch128 and8192 each against heldoutbaseline32. Require paired candidate-minus-incumbent95percent lower bound above-0.02 for each; report practical retention margin and effects. Keep incumbent if any gate fails.",
+      "reserved_seed_base": 9100000000001,
+      "seed_policy": "Reserved exact-policy final seed base remains untouched until final candidate is selected. Use distinct disjoint offsets for head-to-head and each heldout; save plans before execution. Do not reuse final outcomes for recipe changes or choosing another candidate.",
+      "fallback": "If no developmental challenger merits final confirmation or no challenger passes all gates, deliver current validated champion with existing evidence; do not imply newest weights are strongest.",
+      "hardware": "SameCNNtraining23:30UTC October17; retrieve23:50,watchdog23:55,operationaldelivery00UTC October18.",
+      "deployment": "Prepare local static-browser deployment with unique ONNX filename, explicit board_hand metadata only for eligibleCNN, cache versions, and renderedUI validation; preserve rollback. Public hosting and legacyFlaskAPI state must be reported accurately."
+    },
+    "training_completed": true,
+    "completed_utc": "2026-10-17T23:38:24.176534+00:00",
+    "rental_destroyed": true,
+    "retention_verification": "experiments/2026-10-17/final-retention-verification.json",
+    "deployment": {
+      "deployed_utc": "2026-10-17T23:36:15.022777+00:00",
+      "scope": "Local static files only; no public push",
+      "checkpoint_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+      "onnx_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+      "deployed_model": "web/static/model-exact-0bd3130842892f06.onnx",
+      "manifest": {
+        "model": "model-exact-0bd3130842892f06.onnx",
+        "policyKind": "exact_sequence_policy",
+        "playMode": "direct",
+        "actionEncoding": "card_id * 100 + row * 10 + col",
+        "variant": "cnn",
+        "valueMode": "bounded",
+        "historyArchitecture": "board",
+        "observationMode": "board_hand"
+      },
+      "manifest_sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f",
+      "asset_cache_versions": {
+        "game_engine.js": "324f370d5a5a1062",
+        "direct_player.js": "7a3bc458213c3683",
+        "game.js": "0fcbc0e0fee63ad5",
+        "style.css": "7cfcb63081261844"
+      },
+      "rollback_directory": "artifacts/rollback/exact-final-2026-10-17",
+      "rollback_sha256": {
+        "model.json": "bcc1a1275b2bfacea104d0e6cb5aa7daef3f58eff239a198e74e076702fce592",
+        "model.onnx": "d6e8a786804aa82b19a8c273e1c04af540843e6eae87ee24785497a96fff5fb0",
+        "index.html": "fecb96aeedf4d58d52078023abb1c5c82f988adfc5428454f36b07dd8a6f7982"
+      },
+      "previous_model_retained_unchanged": true,
+      "rendered_validation": "passed",
+      "rendered_validation_report": "experiments/2026-10-17/exact-cnn-final-rendered-browser-validation.json",
+      "rendered_report_sha256": "c4dff95b6f8d649d2a7236be0f8f52d85126230d438755e5660e3255914452b1",
+      "served_model_hash_verified": true,
+      "same_session_reload_verified": true,
+      "search_calls": 0,
+      "runtime_errors": [],
+      "known_browser_diagnostic": "Missing favicon.ico produced one HTTP404 console message; no application, inference, or JavaScript errors",
+      "public_deployment": false,
+      "rollback_instructions": "Restore model.json and index.html from rollback_directory; original model.onnx remains present and unchanged."
+    },
+    "spending": "experiments/2026-10-17/spending-ledger-final.json",
+    "automation_deleted": true
+  },
+  "last_verified_utc": "2026-10-17T23:38:24.176534+00:00",
+  "active_change": null,
+  "user_constraints": [
+    "No rules-based forced-win overrides: user explicitly rejected them.",
+    "Existing production uses four-deal ensemble search. User subsequently explicitly authorized trying new architectures and said all components are changeable; research may use direct policies and other learning algorithms. Replace production only with independently demonstrated improvement.",
+    "Do not describe ensemble determinization as a complete belief-state solution. User is interested in history-aware policy and proper imperfect-information architectures."
+  ],
+  "current_champion_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+  "current_champion_local": "artifacts/checkpoints/exact-final/cnn_ppo-final.pt",
+  "search_mode": "none: direct exact-action policy",
+  "gameplay_simulations": 0,
+  "confirmed_model_score_vs_previous": 0.53619384765625,
+  "confirmed_model_games": 8192,
+  "research_priorities": [
+    "Sustainedtrainingis now active; keepit progressing. No more broadtiny sweeps. Honor slowstarters andlongbudget comparisons.",
+    "Usecorrectedfrozen-reference evaluation. EarlierGPU-hourrankingsinvalid; seeevaluation_mode_audit. Never mutateBatchNormduringevaluation.",
+    "Preservevalidatedproductionchampion, noforced-win rules; imperfect-informationhistoryresearch is notReBeL. Promoteonlyindependentlyvalidatedstrength.",
+    "One rental at <=$2.50/hour. Current RTX PRO6000WS96GB/192 Threadripper threads $1.88385185/hour. Compare measured full-cycle throughput/cost; report exclusive GPU training time and shared pretraining separately."
+  ],
+  "comparison_caveat": "Four-deal method scored 50.37% (95% pair CI 48.56\u201352.17%) on 2048 games with original weights, but 46.875% (43.94\u201349.81%) in a 512-game check on the newly trained champion. User explicitly selected four-deal production search. Do not claim it universally improves strength; train/evaluate subsequent models under four-deal search.",
+  "current_champion_onnx": "artifacts/exact-cnn-final.onnx",
+  "inference_transport": {
+    "default": "shared",
+    "active_round_1": "queue (already running before deployment)",
+    "next_trials": "shared automatically through updated train CLI default",
+    "control_flag": "--no-shared-inference",
+    "completed_comparison": "3072 games each: 159 seconds queue, 82 seconds shared",
+    "active_round_2": "shared (verified in actual metrics)"
+  },
+  "architecture_experiments": {
+    "source": [
+      "src/history_policy.py",
+      "scripts/architecture_experiments.py",
+      "scripts/direct_selfplay.py"
+    ],
+    "remote_results": "campaign/architectures_v1",
+    "distillation": "Four variants completed 512 teacher self-play games, three fitting epochs, held-out game split; initial 128/64-game screens do not demonstrate superiority.",
+    "direct_selfplay": "PriorstandalonePPOreference evaluationsinvalid; seeaudit. Correctedlongattentionreference match scored38.18percent on512freshgames againstfrozen128search; no promotion.",
+    "production_changed": false,
+    "cuda_fix": "Fixed GRU cuDNN backward requiring training mode while preserving frozen BatchNorm statistics; CPU and CUDA regression passed remotely.",
+    "confirmation": "Manualearlierconfirmation requiresreference-modeaudit; do not relyon it. Productionarena confirmation67.29percent remainsvalid.",
+    "next_experiment": "Sustainedtrainingonly; noadditionalshortsweeps",
+    "v2_results": "Jointattention43.95% vs ensemble128 on256games; no promotion. Initialmodel validation total2.4779 vs joint2.5428; historyablation policyKL1.25e-6 indicates almostno useofpublichistory.",
+    "report": "experiments/2026-10-17/architecture_results.json",
+    "completed": "Diagnosticrunscomplete, affectedreferencecomparisonsinvalidated. Correctedlongtrainingactive; noexperimentalmodelpromoted.",
+    "active_job": {
+      "pid": 7983,
+      "command": [
+        "python",
+        "-u",
+        "scripts/sustained_selfplay.py",
+        "--champion",
+        "campaign/champion.pt",
+        "--baseline",
+        "campaign/baseline.pt",
+        "--output-dir",
+        "campaign/sustained_v2",
+        "--stop-at",
+        "2026-10-17T15:00:00Z",
+        "--controller-lock",
+        "campaign/controller.lock",
+        "--block-seconds",
+        "1800",
+        "--evaluation-games",
+        "512",
+        "--games-per-iteration",
+        "512"
+      ],
+      "started_unix": 1792191522.0899866,
+      "stop_at": "2026-10-17T15:00:00Z",
+      "status": "stopped_for_verified_migration",
+      "sole_controller": true,
+      "architectures": [
+        "board",
+        "gru"
+      ],
+      "block_seconds": 1800,
+      "reference_mode_fix": true
+    },
+    "active_log": "campaign/sustained_v2.log",
+    "active_checkpoint": "campaign/sustained_v2/{board,gru}/latest.pt",
+    "active_results": "campaign/sustained_v2/state.json",
+    "next_actions": [
+      "Read evaluation_mode_audit first. compute_budget_v1 and priorstandalonePPOreference scores areinvalid. Do not use oldshortscores torejectarchitectures. Productionarena evidence remainsvalid.",
+      "Inspect solecontroller7983, campaign/sustained_v2/state.json, eachmodelprogress.json andmetrics.jsonl, andactualrental. Oldcontrollers1448/7079 stoppedintentionally. No duplicatecontrollers orrentals.",
+      "Let both seriouscontenders accumulate >=3600trainingseconds before narrowing. Check KL,entropy,valueerror,finiteparameters,games/second andmonitoringcurves. Initialdipsare notceilingestimates. Aim substantialall-nighttraining withstableoptimizerstate.",
+      "Monitoringusesrepeatedseeds. Only independently confirm strongcandidates beforepromotion; compare againstcurrentproductionchampion atexplicitinferencebudgets andheldoutopponents. Preservebestmonitor andlatest separately.",
+      "The defaultcyclealternates30-minute trainingblocks; this iscontinuation, notfreshmodels eachtime. Ifadaptingrecipe, preserveoptimizeranddocumentchange; runtimeguardrejectssilentrecipechanges.",
+      "By11a.m.Toronto trainerstops. Retrieveonly productionchampion andseriousselectedcandidateweights/evidence; checkSHA256, validateONNX andintegration, destroyinstance56294531 afterretrieval. Reportby12noon andremoveheartbeat."
+    ],
+    "active_progress": {
+      "architecture": "gru",
+      "iterations": 5405,
+      "games": 2767360,
+      "positions": 107759331,
+      "updates": 216138,
+      "training_seconds": 25289.4621665054,
+      "blocks": 14,
+      "latest_training_seconds": 25329.690552628366,
+      "latest_games": 2771968,
+      "status": "Both passed seven hours; continue toward eight hours. Final independent comparison remains pending."
+    },
+    "active_timeout_utc": "2026-10-17T15:00:00Z",
+    "previous_long_job": {
+      "pid": 3553,
+      "command": [
+        "timeout",
+        "--signal=INT",
+        "--kill-after=20",
+        "1200",
+        "python",
+        "-u",
+        "scripts/direct_selfplay.py",
+        "--init-from",
+        "campaign/architectures_v3_frozen/joint_attention.pt",
+        "--champion",
+        "campaign/architectures_v3_frozen/teacher.pt",
+        "--output-dir",
+        "campaign/history_ppo_long_v1",
+        "--iterations",
+        "256",
+        "--games-per-iteration",
+        "128",
+        "--evaluation-games",
+        "1024",
+        "--seed",
+        "1771713"
+      ],
+      "started_unix": 1792188442.490977,
+      "hard_timeout_seconds": 1200,
+      "expected_training_games": 32768,
+      "status": "completed,not promoted",
+      "champion_unchanged": true,
+      "note": "One bounded research training job alongside existing controller1448, not a second campaign controller. Evaluation seeds are allocated beyond every training seed."
+    }
+  },
+  "larger_machine_decision": {
+    "shortlist": "experiments/2026-10-17/larger_machine_shortlist.json",
+    "option": "64 effective CPU threads +RTX4090, about$0.567/hour including40GB storage at query time",
+    "decision": "Retain current$0.468/hour rental; new architectures fit and can share spare GPU capacity. Recheck availability and benchmark value before migration. One rental at a time."
+  },
+  "compute_comparison": {
+    "gpu": "One RTX4090 exclusively during experiment",
+    "architectures": [
+      "board",
+      "gru",
+      "joint_attention"
+    ],
+    "training_seeds": 2,
+    "training_seconds_per_run": 180,
+    "common_pretraining": "All initialize from same frozen champion CNN",
+    "pilot_configs": [
+      [
+        128,
+        256
+      ],
+      [
+        512,
+        1024
+      ]
+    ],
+    "metrics": [
+      "actualGPUhours",
+      "strength",
+      "GPUutilization",
+      "games/positions/updates",
+      "batch1and128latency"
+    ],
+    "interpretation": "Legacy short comparison invalidated by reference evaluation-mode bug; retained for audit only. Current sustained CNN/GRU comparison uses frozen references and matched exclusive device-time blocks.",
+    "valid_for_architecture_ranking": false
+  },
+  "sustained_training_policy": {
+    "user_priority": "Deliver the strongest independently validated model by October17 18:00 Toronto. ReBeL cancelled. Serious contenders are exact-action CNN/PPO, transformer/PPO and CNN/R-NaD, with substantial continued training.",
+    "exploration_cutoff_utc": "2026-10-16T23:15:00Z",
+    "sustained_training_share_target": 0.75,
+    "sustained_training_hours_target": 8,
+    "maximum_serious_contenders": 3,
+    "training_deadline_utc": "2026-10-17T21:30:00Z",
+    "interpretation": "Allocate most remaining compute to substantial continuous training. Eight hours is a planning target, not a requirement to continue a clearly broken or regressing recipe.",
+    "actions": [
+      "Early PPO regression requires diagnosis of learning rate, KL/entropy, value error, data freshness and update/data ratio; it is not evidence that the architecture has a low ceiling. Make justified recipe corrections and give serious candidates a substantial budget before rejecting them.",
+      "Use continuous training with preserved optimizer/scheduler state and replay where applicable. Avoid repeated optimizer resets and fresh starts. Distinguish matched-budget architecture studies from the final exploitation run.",
+      "Evaluate selected checkpoints periodically against a fixed reference and held-out opponents; keep a separate untouched final confirmation seed set. Preserve the best independently validated checkpoint, not automatically the final checkpoint. Repeated monitoring alone is not promotion evidence.",
+      "Target at least75percent of remaining allocated compute for sustained training/self-play and8or more hours of serious training when time permits. Use matched longer-budget checkpoints, learning-curve slope and independent strength evidence. Stop on numerical failure; investigate sustained regression or plateau rather than treating a short dip as failure.",
+      "Before launching a long run, adapt the current one-hour-per-trial controller limit or replace it sequentially; never leave duplicate controllers. Preserve selected weights before stopping a trial. Ensure deadline-bound process cleanup and automatic rental shutdown remain active.",
+      "Give all three contenders at least one matched exclusive GPU-hour before narrowing; hardware-specific compute must be recorded separately after migration.",
+      "Stop training21UTC, retrieve/checksum by21:30, complete ONNX/browser validation, destroy rental after retrieval; watchdog21:45, final report22UTC."
+    ],
+    "current_evidence": "Three-hour developmental results favor CNN/PPO; validated leader remains2hCNN pending final confirmation. Corrected RNaD recovery continues, transformer continuation retained after supported narrowing at20:13UTC.",
+    "minimum_serious_comparison_budget_hours": 1,
+    "slow_starter_policy": "Early ranking is not an estimate of final ceiling. Give serious contenders at least one hour each at matched GPU-time, subject to deadline and numerical health, then extend promising or unresolved learning curves. Preserve both latest continuation state and best validated weights. A temporary dip is not grounds to discard an architecture.",
+    "final_deadline_utc": "2026-10-17T22:00:00Z"
+  },
+  "last_user_priority_update_utc": "2026-10-16T22:36:01.493720+00:00",
+  "machine_authorization": "User allows selecting or changing machine as needed. Existing explicit cap remains$1.50/hour total and one rental at a time. Recheck live availability, benchmark throughput per dollar, retrieve selected state before migration, and avoid needless migration overhead.",
+  "evaluation_mode_audit": {
+    "discovered_utc": "2026-10-16T22:56:37.508841+00:00",
+    "issue": "Some research callers loaded the reference in training mode. BatchNorm used batch statistics and changed reference buffers during evaluation. The GPU-budget comparison also initialized later candidates from a mutated reference, violating common initialization.",
+    "affected": [
+      "compute_budget_v1 architecture ranking and its reference matches",
+      "standalone direct_selfplay evaluations, including history_ppo_long_v1",
+      "manual research confirmations whose explicit eval mode has not been independently audited"
+    ],
+    "unaffected": "Production arena CLI sets model.eval(); production champion confirmation remains valid. Architecture_experiments main also explicitly freezes its teacher.",
+    "repair": "evaluate_policy freezes both models; predict rejects training mode; sustained runner explicitly freezes references; regression tests compare all parameter and buffer tensors before and after direct and search evaluation.",
+    "action": "Invalidated affected rankings. Stop initial sustained_v1, which had no completed saved training iteration; restart clean sustained_v2 from verified champion. No repeated short sweep.",
+    "repair_verified": "85localtests,19targetedremote tests, corrected4-blockGPUsmoke. Both saved model states in the stopped sustained_v1 were still at iteration0; no trained continuation was discarded."
+  },
+  "sustained_training": {
+    "job": {
+      "pid": 7983,
+      "command": [
+        "python",
+        "-u",
+        "scripts/sustained_selfplay.py",
+        "--champion",
+        "campaign/champion.pt",
+        "--baseline",
+        "campaign/baseline.pt",
+        "--output-dir",
+        "campaign/sustained_v2",
+        "--stop-at",
+        "2026-10-17T15:00:00Z",
+        "--controller-lock",
+        "campaign/controller.lock",
+        "--block-seconds",
+        "1800",
+        "--evaluation-games",
+        "512",
+        "--games-per-iteration",
+        "512"
+      ],
+      "started_unix": 1792191522.0899866,
+      "stop_at": "2026-10-17T15:00:00Z",
+      "status": "running",
+      "sole_controller": true,
+      "architectures": [
+        "board",
+        "gru"
+      ],
+      "block_seconds": 1800,
+      "reference_mode_fix": true
+    },
+    "root": "/workspace/sequence/campaign/sustained_v2",
+    "architectures": [
+      "board",
+      "gru"
+    ],
+    "latest": [
+      "campaign/sustained_v2/board/latest.pt",
+      "campaign/sustained_v2/gru/latest.pt"
+    ],
+    "best_monitor": [
+      "campaign/sustained_v2/board/best_monitor.pt",
+      "campaign/sustained_v2/gru/best_monitor.pt"
+    ],
+    "production_promoted": false,
+    "checkpoint_semantics": "latest includes optimizer/RNG and cumulative training time. best_monitor is selected on reused monitoring seeds and is NOT independently validated. Historical0-2 opponent weights are separate. Do not transfer them all.",
+    "minimum_before_narrowing": "3600trainingseconds EACH architecture, not one hour elapsed for the whole controller. Default alternates both for the entire night unless evidence supports narrowing.",
+    "selection_file": "campaign/sustained_v2/selection.json with architectures list; only use after both >=3600seconds and meaningful independent evidence. Do not change solely on early dips.",
+    "monitoring": "Direct champion andgreedy everyblock; championensemble128 andheldoutoriginalbaseline32 everysecondblock. Both use fixed monitoring seeds for comparable curves.",
+    "final_confirmation": "Fresh reserved seed9000000000001 and further disjoint seeds; at least2048pairedgames for serious final candidate, plusheldoutopponents. Do not confuse monitorbest with validatedpromotion.",
+    "reference": "Frozenoriginalchampion SHA884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85. Both models warmstartidentically. Publichistoryonly forGRU, no privilegedcritic.",
+    "recipe": "50percentcurrent selfplay,25percentfrozen championdirect,25percentrotatinghistorical opponent; learner seats balanced; onpolicy PPO onlylearneractions; batch1024,512games/iteration,2epochs,LR1e-5\u21922e-6cosineover8traininghours,clip0.1,entropy0.003\u21920.0005,targetKL0.015; BatchNormfrozen; optimizerstatecontinuouslypreserved.",
+    "resume": "If controller has actually stopped unexpectedly, inspecterrors andlock then rerun SAMEcommand/outputdir to restore latest.pt. Do not reset output or launchsecondcontroller. Codechecksrecipeunchanged; absolute15UTCdeadline remains.",
+    "deployment": "Browser supports validated GRU three-input model and legacy one-input MCTS model through explicit model contract. Direct GRU uses no search and hides depth controls. Full public-history encoder replay parity, actual browser WASM numerical/move parity and stagedUI gameplay passed. Ready to install strongest final validated checkpoint; current production model file unchanged.",
+    "initial_monitor": {
+      "games": 512,
+      "score": 0.4501953125,
+      "paired_score_95ci": [
+        0.4208058327342683,
+        0.4795847922657317
+      ],
+      "candidate": "unchangedchampiondirectpolicy",
+      "opponent": "samechampionensemble128",
+      "reference_mode": "eval",
+      "note": "Monitoringcontrolonly; finalconfirmationseedsreserved."
+    },
+    "last_health_check": {
+      "verified_utc": "2026-10-17T13:11:36.898004+00:00",
+      "controller_pid": 7983,
+      "watchdog_pid": 609,
+      "rental_count": 1,
+      "instance_id": 56294531,
+      "rental_state": "running",
+      "hourly_usd": 0.4681481481481482,
+      "active_architecture": "gru",
+      "evidence": "experiments/2026-10-17/health-1311.json",
+      "action": "Healthy sole rental/controller/watchdog; both passed seven allocated training hours. Preserve recipe and incumbent; no new jobs or transfers."
+    },
+    "monitoring_history": [
+      {
+        "architecture": "board",
+        "iterations": 384,
+        "games": 196608,
+        "positions": 8213636,
+        "updates": 16396,
+        "training_seconds": 1802.1626188440714,
+        "blocks": 1,
+        "evaluation_seconds": 6.623305313056335,
+        "checkpoint_sha256": "efa17d07e2848e620378787bcb66e6eed3125bc4159c3a6fad49b11833042cc3",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.54296875,
+          "greedy": 0.78515625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 366,
+        "games": 187392,
+        "positions": 7887670,
+        "updates": 15762,
+        "training_seconds": 1801.496816040948,
+        "blocks": 1,
+        "evaluation_seconds": 6.975470288889483,
+        "checkpoint_sha256": "2d6600597298edc074565586c87a1799d9931b123d595e700cfb2c84ac442c65",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.525390625,
+          "greedy": 0.791015625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 721,
+        "games": 369152,
+        "positions": 15183294,
+        "updates": 30396,
+        "training_seconds": 3605.973812269047,
+        "blocks": 2,
+        "evaluation_seconds": 39.24986202898435,
+        "checkpoint_sha256": "dbfe1319e2b2caed1c384ebb0f351bba0125f4875d5699561943c527170b48b6",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5634765625,
+          "greedy": 0.8046875,
+          "champion_search": 0.4921875,
+          "heldout_baseline": 0.6982421875
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 791,
+        "games": 404992,
+        "positions": 16552277,
+        "updates": 33094,
+        "training_seconds": 3605.0717464319896,
+        "blocks": 2,
+        "evaluation_seconds": 33.55218393402174,
+        "checkpoint_sha256": "7f77b3ded835b60ea93eb6f0125459999b2360dcc20479d009ee5ca95e94f45f",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5556640625,
+          "greedy": 0.8203125,
+          "champion_search": 0.486328125,
+          "heldout_baseline": 0.75390625
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 1212,
+        "games": 620544,
+        "positions": 25100783,
+        "updates": 50130,
+        "training_seconds": 5408.476935822051,
+        "blocks": 3,
+        "evaluation_seconds": 7.180589270079508,
+        "checkpoint_sha256": "c28b4eafcd08c92e54c542ec74ae84b5242f5bdb29be2bfb0f005e4bec951eb7",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.58203125,
+          "greedy": 0.837890625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 1100,
+        "games": 563200,
+        "positions": 22894915,
+        "updates": 45782,
+        "training_seconds": 5409.478973621037,
+        "blocks": 3,
+        "evaluation_seconds": 6.545966444071382,
+        "checkpoint_sha256": "1014eb312f835ac2d01bbd95becf59a4c6c39d6f25a21dabe49eae75a57114ef",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5625,
+          "greedy": 0.814453125
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 1647,
+        "games": 843264,
+        "positions": 33859790,
+        "updates": 67586,
+        "training_seconds": 7209.161839362234,
+        "blocks": 4,
+        "evaluation_seconds": 34.172538297018036,
+        "checkpoint_sha256": "8048a01c5725ca209ef1426ec228ec85e0fa393c75c6b51d6d5d77d2465e19c3",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6044921875,
+          "greedy": 0.833984375,
+          "champion_search": 0.5302734375,
+          "heldout_baseline": 0.7529296875
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 1492,
+        "games": 763904,
+        "positions": 30794850,
+        "updates": 61534,
+        "training_seconds": 7213.143520290032,
+        "blocks": 4,
+        "evaluation_seconds": 33.49684706190601,
+        "checkpoint_sha256": "63c0efcf79237f1ba019f22d2ce55cee50156104c78b072dc2f4008bddef4cb2",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5712890625,
+          "greedy": 0.845703125,
+          "champion_search": 0.5634765625,
+          "heldout_baseline": 0.72265625
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 2079,
+        "games": 1064448,
+        "positions": 42483275,
+        "updates": 84874,
+        "training_seconds": 9009.451708386187,
+        "blocks": 5,
+        "evaluation_seconds": 6.542820326983929,
+        "checkpoint_sha256": "b31cc822775b5e3c23008142e3fcf47c8605ee5c61b8113f4bc46d409fbdef18",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.61328125,
+          "greedy": 0.857421875
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 1885,
+        "games": 965120,
+        "positions": 38660349,
+        "updates": 77276,
+        "training_seconds": 9013.322526299162,
+        "blocks": 5,
+        "evaluation_seconds": 7.222748219035566,
+        "checkpoint_sha256": "52d81f474668f9d73a21dda78fe3709b699c2e62b445695e51812f1b9bca0efd",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.5703125,
+          "greedy": 0.857421875
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 2495,
+        "games": 1277440,
+        "positions": 50746639,
+        "updates": 101484,
+        "training_seconds": 10813.1065207941,
+        "blocks": 6,
+        "evaluation_seconds": 32.56135896104388,
+        "checkpoint_sha256": "82a205f63210192749af8d7c54d0c6d0dc7789935cc5fb9623b6f33297034efc",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6044921875,
+          "greedy": 0.8515625,
+          "champion_search": 0.552734375,
+          "heldout_baseline": 0.75390625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 2262,
+        "games": 1158144,
+        "positions": 46170498,
+        "updates": 92350,
+        "training_seconds": 10813.5665300861,
+        "blocks": 6,
+        "evaluation_seconds": 33.442165510961786,
+        "checkpoint_sha256": "50682964a225ffa694dd5af885fc1a58e4f9355529bcd29937d79d373cfecd98",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.619140625,
+          "greedy": 0.84765625,
+          "champion_search": 0.5400390625,
+          "heldout_baseline": 0.748046875
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 2923,
+        "games": 1496576,
+        "positions": 59140008,
+        "updates": 118402,
+        "training_seconds": 12616.991042773938,
+        "blocks": 7,
+        "evaluation_seconds": 6.796620476059616,
+        "checkpoint_sha256": "c69fa0998f8d0237580427a4d65c014edb8311a6208b864aaccb373266c9b3db",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6083984375,
+          "greedy": 0.873046875
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 2659,
+        "games": 1361408,
+        "positions": 54056264,
+        "updates": 108208,
+        "training_seconds": 12615.649927905994,
+        "blocks": 7,
+        "evaluation_seconds": 6.462269200012088,
+        "checkpoint_sha256": "f910e15a8dfdad721702f6c9ea133ba64331555a0908e0f722c60eb8bff383b6",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.60546875,
+          "greedy": 0.853515625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 3050,
+        "games": 1561600,
+        "positions": 61782243,
+        "updates": 123780,
+        "training_seconds": 14416.562711129198,
+        "blocks": 8,
+        "evaluation_seconds": 35.07083476195112,
+        "checkpoint_sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6474609375,
+          "greedy": 0.86328125,
+          "champion_search": 0.5498046875,
+          "heldout_baseline": 0.7822265625
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 3352,
+        "games": 1716224,
+        "positions": 67577646,
+        "updates": 135422,
+        "training_seconds": 14420.678512422135,
+        "blocks": 8,
+        "evaluation_seconds": 32.5194599609822,
+        "checkpoint_sha256": "8d3af846086fea02e4a2a19315e8c318d81ccc982f740d2640ee783aa591713e",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.63671875,
+          "greedy": 0.85546875,
+          "champion_search": 0.5712890625,
+          "heldout_baseline": 0.779296875
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 3440,
+        "games": 1761280,
+        "positions": 69475240,
+        "updates": 139288,
+        "training_seconds": 16217.288328713272,
+        "blocks": 9,
+        "evaluation_seconds": 6.7189444929827005,
+        "checkpoint_sha256": "24f88534d1118c570e3b3dddcd76850818b36f992d4c0919363cab4fec2277e5",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.609375,
+          "greedy": 0.86328125
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 3762,
+        "games": 1926144,
+        "positions": 75599848,
+        "updates": 151570,
+        "training_seconds": 16223.20195261226,
+        "blocks": 9,
+        "evaluation_seconds": 6.980266342172399,
+        "checkpoint_sha256": "0738f2c4b066c732a0d975ea9f91f88a5b36d95c0a8063725a1f9b760a6966e4",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6376953125,
+          "greedy": 0.86328125
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 3834,
+        "games": 1963008,
+        "positions": 77184497,
+        "updates": 154810,
+        "training_seconds": 18021.682057719445,
+        "blocks": 10,
+        "evaluation_seconds": 33.54256690107286,
+        "checkpoint_sha256": "529544477e133048bca50bd45f902aed777c28e0f212e4ecdcbd4da75bcdb72e",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.626953125,
+          "greedy": 0.86328125,
+          "champion_search": 0.541015625,
+          "heldout_baseline": 0.765625
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 4189,
+        "games": 2144768,
+        "positions": 83910102,
+        "updates": 168218,
+        "training_seconds": 18025.363392969128,
+        "blocks": 10,
+        "evaluation_seconds": 35.15131053701043,
+        "checkpoint_sha256": "301482dd05a6fdf80d7c5e6522a1410294feff5c34bb72bdc7527f3b120a7735",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.66796875,
+          "greedy": 0.86328125,
+          "champion_search": 0.5556640625,
+          "heldout_baseline": 0.744140625
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 4241,
+        "games": 2171392,
+        "positions": 85104032,
+        "updates": 170696,
+        "training_seconds": 19823.639511699555,
+        "blocks": 11,
+        "evaluation_seconds": 6.641034566098824,
+        "checkpoint_sha256": "45ea595f632141ff1e99fd9cdd3f22db120ca301b109a9ccdb3d2c85f4d224eb",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.642578125,
+          "greedy": 0.859375
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 4619,
+        "games": 2364928,
+        "positions": 92285712,
+        "updates": 185044,
+        "training_seconds": 19828.15059088613,
+        "blocks": 11,
+        "evaluation_seconds": 6.814576019067317,
+        "checkpoint_sha256": "9b9becffac0d3ead55f3b791ce08fca1085e4ef40f0b83d86a16a51c1650210d",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6591796875,
+          "greedy": 0.87109375
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 4607,
+        "games": 2358784,
+        "positions": 92223012,
+        "updates": 184958,
+        "training_seconds": 21626.545404450502,
+        "blocks": 12,
+        "evaluation_seconds": 32.506683844840154,
+        "checkpoint_sha256": "03c92f1466bdea40bca75e1358a659dcc44f85c074b258d764db5346c25711e2",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.65234375,
+          "greedy": 0.884765625,
+          "champion_search": 0.568359375,
+          "heldout_baseline": 0.7626953125
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 5052,
+        "games": 2586624,
+        "positions": 100718896,
+        "updates": 201972,
+        "training_seconds": 21629.158779826015,
+        "blocks": 12,
+        "evaluation_seconds": 34.2705327461008,
+        "checkpoint_sha256": "f3da1fe231e59b12437386f77f06f2f5d687514500f88f3ca572906e4b562284",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.634765625,
+          "greedy": 0.865234375,
+          "champion_search": 0.583984375,
+          "heldout_baseline": 0.7607421875
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 4996,
+        "games": 2557952,
+        "positions": 99812429,
+        "updates": 200210,
+        "training_seconds": 23426.975640995428,
+        "blocks": 13,
+        "evaluation_seconds": 6.840320898918435,
+        "checkpoint_sha256": "254f7b524134c5d81f37e60566949404a4aa181b2c483b3ec871d1625b54d52c",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6552734375,
+          "greedy": 0.869140625
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 5487,
+        "games": 2809344,
+        "positions": 109179703,
+        "updates": 218916,
+        "training_seconds": 23430.85059817601,
+        "blocks": 13,
+        "evaluation_seconds": 6.60941379587166,
+        "checkpoint_sha256": "21c9c782391fafd9a3b09e99a555e07bd519102226d292afaab9260549bce226",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6474609375,
+          "greedy": 0.8828125
+        }
+      },
+      {
+        "architecture": "gru",
+        "iterations": 5391,
+        "games": 2760192,
+        "positions": 107485889,
+        "updates": 215588,
+        "training_seconds": 25227.350458303466,
+        "blocks": 14,
+        "evaluation_seconds": 34.379959736950696,
+        "checkpoint_sha256": "610e7f8bad9963112906faff3477c5ba9edb052ae0ed6cddc9cfbedcc693e5ca",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.619140625,
+          "greedy": 0.853515625,
+          "champion_search": 0.587890625,
+          "heldout_baseline": 0.7578125
+        }
+      },
+      {
+        "architecture": "board",
+        "iterations": 5910,
+        "games": 3025920,
+        "positions": 117405396,
+        "updates": 235410,
+        "training_seconds": 25233.70567884203,
+        "blocks": 14,
+        "evaluation_seconds": 32.90494628692977,
+        "checkpoint_sha256": "f9cc5bc49af9f52a438d46ae70d7388b4e2261ab684a39e2c2999e684561c8df",
+        "monitoring_only": true,
+        "production_promoted": false,
+        "scores": {
+          "champion_direct": 0.6513671875,
+          "greedy": 0.873046875,
+          "champion_search": 0.5966796875,
+          "heldout_baseline": 0.7802734375
+        }
+      }
+    ],
+    "diagnostics": {
+      "board_first_block_gpu_util_percent": 8.869565217391305,
+      "board_games_per_training_second": 109.09559323015296,
+      "board_first20_vs_last20": {
+        "policy_entropy": [
+          1.7531663554694812,
+          0.8360092843217509
+        ],
+        "value_loss": [
+          0.7053819050636922,
+          0.884648243054038
+        ],
+        "approximate_kl": [
+          0.001034063260261105,
+          0.0008261159987702085
+        ]
+      },
+      "interpretation": "Finite updates and first direct-policy monitoring gain. Entropy is falling and value error rising; inspect subsequent curves before any recipe change. GPU remains underutilized: rollout dominates elapsed time. GPU-hours mean exclusive allocated device time including self-play, not utilization-adjusted kernel hours. Avoid architecture claims until matched substantial budgets and measured inference costs.",
+      "gru_first_block_gpu_util_percent": 14.213717085119413,
+      "gru_last20": {
+        "approximate_kl": 0.0008243351972578916,
+        "value_loss": 0.8792586916756062,
+        "policy_entropy": 0.7616233208988394,
+        "iteration_seconds": 5.018848624045495,
+        "rollout_seconds": 3.8571622827555982
+      },
+      "next_review": "Both six-hour confirmations complete, no local research jobs active. Continue sustained training toward8h. Inspect hourly monitoring and stable KL/value/entropy; no resets. Prepare final confirmation/export/integration neartrainingstop15:00UTC. Reserve final9000000000001 untouched. Around14:41UTC preserveGRU8h ifblock16complete; CNN likelyfinishespartial8h by15:00 and mustbe labeled actualbudget. Do not miss15:30retrieval or15:45watchdogstop.",
+      "latest_by_architecture": {
+        "board": {
+          "training_seconds": 25233.705424306216,
+          "last20": {
+            "approximate_kl": 0.00022496909469805958,
+            "value_loss": 0.8769948169392976,
+            "policy_entropy": 0.3309538902028611,
+            "iteration_seconds": 3.9680576915852726,
+            "rollout_seconds": 3.2094547815504484
+          },
+          "gpu_util": [
+            {
+              "block": 1,
+              "mean": 8.869565217391305
+            },
+            {
+              "block": 2,
+              "mean": 8.676143386897404
+            },
+            {
+              "block": 3,
+              "mean": 8.724201474201474
+            },
+            {
+              "block": 4,
+              "mean": 9.26531862745098
+            },
+            {
+              "block": 5,
+              "mean": 9.83435207823961
+            },
+            {
+              "block": 6,
+              "mean": 8.41172839506173
+            },
+            {
+              "block": 7,
+              "mean": 8.967841682127396
+            }
+          ],
+          "gpu_util_latest_block": 8.87037037037037
+        },
+        "gru": {
+          "training_seconds": 25329.690552628366,
+          "last20": {
+            "approximate_kl": 0.0002461385655089064,
+            "value_loss": 0.888996186064262,
+            "policy_entropy": 0.3588424531605683,
+            "iteration_seconds": 4.447919122967869,
+            "rollout_seconds": 3.292071405646857
+          },
+          "gpu_util": [
+            {
+              "block": 1,
+              "mean": 14.213717085119413
+            },
+            {
+              "block": 2,
+              "mean": 13.431468961278426
+            },
+            {
+              "block": 3,
+              "mean": 13.578914919852034
+            },
+            {
+              "block": 4,
+              "mean": 13.896615384615385
+            },
+            {
+              "block": 5,
+              "mean": 14.065805658056581
+            },
+            {
+              "block": 6,
+              "mean": 13.579987646695491
+            }
+          ],
+          "gpu_util_latest_block": 13.85617701290719
+        }
+      },
+      "assessment": "13:11UTC both7h+; stable finite updates. Last20KL CNN0.000225/GRU0.000246, valueMSE0.877/0.889, entropy0.331/0.359. Seven-hour reused-seed monitoring: CNN59.67%vsoriginalsearch/78.03%heldout, GRU58.79%/75.78%. Reference monitoring has risen but does not establish improvement over retainedGRU4h. Continue to final budget with optimizer preserved; no promotion.",
+      "throughput_review": "Read rollout implementation locally: Python constructs public-history observations and legal Move objects repeatedly; same-state legal moves are enumerated for mask, selection and active filtering. Candidate future optimization is reuse of legal move lists with exact rollout parity. No live code or recipe changes made during current matched comparison. Larger GPU alone is not supported by observed CPU-dominated rollout time.",
+      "final_evaluation_timing": "Superseded noon schedule: userextended3p.m.Toronto/19UTC. Preserve GRU8h around14:41 and CNNfinalat15UTC; finish existingtrainingthenuse additionalcompute for focusedReBeLtest. Finalconfirmation/retrieval/export before18:30, watchdog18:45; destroyafterretrieval andreport19UTC. Reservedfinalseeds stillunused."
+    },
+    "next_matched_budget_hours": 8,
+    "local_confirmation": {
+      "status": "complete",
+      "exec_session_id": 83691,
+      "script": "experiments/2026-10-17/confirm_gru_two_hour.py",
+      "checkpoint": "artifacts/checkpoints/gru-two-hour.pt",
+      "sha256": "63c0efcf79237f1ba019f22d2ce55cee50156104c78b072dc2f4008bddef4cb2",
+      "checksum_verified": true,
+      "output": "experiments/2026-10-17/gru-two-hour-confirmation.json",
+      "device": "cpu",
+      "threads": 2,
+      "max_runtime_seconds": 1800,
+      "games_vs_champion_search128": 2048,
+      "games_vs_heldout_baseline32": 512,
+      "seed": 800000000001,
+      "note": "Completed with exit0, all2560games and frozen-reference assertions passed. No active local confirmation process; do not relaunch completed test.",
+      "elapsed_seconds": 1797.2349780709483,
+      "exit_code": 0,
+      "reference_parameters_and_buffers_unchanged": true,
+      "results": [
+        {
+          "label": "champion_search",
+          "opponent_checkpoint": "overnight-round0.pt",
+          "opponent_simulations": 128,
+          "games": 2048,
+          "wins": 1074,
+          "losses": 967,
+          "draws": 7,
+          "score": 0.526123046875,
+          "paired_score_95ci": [
+            0.5079065245209974,
+            0.5443395692290026
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "opponent_checkpoint": "small-standard.pt",
+          "opponent_simulations": 32,
+          "games": 512,
+          "wins": 384,
+          "losses": 126,
+          "draws": 2,
+          "score": 0.751953125,
+          "paired_score_95ci": [
+            0.7190703749355675,
+            0.7848358750644325
+          ]
+        }
+      ]
+    },
+    "validated_candidate": {
+      "architecture": "gru",
+      "training_seconds": 14416.562711129198,
+      "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+      "sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+      "gameplay": "Direct policy, no search, full public history",
+      "confirmation": "experiments/2026-10-17/gru-four-hour-confirmation.json",
+      "score_vs_original_champion_search128": 0.533447265625,
+      "games": 2048,
+      "paired_score_95ci": [
+        0.5155554123954436,
+        0.5513391188545564
+      ],
+      "score_vs_previous_validated_gru": 0.5244140625,
+      "previous_validated_comparison_games": 2048,
+      "heldout_baseline32_score": 0.759765625,
+      "heldout_games": 512,
+      "onnx": "artifacts/gru-four-hour.onnx",
+      "onnx_sha256": "0cec8d66046fc71773aeb04f89824a5f618a304c7411dffbd3557f4d3b771ca6",
+      "onnx_validation": "artifacts/gru-four-hour.validation.json",
+      "browser_deployed": false,
+      "browser_validation": "experiments/2026-10-17/browser-gru-four-hour-validation.json",
+      "status": "Strongest independently validated retained candidate: beats previous GRU2hour andoriginalsearchchampion on separate2048game matches; heldout75.98percent. Continue sustained training and retain for final comparison."
+    },
+    "future_confirmation_opponents": [
+      "retained validated GRU4hour direct policy",
+      "original production champion ensemble128",
+      "held-out original baseline"
+    ],
+    "integration_preparation": "Implemented HistoryPlayer one-pass legal argmax with Python tie semantics and normalized display policy. UI selects player from model input contract, hides search-depth controls for direct history model, supports hint/watch/evaluation and displays incomplete-history error for analysis edits. Staged GRU2hour browser completed a full AIvsAI game, generated hint, and rejected manual turn-edited history visibly. 209states match Python predictions/moves under actual onnxruntime-web1.18WASM, ~2.004ms/move on local browser. Productionmodel.onnx remains unchanged; final deployment is selected validated checkpoint replacement. Tests4pytest+11Nodepassed. Evidence experiments/2026-10-17/browser-gru-validation.json.",
+    "active_local_confirmation": {
+      "status": "complete",
+      "exec_session_id": 53393,
+      "script": "scripts/confirm_policy.py",
+      "plan": "experiments/2026-10-17/board-six-hour-confirmation-plan.json",
+      "output": "experiments/2026-10-17/board-six-hour-confirmation.json",
+      "checkpoint": "artifacts/checkpoints/board-six-hour.pt",
+      "remote_snapshot": "campaign/board-six-hour.pt",
+      "sha256": "f3da1fe231e59b12437386f77f06f2f5d687514500f88f3ca572906e4b562284",
+      "checksum_verified": true,
+      "training_seconds": 21629.158779826015,
+      "training_games": 2586624,
+      "device": "cpu",
+      "threads": 2,
+      "games_vs_gru_six_hour": 4096,
+      "games_vs_validated_gru_four_hour": 2048,
+      "games_vs_board_four_hour": 2048,
+      "original_champion_search128_games": 2048,
+      "heldout_baseline32_games": 512,
+      "base_seed": 1400000000001,
+      "reference_seed": 1300001000001,
+      "heldout_seed": 1300002000001,
+      "purpose": "Matched six-hour architecture and learning-curve comparison; final reserved seeds untouched",
+      "note": "Completed10752games exit0. No active CPU research job. No demonstrated improvement over incumbent; no promotion.",
+      "exit_code": 0,
+      "elapsed_seconds": 1854.4248909249436,
+      "parameters_and_buffers_unchanged": true,
+      "results": [
+        {
+          "label": "matched_gru_six_hour",
+          "games": 4096,
+          "wins": 2078,
+          "losses": 2014,
+          "draws": 4,
+          "score": 0.5078125,
+          "paired_score_95ci": [
+            0.49595728425704355,
+            0.5196677157429564
+          ]
+        },
+        {
+          "label": "validated_gru_four_hour",
+          "games": 2048,
+          "wins": 1036,
+          "losses": 1010,
+          "draws": 2,
+          "score": 0.50634765625,
+          "paired_score_95ci": [
+            0.4885800533082902,
+            0.5241152591917098
+          ]
+        },
+        {
+          "label": "board_four_hour",
+          "games": 2048,
+          "wins": 1057,
+          "losses": 991,
+          "draws": 0,
+          "score": 0.51611328125,
+          "paired_score_95ci": [
+            0.49909411824154304,
+            0.533132444258457
+          ]
+        },
+        {
+          "label": "original_champion_search",
+          "games": 2048,
+          "wins": 1151,
+          "losses": 894,
+          "draws": 3,
+          "score": 0.562744140625,
+          "paired_score_95ci": [
+            0.5446876114760857,
+            0.5808006697739143
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "games": 512,
+          "wins": 402,
+          "losses": 109,
+          "draws": 1,
+          "score": 0.7861328125,
+          "paired_score_95ci": [
+            0.7534932348335425,
+            0.8187723901664575
+          ]
+        }
+      ]
+    },
+    "completed_four_hour_confirmation": {
+      "status": "complete",
+      "exec_session_id": 77458,
+      "script": "scripts/confirm_policy.py",
+      "plan": "experiments/2026-10-17/gru-four-hour-confirmation-plan.json",
+      "output": "experiments/2026-10-17/gru-four-hour-confirmation.json",
+      "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+      "sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+      "checksum_verified": true,
+      "device": "cpu",
+      "threads": 2,
+      "opponents": {
+        "validated_gru_two_hour_direct": 2048,
+        "original_champion_ensemble128": 2048,
+        "heldout_original_baseline32": 512
+      },
+      "base_seed": 1100000000001,
+      "purpose": "Fresh intermediate comparison, independent of reusedmonitor and reservedfinal seeds",
+      "note": "One local confirmation job, lock-protected and resumable every256 games. Do not relaunch if session77458 still alive. Rental controller remains running exclusively. No candidate promotion yet.",
+      "exit_code": 0,
+      "elapsed_seconds": 1802.2235012890305,
+      "results": [
+        {
+          "label": "validated_gru_two_hour",
+          "games": 2048,
+          "wins": 1074,
+          "losses": 974,
+          "draws": 0,
+          "score": 0.5244140625,
+          "paired_score_95ci": [
+            0.5076220706893184,
+            0.5412060543106816
+          ]
+        },
+        {
+          "label": "original_champion_search",
+          "games": 2048,
+          "wins": 1091,
+          "losses": 954,
+          "draws": 3,
+          "score": 0.533447265625,
+          "paired_score_95ci": [
+            0.5155554123954436,
+            0.5513391188545564
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "games": 512,
+          "wins": 389,
+          "losses": 123,
+          "draws": 0,
+          "score": 0.759765625,
+          "paired_score_95ci": [
+            0.7267921203973227,
+            0.7927391296026773
+          ]
+        }
+      ]
+    },
+    "previous_validated_candidate": {
+      "architecture": "gru",
+      "training_seconds": 7213.143520290032,
+      "checkpoint": "artifacts/checkpoints/gru-two-hour.pt",
+      "sha256": "63c0efcf79237f1ba019f22d2ce55cee50156104c78b072dc2f4008bddef4cb2",
+      "gameplay": "Direct policy, no search, full public history",
+      "confirmation": "experiments/2026-10-17/gru-two-hour-confirmation.json",
+      "score_vs_original_champion_search128": 0.526123046875,
+      "games": 2048,
+      "paired_score_95ci": [
+        0.5079065245209974,
+        0.5443395692290026
+      ],
+      "heldout_baseline32_score": 0.751953125,
+      "heldout_games": 512,
+      "onnx": "artifacts/gru-two-hour.onnx",
+      "onnx_sha256": "b9fab77b2dd8b28efb42e0e4ee977876ab9737bc27e9e3ac7d9309a0fe713e89",
+      "onnx_validation": "artifacts/gru-two-hour.validation.json",
+      "browser_deployed": false,
+      "status": "Independent intermediate confirmation passed; retained as strongest validated challenger. Continue training; final reserved confirmation remains untouched.",
+      "browser_validation": "experiments/2026-10-17/browser-gru-validation.json"
+    },
+    "deployment_followup": "Implemented explicit web/static/model.json playMode direct/search; current production manifest search and weights unchanged. Unified DirectPlayer supports one-inputCNN or three-inputGRU; depthcontrols hidden forboth direct modes. Failedmodel/config load now displays error instead of silent randomAI. Exporter supports CNN and GRU with real-stateORTparity. CNN4hour staged browser hint andplay verified; exactfinalcheckpointbrowserparityrequired beforefinaldeployment. history_player.js renamed direct_player.js and callers updated. Exact retained GRU4hour now passed actualbrowserWASM numerical andmove parity on209states with currentDirectPlayer, maxpolicyerror1.7166e-5 andvalue5.9605e-7 withinatol/rtol1e-5;~1.825ms/inference. Evidence browser-gru-four-hour-validation.json. Generic browser-policy-validation.html accepts model/fixtures queryparams for final checkpoint. Generator now accepts --checkpoint/--output; final exactcheckpoint parity stillrequired ifweightschange. Production manifest remains search.",
+    "matched_four_hour_comparison": {
+      "results": [
+        {
+          "label": "matched_gru_four_hour",
+          "games": 4096,
+          "wins": 2032,
+          "losses": 2062,
+          "draws": 2,
+          "score": 0.496337890625,
+          "paired_score_95ci": [
+            0.484541855805779,
+            0.508133925444221
+          ]
+        },
+        {
+          "label": "original_champion_search",
+          "games": 2048,
+          "wins": 1116,
+          "losses": 931,
+          "draws": 1,
+          "score": 0.545166015625,
+          "paired_score_95ci": [
+            0.5272811694316806,
+            0.5630508618183194
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "games": 512,
+          "wins": 407,
+          "losses": 105,
+          "draws": 0,
+          "score": 0.794921875,
+          "paired_score_95ci": [
+            0.7623905403135579,
+            0.8274532096864421
+          ]
+        }
+      ],
+      "evidence": "experiments/2026-10-17/board-four-hour-confirmation.json",
+      "cost_evidence": "experiments/2026-10-17/four-hour-cost-comparison.json",
+      "paired_reference_differences": [
+        {
+          "opponent": "original_champion_search",
+          "games": 2048,
+          "cnn_minus_gru_score": 0.01171875,
+          "paired_95ci": [
+            -0.010082755479024673,
+            0.03352025547902467
+          ]
+        },
+        {
+          "opponent": "heldout_baseline",
+          "games": 512,
+          "cnn_minus_gru_score": 0.03515625,
+          "paired_95ci": [
+            -0.005206173250235202,
+            0.0755186732502352
+          ]
+        }
+      ],
+      "interpretation": "CNN49.63percent vsGRU/4096CI48.45-50.81: no demonstrated head-to-head superiority. CNN54.52percent vsoriginalchampion128 and79.49vsheldout32; comparedwithGRU53.34/75.98oncommondeals, paired differenceCIsbothinclude0. Same incremental4allocatedRTX4090hours ~$1.875each, sharedpretraining, one trainingseed; no ceilingclaim. CPU2thread PyTorch singlemoveCNN0.559ms/GRU1.693ms (~3.03x); batch128CNN0.290ms/GRU0.400ms perposition. NotGPUorbrowserlatency. Continueboth6h; keepvalidatedGRU4h incumbent."
+    },
+    "retained_board_four_hour": {
+      "checkpoint": "artifacts/checkpoints/board-four-hour.pt",
+      "sha256": "8d3af846086fea02e4a2a19315e8c318d81ccc982f740d2640ee783aa591713e",
+      "onnx": "artifacts/board-four-hour.onnx",
+      "onnx_sha256": "67ff21d9d9827fb4bbf306c1f4d57e1c7a5e3adde7f48d2db21a4dbbb1fff7ee",
+      "onnx_validation": "artifacts/board-four-hour.validation.json",
+      "confirmation": "experiments/2026-10-17/board-four-hour-confirmation.json",
+      "mode": "direct",
+      "status": "Validated improvement overoriginalsearchchampion; no demonstrated improvement overretainedGRU4hour. Retain as comparable cheaper-inference alternative.",
+      "browser_validation": "experiments/2026-10-17/browser-board-four-hour-validation.json"
+    },
+    "completed_board_four_hour_confirmation": {
+      "status": "complete",
+      "plan": "experiments/2026-10-17/board-four-hour-confirmation-plan.json",
+      "output": "experiments/2026-10-17/board-four-hour-confirmation.json",
+      "checkpoint": "artifacts/checkpoints/board-four-hour.pt",
+      "sha256": "8d3af846086fea02e4a2a19315e8c318d81ccc982f740d2640ee783aa591713e",
+      "checksum_verified": true,
+      "games_vs_gru_four_hour": 4096,
+      "original_champion_search128_games": 2048,
+      "heldout_baseline32_games": 512,
+      "note": "Completed6656games exit0; no active CPUconfirmation. Do not relaunch. All parameters/buffers unchanged.",
+      "exec_session_id": 24655,
+      "script": "scripts/confirm_policy.py",
+      "device": "cpu",
+      "threads": 2,
+      "purpose": "Matched4hour architecture comparison",
+      "completed_head_to_head": {
+        "label": "matched_gru_four_hour",
+        "games": 4096,
+        "wins": 2032,
+        "losses": 2062,
+        "draws": 2,
+        "score": 0.496337890625,
+        "paired_score_95ci": [
+          0.484541855805779,
+          0.508133925444221
+        ]
+      },
+      "last_observed_status": "complete",
+      "elapsed_seconds": 1824.3405038850615,
+      "exit_code": 0
+    },
+    "completed_gru_six_hour_confirmation": {
+      "status": "complete",
+      "exec_session_id": 89928,
+      "script": "scripts/confirm_policy.py",
+      "plan": "experiments/2026-10-17/gru-six-hour-confirmation-plan.json",
+      "output": "experiments/2026-10-17/gru-six-hour-confirmation.json",
+      "checkpoint": "artifacts/checkpoints/gru-six-hour.pt",
+      "remote_snapshot": "campaign/gru-six-hour.pt",
+      "sha256": "03c92f1466bdea40bca75e1358a659dcc44f85c074b258d764db5346c25711e2",
+      "checksum_verified": true,
+      "training_seconds": 21626.545404450502,
+      "training_games": 2358784,
+      "device": "cpu",
+      "threads": 2,
+      "games_vs_gru_four_hour": 2048,
+      "original_champion_search128_games": 2048,
+      "heldout_baseline32_games": 512,
+      "base_seed": 1300000000001,
+      "purpose": "Independent six-hour learning-curve confirmation; final reserved seeds untouched",
+      "note": "Completed4608games exit0; no longer active. No demonstrated improvement over retainedGRU4h; preserve as six-hour matched-budget comparator.",
+      "exit_code": 0,
+      "elapsed_seconds": 1764.4687585309148,
+      "parameters_and_buffers_unchanged": true,
+      "results": [
+        {
+          "label": "validated_gru_four_hour",
+          "games": 2048,
+          "wins": 1042,
+          "losses": 1004,
+          "draws": 2,
+          "score": 0.50927734375,
+          "paired_score_95ci": [
+            0.49256501146559123,
+            0.5259896760344087
+          ]
+        },
+        {
+          "label": "original_champion_search",
+          "games": 2048,
+          "wins": 1164,
+          "losses": 880,
+          "draws": 4,
+          "score": 0.5693359375,
+          "paired_score_95ci": [
+            0.5506632705927741,
+            0.5880086044072259
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "games": 512,
+          "wins": 391,
+          "losses": 118,
+          "draws": 3,
+          "score": 0.7666015625,
+          "paired_score_95ci": [
+            0.7323016110888059,
+            0.8009015139111941
+          ]
+        }
+      ]
+    },
+    "completed_board_six_hour_confirmation": {
+      "status": "complete",
+      "exec_session_id": 53393,
+      "script": "scripts/confirm_policy.py",
+      "plan": "experiments/2026-10-17/board-six-hour-confirmation-plan.json",
+      "output": "experiments/2026-10-17/board-six-hour-confirmation.json",
+      "checkpoint": "artifacts/checkpoints/board-six-hour.pt",
+      "remote_snapshot": "campaign/board-six-hour.pt",
+      "sha256": "f3da1fe231e59b12437386f77f06f2f5d687514500f88f3ca572906e4b562284",
+      "checksum_verified": true,
+      "training_seconds": 21629.158779826015,
+      "training_games": 2586624,
+      "device": "cpu",
+      "threads": 2,
+      "games_vs_gru_six_hour": 4096,
+      "games_vs_validated_gru_four_hour": 2048,
+      "games_vs_board_four_hour": 2048,
+      "original_champion_search128_games": 2048,
+      "heldout_baseline32_games": 512,
+      "base_seed": 1400000000001,
+      "reference_seed": 1300001000001,
+      "heldout_seed": 1300002000001,
+      "purpose": "Matched six-hour architecture and learning-curve comparison; final reserved seeds untouched",
+      "note": "Completed10752games exit0. No active CPU research job. No demonstrated improvement over incumbent; no promotion.",
+      "exit_code": 0,
+      "elapsed_seconds": 1854.4248909249436,
+      "parameters_and_buffers_unchanged": true,
+      "results": [
+        {
+          "label": "matched_gru_six_hour",
+          "games": 4096,
+          "wins": 2078,
+          "losses": 2014,
+          "draws": 4,
+          "score": 0.5078125,
+          "paired_score_95ci": [
+            0.49595728425704355,
+            0.5196677157429564
+          ]
+        },
+        {
+          "label": "validated_gru_four_hour",
+          "games": 2048,
+          "wins": 1036,
+          "losses": 1010,
+          "draws": 2,
+          "score": 0.50634765625,
+          "paired_score_95ci": [
+            0.4885800533082902,
+            0.5241152591917098
+          ]
+        },
+        {
+          "label": "board_four_hour",
+          "games": 2048,
+          "wins": 1057,
+          "losses": 991,
+          "draws": 0,
+          "score": 0.51611328125,
+          "paired_score_95ci": [
+            0.49909411824154304,
+            0.533132444258457
+          ]
+        },
+        {
+          "label": "original_champion_search",
+          "games": 2048,
+          "wins": 1151,
+          "losses": 894,
+          "draws": 3,
+          "score": 0.562744140625,
+          "paired_score_95ci": [
+            0.5446876114760857,
+            0.5808006697739143
+          ]
+        },
+        {
+          "label": "heldout_baseline",
+          "games": 512,
+          "wins": 402,
+          "losses": 109,
+          "draws": 1,
+          "score": 0.7861328125,
+          "paired_score_95ci": [
+            0.7534932348335425,
+            0.8187723901664575
+          ]
+        }
+      ]
+    },
+    "matched_six_hour_comparison": {
+      "evidence": "experiments/2026-10-17/six-hour-cost-comparison.json",
+      "paired_reference_differences": [
+        {
+          "opponent": "original_champion_search",
+          "games": 2048,
+          "cnn_minus_gru_score": -0.006591796875,
+          "paired_95ci": [
+            -0.02924169621991528,
+            0.01605810246991528
+          ]
+        },
+        {
+          "opponent": "heldout_baseline",
+          "games": 512,
+          "cnn_minus_gru_score": 0.01953125,
+          "paired_95ci": [
+            -0.023285269553328235,
+            0.062347769553328235
+          ]
+        }
+      ],
+      "interpretation": "Matched incremental6.008/6.007 allocatedRTX4090hours ~$2.813each. CNN50.78%vsGRU/4096 CI49.60-51.97. CNN50.63%vsincumbentGRU4h/2048 CI48.86-52.41; ownCNN4h51.61%CI49.91-53.31. GRU6h50.93%vsGRU4hCI49.26-52.60. No six-hour checkpoint independently improves incumbent. Same reference deals: CNN56.27/GRU56.93%vsoriginalsearchchamp and78.61/76.66%heldout; paired architecture-difference intervals contain0. KeepGRU4h incumbent, continueboth toward8h. One trainingseed/sharedwarmstart; no ceilingclaim."
+    }
+  },
+  "legacy_tournament": {
+    "controller_pid": 1448,
+    "status": "stoppedintentionally",
+    "state": "campaign/state.json",
+    "retained_round3": "campaign/retained_round3.pt",
+    "note": "Round3 checkpointretainedbeforetermination; notvalidated. Oldstate may sayKeyboardInterruptfailed, whichreflectsintentionaltransition."
+  },
+  "rebel_research": {
+    "status": "cancelled_by_user",
+    "requested_deadline": "2026-10-17T19:00:00Z",
+    "source": "https://github.com/facebookresearch/rebel",
+    "paper": "https://arxiv.org/abs/2007.13544",
+    "local_reference": "/tmp/sequence-rebel-reference",
+    "scope": "Validate genuine public-belief CFR plus learned counterfactual values; distinguish official Liar Dice reference from restricted Sequence prototype and full Sequence deployment. Do not relabel GRU/determinization as ReBeL.",
+    "machine_policy": "User permits RTX5090 or moreCPUcores ifuseful, still<=1.50/hour one rental. CurrentGPU9-14percentutilization CPUrolloutbound; do notmigrate without netthroughput evidence.",
+    "next": "Do not resume. User explicitly cancelled ReBeL, requests efficient policy selfplay andtransformer.",
+    "user_priority": "User explicitly rejects toy demos; reference and restricted solver checks complete, focus all new research on complete standard Sequence games. Larger rental permitted within existing1.50/hour andoneinstance cap if profiling warrants.",
+    "full_game_sources": [
+      "src/rebel_full_game.py",
+      "src/rebel_full_agent.py",
+      "src/rebel_full_value.py",
+      "scripts/train_rebel_full.py",
+      "scripts/evaluate_rebel_full.py"
+    ],
+    "active_agents": [
+      "rebel_reference: value wrapper profiling",
+      "rebel_design_audit: private query and depth2",
+      "sequence_belief_solver: fulladapter/tests andtraining audit"
+    ],
+    "active_jobs": [],
+    "approximations": [
+      "Finite public hand banks based on card counts; no historical behavioral posterior yet.",
+      "Off-support actual hand evaluated separately, never inserted into shared publicbelief.",
+      "Pre-draw learned leaves anchored by full-game terminal MonteCarlo returns plus CFRroot targets.",
+      "No equilibrium guarantee; not exactpaper ReBeL."
+    ],
+    "machine_shortlist": "experiments/2026-10-17/rebel-machine-shortlist.json",
+    "machine_decision": "Current sole32-thread EPYC9554/RTX4090 retained during existingtraining. Fresh48-thread EPYC9654/6000Adaoffers ~0.616/hour exist, but only1.5xnominalCPU andmigrationcost; profilefullgamepipelinebeforedecision. Manycheap64/96threadoffers areolderCPUs, notautomaticallyfaster.",
+    "completed_pipeline_check": {
+      "session": 78907,
+      "games": 2,
+      "elapsed_seconds": 22.61,
+      "interpretation": "functionalcomplete-gamecheckonly,notstrength"
+    }
+  },
+  "migration": {
+    "status": "replacement_ready_native_and_exact_tests_passed",
+    "old_instance": 56294531,
+    "old_controller": 7983,
+    "snapshot_session": 22787,
+    "selected_offer": 55530828,
+    "target": "RTX3090 +ThreadripperPRO7995WX,192threads257GBRAM",
+    "quoted_hourly_with_50GB": 1.151851851851852,
+    "new_hourly_cap": 2.5,
+    "no_duplicate_rentals": true,
+    "local_bundle": "artifacts/migration-56294531",
+    "final_states": {
+      "board": {
+        "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+        "metadata": {
+          "recipe": {
+            "architectures": [
+              "board",
+              "gru"
+            ],
+            "games_per_iteration": 512,
+            "batch_size": 1024,
+            "epochs_per_update": 2,
+            "initial_lr": 1e-05,
+            "minimum_lr": 2e-06,
+            "schedule_training_hours": 8,
+            "ppo_clip": 0.1,
+            "target_kl": 0.015,
+            "initial_entropy_coefficient": 0.003,
+            "final_entropy_coefficient": 0.0005,
+            "opponents": "50% current self-play,25% frozen champion direct,25% historical policy; both learner seats balanced",
+            "historical_pool_size": 3,
+            "checkpoint_seconds": 60,
+            "seed": 4100000001,
+            "monitor_seed": 1000000000001,
+            "final_confirmation_seed_reserved": 9000000000001
+          },
+          "architecture": "board",
+          "iterations": 6314,
+          "games": 3232768,
+          "positions": 125255138,
+          "updates": 251132,
+          "training_seconds": 26913.58923665015,
+          "blocks": 14
+        },
+        "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229"
+      },
+      "gru": {
+        "checkpoint": "artifacts/checkpoints/gru-pre-migration-final.pt",
+        "metadata": {
+          "recipe": {
+            "architectures": [
+              "board",
+              "gru"
+            ],
+            "games_per_iteration": 512,
+            "batch_size": 1024,
+            "epochs_per_update": 2,
+            "initial_lr": 1e-05,
+            "minimum_lr": 2e-06,
+            "schedule_training_hours": 8,
+            "ppo_clip": 0.1,
+            "target_kl": 0.015,
+            "initial_entropy_coefficient": 0.003,
+            "final_entropy_coefficient": 0.0005,
+            "opponents": "50% current self-play,25% frozen champion direct,25% historical policy; both learner seats balanced",
+            "historical_pool_size": 3,
+            "checkpoint_seconds": 60,
+            "seed": 4100000001,
+            "monitor_seed": 1000000000001,
+            "final_confirmation_seed_reserved": 9000000000001
+          },
+          "architecture": "gru",
+          "iterations": 5786,
+          "games": 2962432,
+          "positions": 115180983,
+          "updates": 231046,
+          "training_seconds": 27030.84246313735,
+          "blocks": 15
+        },
+        "sha256": "c6bcfad7cec97d151868c509332b74dd0ad22a6bf842a9c5a9e21ab0d1fbdeee"
+      }
+    },
+    "old_destroyed": true,
+    "old_destroyed_at_utc": "2026-10-17T14:11:00Z (approximate; inventoryconfirmedemptybeforecreate)",
+    "new_instance": 56404543,
+    "new_offer": 55530460,
+    "new_hardware": "RTXPRO6000WS96GB ThreadripperPRO7995WX192threads257GBRAM50GBdisk",
+    "quoted_hourly_usd": 1.8838518518518519,
+    "new_created_utc": "2026-10-17T14:12:12.869765+00:00",
+    "setup_session": 79150,
+    "source_bundle_bytes": 33599617,
+    "old_bundle_sha_verified_files": 45
+  },
+  "exact_policy_research": {
+    "status": "sustained_training_active",
+    "contenders": [
+      "cnn_ppo",
+      "transformer_ppo",
+      "cnn_rnad"
+    ],
+    "common_warmstart": "artifacts/checkpoints/exact-common-warm.pt",
+    "primary_incumbent": "artifacts/checkpoints/board-pre-migration-final.pt",
+    "budget_plan": "Atleast1hourallocatedGPUeachwhenfeasible;20minresumableblocks;monitorlearningcurves. Needsharedteacher_distillationbecausecanonicalhandorderchanges18percentgreedypositions on128realstates.",
+    "native_batch_owner": "rebel_reference",
+    "trainer_owner": "sequence_belief_solver",
+    "model_and_rnad_owner": "rebel_design_audit",
+    "training_stop_utc": "2026-10-17T21:00:00Z",
+    "final_deadline_utc": "2026-10-17T22:00:00Z",
+    "local_retained_model_confirmation": {
+      "session": 44119,
+      "candidate": "board-pre-migration-final.pt",
+      "output": "experiments/2026-10-17/board-pre-migration-confirmation.json",
+      "status": "complete",
+      "results": [
+        {
+          "label": "validated_gru_four_hour",
+          "games": 2048,
+          "score": 0.527587890625,
+          "paired_score_95ci": [
+            0.5100593161600683,
+            0.5451164650899317
+          ]
+        },
+        {
+          "label": "matched_gru_pre_migration",
+          "games": 2048,
+          "score": 0.500244140625,
+          "paired_score_95ci": [
+            0.4836390625381223,
+            0.5168492187118777
+          ]
+        }
+      ]
+    },
+    "retained_gru_final_screen": {
+      "score": 0.517822265625,
+      "games": 2048,
+      "paired_95ci": [
+        0.5003246715293992,
+        0.5353198597206008
+      ],
+      "status": "BorderlineimprovementoverGRU4h needsfreshreplicationbeforepromotion",
+      "evidence": "experiments/2026-10-17/gru-pre-migration-confirmation.json"
+    },
+    "common_teacher": "artifacts/checkpoints/board-pre-migration-final.pt",
+    "shared_teacher_training_seconds": 26913.58923665015,
+    "distillation": {
+      "status": "complete",
+      "epochs": 4,
+      "positions_target": 65536,
+      "heldout_policy_kl": 0.3436735948411902,
+      "heldout_exact_agreement": 0.7952730342185572,
+      "log": "campaign/exact/distill.log"
+    },
+    "warmstart_screen": {
+      "score": 0.52294921875,
+      "games": 1024,
+      "paired_95ci": [
+        0.49862580001194606,
+        0.5472726374880539
+      ],
+      "evidence": "experiments/2026-10-17/exact-warm-screen.json",
+      "interpretation": "Initialization screen; compatible with retained incumbent, not demonstrated improvement."
+    },
+    "remote_results": "campaign/exact/sustained",
+    "controller_initial_pid": 1367,
+    "block_seconds": 600,
+    "games_per_iteration": 2048,
+    "remote_trainer_sha256": "2c40f33913c69a41a07e8eb3d2bd4e38c1cc4b30150e59a5ddfea1a3002558ae",
+    "warmstart_sha256": "f67e9f0b87438fd28157e1f56fe71c244cb7499ddf5c5efefb39c03230f809f1",
+    "controller_resumed_utc": "2026-10-17T14:38:35Z",
+    "profile_evidence": "experiments/2026-10-17/exact-profile-5090-2048.json",
+    "retained_replication_session": 20454,
+    "retained_replication_output": "experiments/2026-10-17/board-retained-replication.json",
+    "execution_optimization": {
+      "status": "deployed",
+      "tests": "10passed CPU/CUDA, deterministic fresh-subprocess baseline-vs-baseline and baseline-vs-staged weights/Adam/RNG/metrics bitwise equal",
+      "production_determinism_changed": false,
+      "recipe_changed": false,
+      "profile_evidence": "experiments/2026-10-17/exact-profile-5090-staged-2048.json",
+      "initial_profile_seconds": {
+        "cnn_ppo_before": 5.603866165,
+        "cnn_ppo_after": 5.435834625,
+        "transformer_ppo_before": 12.769298817,
+        "transformer_ppo_after": 12.572589314
+      },
+      "interpretation": "Small initial-cycle improvement (~3% CNN/~1.6% transformer); sustained effects may vary",
+      "controller_before": 1506,
+      "controller_after": 1812
+    },
+    "latest_verified_progress": {
+      "cnn_ppo": {
+        "training_seconds": 650.5549988881685,
+        "games": 253952,
+        "monitor_score": 0.55859375
+      },
+      "transformer_ppo": {
+        "training_seconds": 608.1162682152353,
+        "games": 96256,
+        "monitor_score": 0.53515625
+      },
+      "cnn_rnad": {
+        "training_seconds": 699.0169090409763,
+        "games": 221184,
+        "monitor_score": 0.49609375
+      }
+    },
+    "training_reference_note": "Frozen training and monitoring reference remains GRU4h to preserve recipe; independent promotion must also beat newly validated retainedCNN7.48h.",
+    "optional_research": "Subagent rebel_reference exploring isolated TorchScript RNaD recurrence acceleration CPUonly, no live corechanges or GPUjobs authorized. Maintrainer continues."
+  },
+  "automation_status": "DELETED",
+  "efficiency_migration": {
+    "previous_instance": 56404543,
+    "previous_destroyed": true,
+    "verified_archive_sha256": "8cb05efe660c221c9091ff988bb186701e8cf0a30749b50809d59ac31a9f53f6",
+    "verified_wheel_sha256": "60a2cc30f1cb1b1064afe9f492a97410035d988346d72b9385141bce226ccbf9",
+    "new_instance": 56406932,
+    "offer": 29509871,
+    "machine_id": 51673,
+    "hourly_usd": 0.7366666666666668,
+    "cpu": "Ryzen9 9950X 16cores32threads",
+    "ram_mib": 61877,
+    "disk_gb": 50,
+    "created_utc": "2026-10-17T14:33:11.249615+00:00",
+    "one_rental_verified": true,
+    "bootstrap_session": 72522,
+    "setup_note": "Initial regression check found omitted BoardDesign.csv in minimal source bundle; copied the required static board file and reran before any training.",
+    "profile_seconds_2048": {
+      "cnn_ppo": 5.603866165038198,
+      "transformer_ppo": 12.769298817031085,
+      "cnn_rnad": 6.382689470890909
+    },
+    "comparison_evidence": "experiments/2026-10-17/exact-machine-comparison.json"
+  },
+  "best_validated_model": {
+    "architecture": "exact-action CNN, 3 residual blocks, 64 channels, own-hand set encoder",
+    "algorithm": "PPO",
+    "checkpoint": "artifacts/checkpoints/exact-final/cnn_ppo-final.pt",
+    "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+    "onnx": "artifacts/exact-cnn-final.onnx",
+    "onnx_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+    "confirmation": "experiments/2026-10-17/final-confirmation-summary.json",
+    "all_gates_pass": true,
+    "training_wall_seconds": 22750.368895523163,
+    "allocated_gpu_seconds": 32884.38954292814,
+    "games": 10846208,
+    "observation": "board and own hand; no ordered public history or played-card counts",
+    "play_mode": "direct exact card-and-square, no search or forced-win override"
+  },
+  "multigpu_plan": {
+    "status": "sustained_training_verified",
+    "user_authorized": true,
+    "hourly_cap": 2.5,
+    "max_instances": 1,
+    "preferred_offer": 35283300,
+    "hardware": "2xRTX4090,EPYC9684X38.4threads206340MiBRAM",
+    "quoted_hourly_usd_50gb": 0.8277777777777777,
+    "shortlist": "experiments/2026-10-17/multigpu-shortlist.json",
+    "supervisor_owner": "sequence_belief_solver",
+    "audit_owner": "rebel_design_audit",
+    "expected_benefit": "Two independent concurrent training streams; actual throughput and dollar efficiency to be measured. Available replacement1.05852/h after original0.82778/h offer disappeared.",
+    "snapshot_session": 28711,
+    "snapshot_bundle": "artifacts/migration-56406932/sequence-exact-migration.tar.gz",
+    "controller_stopped_intentionally": 1812,
+    "retrieval_verified_files": 36,
+    "bundle_sha256": "6a5fcd3cd7c3e58bcdbc30a99d8b3b8bc38a7dd5e4155d24276f967d1e57178d",
+    "new_instance": 56415071,
+    "actual_offer": 56403362,
+    "actual_hardware": "2x RTX4090, Ryzen7950X32threads,63GBRAM,50GBdisk",
+    "actual_hourly_usd": 1.0585185185185186,
+    "original_offer_unavailable": true,
+    "old_hardware_final_metadata": "experiments/2026-10-17/5090-final-training-metadata.json",
+    "remote_verified_files": 36,
+    "bootstrap_pid": 392,
+    "started_utc": "2026-10-17T15:58:16Z",
+    "controller_pid": 1092,
+    "initial_workers": {
+      "gpu0": {
+        "pid": 1093,
+        "contender": "cnn_ppo"
+      },
+      "gpu1": {
+        "pid": 1094,
+        "contender": "cnn_rnad"
+      }
+    },
+    "comparison": "experiments/2026-10-17/dual-4090-migration-comparison.json",
+    "supervisor": "scripts/train_exact_multigpu.py",
+    "first_continuation_check": {
+      "cnn_ppo_training_seconds": 1317.9313984391629,
+      "cnn_rnad_training_seconds": 1448.8123116061615,
+      "transformer_ppo_training_seconds": 1635.5041665015742,
+      "recent60_sample_mean_gpu_util_percent": [
+        75.8667,
+        62.8333
+      ],
+      "note": "CNN/PPO and R-NaD checkpoints advanced, worker logs clean; transformer rotates next based on least-trained scheduling. Partial utilization remains; measured full-cycle price efficiency drives hardware decision."
+    }
+  },
+  "hardware_training_segments": {
+    "5090_before_migration": "experiments/2026-10-17/5090-final-training-metadata.json",
+    "dual4090_dispatches": "/workspace/sequence/campaign/exact/sustained/hardware_dispatches"
+  },
+  "next_actions": [],
+  "latest_review": {
+    "checked_utc": "2026-10-17T19:11:24.861758+00:00",
+    "evidence": "experiments/2026-10-17/review-1911.json",
+    "instance": 56415071,
+    "hourly_usd": 1.0585185185185186,
+    "supervisor": 1092,
+    "workers": {
+      "0": {
+        "contender": "cnn_rnad",
+        "device": "0",
+        "started_epoch": 1792263914.5713449,
+        "stop_sent": false,
+        "pid": 2628
+      },
+      "1": {
+        "contender": "cnn_ppo",
+        "device": "1",
+        "started_epoch": 1792263961.1336904,
+        "stop_sent": false,
+        "pid": 2635
+      }
+    },
+    "watchdog": 393,
+    "training_seconds": {
+      "cnn_ppo": 9046.381919196137,
+      "transformer_ppo": 8931.419359013584,
+      "cnn_rnad": 8767.26204878214
+    },
+    "all_learning_metrics_finite": true,
+    "decision": "Allthreehealthy; correctedRNaD3350.37s, waitingfor>=3600s milestone then fixedrecoverycomparison. Keepvalidated2hCNN."
+  },
+  "milestone_capture": {
+    "pid": 1318,
+    "role": "CPU-only read-only checkpoint observer; no GPU work or training control",
+    "script": "experiments/2026-10-17/capture-exact-milestones.py",
+    "remote_script": "/tmp/capture-sequence-milestones.py",
+    "plan": "experiments/2026-10-17/milestone-capture-plan.json",
+    "remote_output": "/workspace/sequence/campaign/exact/milestones",
+    "milestones": [
+      "mixed-1h cumulative allocated time",
+      "4090-1h incremental time since migration"
+    ],
+    "operation": "Hardlink immutable atomically replaced latest.pt; inspect on CPU; retain first checkpoint beyond threshold; checksum manifest. Exactly6 selected snapshots maximum; stop when done or18UTC. Singleton file lock.",
+    "verification": "Local capture and idempotent rerun passed on same filesystem; remote observer live, clean log, both GPU training workers remain active.",
+    "comparison_caveat": "Mixed1h includes unequal5090time and differenthardware ratios; do not call equal-FLOP.4090-1h matches additional training hardware/time but inherited5090training differs; report both and sharedpretraining separately.",
+    "status": "complete; all six immutable milestones saved; observer exited"
+  },
+  "onehour_evaluation": {
+    "status": "complete",
+    "remote_log": "/workspace/sequence/campaign/exact/onehour-suite.log",
+    "remote_pidfile": "/workspace/sequence/campaign/exact/onehour-suite.pid",
+    "remote_results": "/workspace/sequence/campaign/exact/onehour-evaluation",
+    "timeout_seconds": 900,
+    "candidates": [
+      "cnn_ppo-mixed-1h",
+      "transformer_ppo-mixed-1h",
+      "cnn_rnad-mixed-1h"
+    ],
+    "opponents": {
+      "retained_cnn7h48": 4096,
+      "original_search128": 1024,
+      "heldout_baseline32": 512
+    },
+    "seeds": [
+      2200100000001,
+      2200200000001,
+      2200300000001
+    ],
+    "comparison_scope": "Developmental greedy-policy comparison, no automatic promotion, no final seeds consumed. Time within62s of1h, mixed5090/4090 hardware explicitly tracked.",
+    "next": "Inspect suite results and confirm GPU0 automatically resumes after reservation. Keep all training pending additional matched4090time and learning evidence.",
+    "local_summary": "experiments/2026-10-17/onehour-comparison-summary.json",
+    "local_evidence": "experiments/2026-10-17/onehour-evaluation",
+    "gpu0_recovery_verified": true
+  },
+  "onehour_confirmation": {
+    "pid": 1523,
+    "remote_log": "/workspace/sequence/campaign/exact/onehour-confirmation.log",
+    "remote_output": "/workspace/sequence/campaign/exact/onehour-confirmation/cnn_ppo.json",
+    "games": {
+      "retainedCNN": 8192,
+      "originalsearch128": 2048,
+      "heldoutbaseline32": 1024
+    },
+    "seeds": [
+      2300100000001,
+      2300200000001,
+      2300300000001
+    ],
+    "status": "complete",
+    "checkpoint_sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb",
+    "local_evidence": "experiments/2026-10-17/onehour-confirmation/cnn_ppo.json",
+    "gpu0_recovery_verified": true
+  },
+  "rnad_evaluation_audit": {
+    "finding": "R-NaD learns a stochastic behavioral policy; greedyargmax evaluates a different policy. Existinggreedy results remain relevant to currentbrowser deployment but are insufficienttojudgelearnedmixedstrategy.",
+    "action": "Agentrebel_design_audit implementingoptionalT1categoricalcandidateevaluation withpergameseededRNG,batching/resumeinvariance,legalmasks,defaultgreedyunchanged. No trainingchange. Applysupplementequallytoall3contenders, twoactionseedreplicatesclusteredbydeal; finalseedsuntouched.",
+    "stochastic_initial_control": {
+      "score": 0.48046875,
+      "current_onehour_score": 0.2607421875,
+      "paired_difference": -0.2197265625,
+      "paired95ci": [
+        -0.2527634034526601,
+        -0.18668972154733993
+      ]
+    },
+    "hypothesis": "DefaultNeuRDthreshold2maymismatchsharppretrainedteacher; positiveforcesongoodactionsabovecentered2areblockedwhilenegativeforcesremainallowed. Needmeasurelegal-centeredlogitandactualforcesaturationbeforechangingthreshold. Notidentifiedasportbug; officialreferenceparitypasses.",
+    "diagnostic_status": "CPUdiagnosticcomplete,nooptimizersteps,noGPUinterruption",
+    "diagnostic": "experiments/2026-10-17/rnad-frozen-diagnostic.json",
+    "diagnostic_results": {
+      "initial_top_probability": 0.8428217106413552,
+      "rnad_top_probability": 0.4070041456260814,
+      "initial_top_centered_logit": 10.311091123072815,
+      "rnad_top_centered_logit": 2.242724776999099,
+      "beta2_positive_top_force_blocked": 0.4610471725463867,
+      "beta8_positive_top_force_blocked": 4.9748960009310395e-06,
+      "initial_to_rnad_kl": 0.7896640300750732,
+      "reference_kl": 0.014316599816083908
+    },
+    "proposed_change": "Applied17:35UTC: singleexplicitserializednerd_threshold2->8, allotherstatebitwiseunchanged. Completeprechangebackupandoriginalonehour4090controlpreserved. No performanceclaimyet."
+  },
+  "previous_validated_model_before_exact_cnn": {
+    "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+    "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+    "training_seconds": 26913.58923665015,
+    "evidence": "experiments/2026-10-17/board-retained-replication.json",
+    "independent_replication": true,
+    "results": [
+      {
+        "label": "validated_gru_four_hour",
+        "games": 4096,
+        "score": 0.5283203125,
+        "paired_score_95ci": [
+          0.515662046744853,
+          0.540978578255147
+        ]
+      },
+      {
+        "label": "original_champion_search",
+        "games": 2048,
+        "score": 0.56640625,
+        "paired_score_95ci": [
+          0.5482279500627012,
+          0.5845845499372988
+        ]
+      },
+      {
+        "label": "heldout_baseline",
+        "games": 512,
+        "score": 0.767578125,
+        "paired_score_95ci": [
+          0.7337715902344571,
+          0.8013846597655429
+        ]
+      }
+    ],
+    "production_deployed": false,
+    "onnx": "artifacts/board-retained-validated.onnx",
+    "onnx_sha256": "bdb812dfd7adc0f93a733bbd530ec5157a7707e166360da6a793e2c93a573350",
+    "export_validation": "artifacts/board-retained-validated.validation.json",
+    "browser_validation": "artifacts/board-retained-validated.browser-validation.json",
+    "browser_move_parity_states": 32,
+    "browser_warm_median_ms": 1.5,
+    "browser_warm_p95_ms": 1.54
+  },
+  "stochastic_supplement": {
+    "pid": 1658,
+    "status": "complete",
+    "remote_log": "/workspace/sequence/campaign/exact/onehour-sampling.log",
+    "remote_results": "/workspace/sequence/campaign/exact/onehour-sampling",
+    "mode": "T1 categorical candidate, opponents fixed greedy",
+    "candidate_checkpoints": "Sameimmutablemixed1hcheckpointsasgreedyscreen",
+    "games_per_candidate": 1024,
+    "independent_deal_pairs": 256,
+    "action_seed_replicates": [
+      311071,
+      311072
+    ],
+    "deal_seed": 2200100000001,
+    "comparison": "Samefirst512greedybaselinegames; averageacrossseatsandreplicateswithin eachdeal before uncertainty. No extra independentdealclaim fromreplicates.",
+    "remote_tests": "16passed1.87s",
+    "evaluator_sha256": "583873ecee908e5a745de5da622a506cec1d2e3e53e6d3f1d2f5be21a203a89c",
+    "local_summary": "experiments/2026-10-17/onehour-sampling-summary.json",
+    "gpu0_recovery_verified": true,
+    "rnad_sample_score": 0.2607421875,
+    "rnad_clustered_deal95ci": [
+      0.23629273006913187,
+      0.2851916449308681
+    ],
+    "finding": "T1 sampling does not rescue1hRNaD; learned stochastic policy substantially underperforms greedy mode. Need diagnosehighentropy/NeuRDguard/recipebeforejudgingalgorithmceiling. Currenttrainingcontinuesunchangedpendingmatched4090budget."
+  },
+  "rnad_threshold_amendment": {
+    "record": "experiments/2026-10-17/rnad-threshold8-amendment.json",
+    "remote_record": "campaign/exact/recipe-amendments/rnad-threshold8.json",
+    "remote_prechange_continuation": "campaign/exact/recipe-amendments/rnad-threshold2-continuation.pt",
+    "applied_utc": "2026-10-17T17:35:08.015703+00:00",
+    "training_seconds_at_change": 5416.89391744716,
+    "learner_steps_at_change": 47424,
+    "old_threshold": 2,
+    "new_threshold": 8,
+    "everything_else_bitwise_preserved": true,
+    "post_change_runtime_restore_verified": true,
+    "supervisor_recovered_two_workers": {
+      "gpu0": {
+        "pid": 1826,
+        "contender": "transformer_ppo"
+      },
+      "gpu1": {
+        "pid": 1827,
+        "contender": "cnn_ppo"
+      }
+    },
+    "pause_markers_remaining": false,
+    "next_verification": "Resume and persistence verified. Allow substantial corrected-recipe training before fresh paired strength evaluation, measuring budget since5416.893917seconds.",
+    "independent_audit": "Passed: GPU and contender leases protect atomic replacement; recursive comparisons preserve all other state; saved full config and amendment metadata survive restore and future saves. Strength recovery remains unproven.",
+    "first_advancing_checkpoint_verified": {
+      "utc": "2026-10-17T17:46:21.283581+00:00",
+      "training_seconds": 5479.5242664701655,
+      "updates": 47936,
+      "threshold": 8,
+      "amendment_metadata_preserved": true,
+      "evidence": "experiments/2026-10-17/review-1746.json"
+    },
+    "latest_verified_training_seconds": 8767.26204878214,
+    "corrected_recipe_training_seconds": 3350.3681313349807
+  },
+  "matched4090_cpu_evaluation": {
+    "status": "complete",
+    "session_id": 74409,
+    "script": "experiments/2026-10-17/run-4090-hour-cpu-evaluation.py",
+    "output": "experiments/2026-10-17/4090-hour-evaluation",
+    "models": "All three original4090-hour controls; RNaDthreshold2, not corrected continuation",
+    "games": {
+      "new_exact_champion": 4096,
+      "previous_retained_CNN": 2048
+    },
+    "seeds": [
+      2400100000001,
+      2400200000001
+    ],
+    "device": "local CPU, one thread, sequential models",
+    "scope": "Developmental, not promotion. Same incremental4090hardware budget, unequal inherited5090time. All3fileschecksumverified.",
+    "interim_cnn_vs_champion": {
+      "games": 4096,
+      "score": 0.50830078125,
+      "paired95ci": [
+        0.4971533128685999,
+        0.5194482496314001
+      ],
+      "interpretation": "No demonstrated further improvement at this checkpoint; no promotion. Remaining opponent and contenders still running."
+    },
+    "summary": "experiments/2026-10-17/4090-hour-comparison-summary.json",
+    "cpu_evaluation_seconds": 1070.930307699833,
+    "gpu_training_interruption_seconds": 0
+  },
+  "milestone_capture_v2": {
+    "pid": 2183,
+    "status": "running_verified",
+    "role": "CPU-only immutable checkpoint observer; prior observer exited before launch",
+    "plan": "experiments/2026-10-17/milestone-capture-v2-plan.json",
+    "remote_plan": "/tmp/sequence-milestone-v2-plan.json",
+    "remote_output": "/workspace/sequence/campaign/exact/milestones-v2",
+    "remote_log": "/workspace/sequence/campaign/exact/milestone-v2-capture.log",
+    "milestones": "All3 mixed2h and3h; RNaD threshold8 additional1h and2h; eight selected checkpoints maximum; exit when complete or21UTC",
+    "comparison_caveat": "Mixed hardware inherited budgets recorded separately. Threshold8 durations start at5416.893917 seconds, priortrainingnotcountedasnewrecipe."
+  },
+  "twohour_evaluation": {
+    "status": "complete",
+    "candidate": "transformer_ppo-mixed-2h",
+    "checkpoint": {
+      "checkpoint": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/exact-twohour/transformer_ppo-mixed-2h.pt",
+      "sha256": "3242969df2e07c93425fe7e54af16407837fa941024e29b8abb8567ab5253bbf"
+    },
+    "training_seconds": 7214.550657167594,
+    "output": "experiments/2026-10-17/twohour-evaluation/transformer_ppo.json",
+    "device": "local CPU one thread",
+    "games": [
+      4096,
+      2048
+    ],
+    "seeds": [
+      2500100000001,
+      2500200000001
+    ],
+    "gpu_training_interruption_seconds": 0,
+    "session_id": 67076,
+    "started_utc": "2026-10-17T18:29:00Z",
+    "estimated_completion": "About18:42\u201318:50UTC based on prior740s CPU evaluation; estimate, not guarantee",
+    "transformer_results": [
+      {
+        "label": "validated_exact_cnn_1h",
+        "games": 4096,
+        "score": 0.4998779296875,
+        "paired_score_95ci": [
+          0.4880832569196072,
+          0.5116726024553928
+        ]
+      },
+      {
+        "label": "retained_cnn_7h48",
+        "games": 2048,
+        "score": 0.51171875,
+        "paired_score_95ci": [
+          0.49486194187850485,
+          0.5285755581214951
+        ]
+      }
+    ],
+    "transformer_cpu_seconds": 756.1297878409969,
+    "cnn_session_id": 85999,
+    "cnn_output": "experiments/2026-10-17/twohour-evaluation/cnn_ppo.json",
+    "cnn_plan": "experiments/2026-10-17/twohour-evaluation/cnn_ppo-plan.json",
+    "cnn_results": [
+      {
+        "label": "validated_exact_cnn_1h",
+        "games": 4096,
+        "score": 0.5152587890625,
+        "paired_score_95ci": [
+          0.5034195973727666,
+          0.5270979807522334
+        ]
+      },
+      {
+        "label": "retained_cnn_7h48",
+        "games": 2048,
+        "score": 0.5224609375,
+        "paired_score_95ci": [
+          0.5049244924755938,
+          0.5399973825244062
+        ]
+      }
+    ],
+    "summary": "experiments/2026-10-17/twohour-comparison-summary.json",
+    "inference_cost": "experiments/2026-10-17/twohour-inference-cost.json"
+  },
+  "twohour_confirmation": {
+    "status": "complete_promoted_after_heldout_replication",
+    "remote_output": "campaign/exact/twohour-confirmation",
+    "remote_script": "/tmp/run-sequence-twohour-confirmation.py",
+    "remote_pidfile": "campaign/exact/twohour-confirmation/suite.pid",
+    "gpu": 0,
+    "other_gpu_continues_training": true,
+    "timeout_seconds": 600,
+    "candidate": "cnn_ppo-mixed-2h",
+    "checkpoint_sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+    "independent_seeds": [
+      2700100000001,
+      2700200000001,
+      2700300000001
+    ],
+    "games": {
+      "incumbent_exactCNN1h": 8192,
+      "original_search128": 2048,
+      "heldout_baseline32": 1024
+    },
+    "incumbent_heldout_control": "Samefreshdeals/2048originalsearch+1024baseline to measure paired retention; not just compare unrelated winrates",
+    "next": "Completed; do not repeat. Future promotions must beat the 2h CNN leader.",
+    "pid": 2426,
+    "onnx": "artifacts/exact-cnn-twohour.onnx",
+    "onnx_sha256": "e0e7c9c30bc09dd3308fb422c8a1edfa16e98b4ed102d7129a081049da621c89",
+    "export_summary": "experiments/2026-10-17/exact-cnn-twohour-export-summary.json",
+    "native_action_parity": "576/576",
+    "ort_web_action_parity": "1016/1016 over12 completegames",
+    "browser_validation": "experiments/2026-10-17/exact-cnn-twohour-browser-validation.json",
+    "rendered_ui_test": true,
+    "production_deployed": false,
+    "gpu0_recovery_verified": true,
+    "workers_after_release": {
+      "gpu0": {
+        "pid": 2473,
+        "contender": "transformer_ppo"
+      },
+      "gpu1": {
+        "pid": 2406,
+        "contender": "cnn_rnad"
+      }
+    },
+    "summary": "experiments/2026-10-17/twohour-confirmation-summary.json",
+    "results": [
+      {
+        "label": "validated_exact_cnn_1h",
+        "games": 8192,
+        "score": 0.51422119140625,
+        "paired_score_95ci": [
+          0.5059115676167291,
+          0.5225308151957709
+        ]
+      },
+      {
+        "label": "original_search_128",
+        "games": 2048,
+        "score": 0.5947265625,
+        "paired_score_95ci": [
+          0.5765404824211349,
+          0.6129126425788651
+        ]
+      },
+      {
+        "label": "heldout_baseline_32",
+        "games": 1024,
+        "score": 0.77099609375,
+        "paired_score_95ci": [
+          0.7479771824756771,
+          0.7940150050243229
+        ]
+      }
+    ],
+    "paired_heldout_differences": [
+      {
+        "label": "original_search_128",
+        "games": 2048,
+        "candidate_score": 0.5947265625,
+        "incumbent_score": 0.57861328125,
+        "candidate_minus_incumbent": 0.01611328125,
+        "paired95ci": [
+          -0.004577038543079715,
+          0.03680360104307971
+        ]
+      },
+      {
+        "label": "heldout_baseline_32",
+        "games": 1024,
+        "candidate_score": 0.77099609375,
+        "incumbent_score": 0.7822265625,
+        "candidate_minus_incumbent": -0.01123046875,
+        "paired95ci": [
+          -0.037673952688553815,
+          0.015213015188553815
+        ]
+      }
+    ],
+    "gpu_evaluation_seconds": 155.69546908902703,
+    "promotion": "Promoted after independent8192headtohead and fresh8192heldout practicalretention passed. Export andruntime parity verified."
+  },
+  "twohour_heldout_replication": {
+    "status": "complete",
+    "script": "experiments/2026-10-17/run-twohour-heldout-gpu.py",
+    "output": "experiments/2026-10-17/twohour-heldout-replication",
+    "device": "GPU0 exclusive reservation; GPU1 continues",
+    "games_per_model": 8192,
+    "seed": 2800300000001,
+    "opponent": "heldout_baseline32",
+    "reason": "Independent1024game paired baseline difference -1.123pp CI[-3.767,+1.521] inconclusive; larger fixedfreshreplication before promoting candidate that beats incumbent51.42%/8192.",
+    "predeclared_practical_retention_margin": 0.02,
+    "criterion": "Pair outcomes bydeal andseat; require candidate-minus-incumbent95percentlowerbound>=-0.02 for practical retention. Report raw effect, no claim of equalstrength. Thismargin selected before freshreplication outcomes, not preregistered originalcampaign.",
+    "optional_stopping": false,
+    "cpu_attempt_session": 30140,
+    "cpu_attempt_status": "interrupted before any completed256-game chunk; no outcome peeking; CPU search substantially slower than directpolicy comparisons",
+    "remote_script": "/tmp/run-sequence-twohour-heldout.py",
+    "remote_output": "campaign/exact/twohour-heldout-replication",
+    "timeout_seconds": 600,
+    "pid": 2553,
+    "cpu_attempt_processes_verified_exited": true,
+    "summary": "experiments/2026-10-17/twohour-heldout-replication/summary.json",
+    "results": {
+      "games_per_model": 8192,
+      "independent_deal_pairs": 4096,
+      "candidate_score": 0.78460693359375,
+      "incumbent_score": 0.77923583984375,
+      "candidate_minus_incumbent": 0.00537109375,
+      "paired95ci": [
+        -0.004643367939296662,
+        0.015385555439296662
+      ],
+      "practical_retention_margin": 0.02,
+      "practical_retention_pass": true,
+      "superiority_on_this_opponent_proven": false,
+      "gpu_evaluation_seconds": 140.77955713600386,
+      "remote_file_checksums_verified": true,
+      "no_optional_stopping": true,
+      "scope": "Fixed fresh replication, shared deals and swapped seats; per-deal average difference. Retention permits at most2pp score loss, not equality proof. Margin set before thisreplication, not at outset of campaign."
+    },
+    "gpu0_recovery_verified": true,
+    "workers_after_release": {
+      "gpu0": {
+        "pid": 2576,
+        "contender": "cnn_ppo"
+      },
+      "gpu1": {
+        "pid": 2406,
+        "contender": "cnn_rnad"
+      }
+    }
+  },
+  "twohour_candidate": {
+    "checkpoint": "artifacts/checkpoints/exact-twohour/cnn_ppo-mixed-2h.pt",
+    "remote_checkpoint": "campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+    "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+    "training_seconds": 7254.263982497156,
+    "shared_pretraining": "Common distillation of7.48hCNN, separate cost",
+    "selfplay_games": 3072000,
+    "onnx": "artifacts/exact-cnn-twohour.onnx",
+    "onnx_sha256": "e0e7c9c30bc09dd3308fb422c8a1edfa16e98b4ed102d7129a081049da621c89",
+    "native_action_parity": "576/576",
+    "ort_web_action_parity": "1016/1016 over12completegames;41normalvsJackand24Jackchoices",
+    "export_summary": "experiments/2026-10-17/exact-cnn-twohour-export-summary.json",
+    "production_deployed": false,
+    "status": "promoted_to_validated_leader_not_production"
+  },
+  "previous_validated_model_before_twohour_cnn": {
+    "checkpoint": "artifacts/checkpoints/exact-cnn-onehour.pt",
+    "sha256": "f031c72501b1f85b5147b78352febcb2c494ee240505fcb89500fc203fb6c1cb",
+    "architecture": "exact-action CNN",
+    "algorithm": "PPO",
+    "shared_pretraining": "Distillation of retained7.48-hourCNN; inheritedtrainingcosttrackedseparately",
+    "additional_training_seconds": 3607.695656485157,
+    "additional_hardware": "1255.060013s5090 plus2352.635643s4090; modeltimeexcludessharedpretraining",
+    "confirmation_evidence": "experiments/2026-10-17/onehour-confirmation/cnn_ppo.json",
+    "independent_results": {
+      "retainedCNN7h48": {
+        "games": 8192,
+        "score": 0.51458740234375,
+        "paired95ci": [
+          0.5063319528101663,
+          0.5228428518773337
+        ]
+      },
+      "originalsearch128": {
+        "games": 2048,
+        "score": 0.5859375,
+        "paired95ci": [
+          0.5675632484267766,
+          0.6043117515732234
+        ]
+      },
+      "heldoutbaseline32": {
+        "games": 1024,
+        "score": 0.775390625,
+        "paired95ci": [
+          0.7519112656195868,
+          0.7988699843804132
+        ]
+      }
+    },
+    "local_checksum_verified": true,
+    "production_deployed": false,
+    "onnx": "artifacts/exact-cnn-onehour.onnx",
+    "export_status": "PassednativeONNX/PyTorch576predictions and actualORTWebWASM+DirectPlayer1016states/12completegames; all exactcard+squarechoicesmatch,42normal-vsJackcasesand17selectedJackmoves,cardspendingandhiddenidentityinvarianceverified. Not renderedUItest.",
+    "supersedes_for_future_promotion": "NewcandidateconfirmationsmustbeattheexactCNN1hcheckpointandretainheldoutstrength. FrozenGRUtrainingreferenceunchanged.",
+    "onnx_sha256": "ac621d24d9af4f5db59dd6c40c362fc737be06b2ccb0e7df5ef9708509966209",
+    "browser_validation": "experiments/2026-10-17/exact-cnn-onehour-browser-validation.json",
+    "native_validation": "artifacts/exact-cnn-onehour.validation.json",
+    "parameters": 762410,
+    "additional_selfplay_games": 1511424,
+    "additional_positions": 57323688,
+    "additional_optimizer_updates": 112710,
+    "remote_checkpoint": "campaign/exact/milestones/cnn_ppo-mixed-1h.pt",
+    "architecture_details": {
+      "residual_blocks": 3,
+      "channels": 64,
+      "card_embedding_width": 32,
+      "parameters": 762410,
+      "inputs_actually_used": "Canonical board/own-hand channels and own-hand count set encoder; legal exact card-square actions. Board variant does not use ordered history or public played-card count context.",
+      "inference": "One direct policy forward pass, no search/determinization",
+      "training_algorithm": "PPO"
+    }
+  },
+  "rnad_recovery_evaluation": {
+    "status": "complete_recovery_demonstrated_still_below_champion",
+    "pid": 2713,
+    "remote_output": "campaign/exact/rnad-recovery-1h",
+    "remote_script": "/tmp/run-sequence-rnad-recovery.py",
+    "script": "experiments/2026-10-17/run-rnad-recovery-suite.py",
+    "wait_timeout_seconds": 900,
+    "evaluation_timeout_seconds": 600,
+    "gpu": 0,
+    "no_gpu_lease_while_waiting": true,
+    "opponents": [
+      "validatedCNN2h",
+      "previousCNN1h_anchor"
+    ],
+    "candidates": [
+      "threshold8-1h_checkpoint",
+      "threshold2_prechange_continuation"
+    ],
+    "greedy_games": [
+      4096,
+      2048
+    ],
+    "sample_games_per_replicate": [
+      1024,
+      1024
+    ],
+    "action_seed_replicates": [
+      410071,
+      410072
+    ],
+    "deal_seeds": [
+      2900100000001,
+      2900200000001
+    ],
+    "analysis": "Averageactionreplicasandbothseatswithin eachdeal; pairedcorrected-minus-control interval. Anchoropponent unchangedwithin comparisons. No finalseeds orautomaticpromotion.",
+    "summary": "experiments/2026-10-17/rnad-recovery-1h/summary.json",
+    "comparisons": [
+      {
+        "opponent": "validated_cnn_2h",
+        "candidate_mode": "greedy",
+        "independent_deals": 2048,
+        "action_replicates": 1,
+        "games_per_candidate": 4096,
+        "corrected": {
+          "score": 0.4422607421875,
+          "paired95ci": [
+            0.4299092476406237,
+            0.4546122367343763
+          ]
+        },
+        "prechange": {
+          "score": 0.419677734375,
+          "paired95ci": [
+            0.40702201832378465,
+            0.43233345042621535
+          ]
+        },
+        "corrected_minus_prechange": {
+          "score": 0.0225830078125,
+          "paired95ci": [
+            0.006099192831445038,
+            0.03906682279355496
+          ]
+        }
+      },
+      {
+        "opponent": "validated_cnn_2h",
+        "candidate_mode": "sample",
+        "independent_deals": 512,
+        "action_replicates": 2,
+        "games_per_candidate": 2048,
+        "corrected": {
+          "score": 0.368896484375,
+          "paired95ci": [
+            0.34951226383461065,
+            0.38828070491538935
+          ]
+        },
+        "prechange": {
+          "score": 0.197265625,
+          "paired95ci": [
+            0.18047470438448127,
+            0.21405654561551873
+          ]
+        },
+        "corrected_minus_prechange": {
+          "score": 0.171630859375,
+          "paired95ci": [
+            0.1476254735560109,
+            0.1956362451939891
+          ]
+        }
+      },
+      {
+        "opponent": "previous_cnn_1h_anchor",
+        "candidate_mode": "greedy",
+        "independent_deals": 1024,
+        "action_replicates": 1,
+        "games_per_candidate": 2048,
+        "corrected": {
+          "score": 0.46630859375,
+          "paired95ci": [
+            0.44881357743123984,
+            0.48380361006876016
+          ]
+        },
+        "prechange": {
+          "score": 0.41943359375,
+          "paired95ci": [
+            0.4016897910153295,
+            0.4371773964846705
+          ]
+        },
+        "corrected_minus_prechange": {
+          "score": 0.046875,
+          "paired95ci": [
+            0.024821324774083896,
+            0.0689286752259161
+          ]
+        }
+      },
+      {
+        "opponent": "previous_cnn_1h_anchor",
+        "candidate_mode": "sample",
+        "independent_deals": 512,
+        "action_replicates": 2,
+        "games_per_candidate": 2048,
+        "corrected": {
+          "score": 0.36474609375,
+          "paired95ci": [
+            0.34573970848065266,
+            0.38375247901934734
+          ]
+        },
+        "prechange": {
+          "score": 0.205810546875,
+          "paired95ci": [
+            0.187971936298528,
+            0.223649157451472
+          ]
+        },
+        "corrected_minus_prechange": {
+          "score": 0.158935546875,
+          "paired95ci": [
+            0.1347325866629801,
+            0.1831385070870199
+          ]
+        }
+      }
+    ],
+    "gpu_evaluation_seconds": 23.8083602199913,
+    "remote_checksums_verified": true,
+    "gpu0_recovery_verified": true,
+    "workers_after_release": {
+      "0": {
+        "pid": 2769,
+        "contender": "transformer_ppo"
+      },
+      "1": {
+        "pid": 2776,
+        "contender": "cnn_rnad"
+      }
+    },
+    "corrected_checkpoint_sha256": "514684650e97465d45192e5429cb0c174bb27b060f9a4ab1b53428ce02fc2719",
+    "corrected_total_training_seconds": 9027.729342050152,
+    "additional_corrected_recipe_seconds": 3610.835424602992,
+    "decision": "Continue threshold8 unchanged through second additional hour. No promotion. Before/after includes additional training and does not isolate causal threshold benefit against an equally trained threshold2 continuation."
+  },
+  "spending_ledger": {
+    "path": "experiments/2026-10-17/spending-ledger-provisional.json",
+    "provider_reported_task_charges_usd": 13.659,
+    "queried_utc": "2026-10-17T19:17:34Z",
+    "scope": "Four task rentals; provider charge ledger, not finalized invoice or net credits. Refresh at shutdown using refresh-spending-ledger.py."
+  },
+  "rendered_browser_staging": {
+    "status": "passed",
+    "port": 38361,
+    "model": "artifacts/exact-cnn-twohour.onnx",
+    "production_deployed": false,
+    "readiness_audit": "experiments/2026-10-17/exact-deployment-readiness-audit.json",
+    "fix": "AnalysisBoard can use board_hand CNN after public history invalidation; explicit architecture metadata gates this capability. History models remain fail-closed. 18 Node and 8 Python tests passed.",
+    "evidence": "experiments/2026-10-17/exact-cnn-rendered-browser-validation.json",
+    "actual_browser": "Chrome155",
+    "checks": [
+      "direct exact CNN load",
+      "hidden search controls",
+      "human hint/move/AI reply",
+      "Watch/pause/resume/reset",
+      "edited analysis board and hand hints for both turns",
+      "zero MCTS search calls"
+    ],
+    "limitations": [
+      "Local staging manifest only, not public deployment",
+      "Desktop viewport only",
+      "One harmless favicon404; no JS exceptions or inference errors"
+    ]
+  },
+  "latest_learning_review": {
+    "utc": "2026-10-17T19:41:30Z",
+    "cnn_ppo": {
+      "training_seconds": 10253.937629381137,
+      "games": 4403200,
+      "policy_entropy": 0.33531156,
+      "approximate_kl": 0.000391325,
+      "rollout_value_explained_variance": 0.111639
+    },
+    "transformer_ppo": {
+      "training_seconds": 10147.811342158588,
+      "games": 1306624,
+      "policy_entropy": 0.42670699,
+      "approximate_kl": 0.000560348,
+      "rollout_value_explained_variance": 0.107529
+    },
+    "cnn_rnad": {
+      "training_seconds": 9959.167876814172,
+      "games": 2785280,
+      "entropy": 1.28077839,
+      "critic_loss": 1.35706995,
+      "gradient_norm": 284.0164,
+      "corrected_recipe_seconds": 4542.273959367012
+    },
+    "decision": "Continue unchanged. Finite metrics, progress on both GPU workers. Reference rotations occur periodically rather than every minibatch. Await matched3h playing-strength tests; no ceiling claims."
+  },
+  "threehour_evaluation": {
+    "status": "complete",
+    "pid": 2932,
+    "local_ssh_session": 78195,
+    "remote_script": "/tmp/run-sequence-threehour-suite.py",
+    "script": "experiments/2026-10-17/run-threehour-suite.py",
+    "remote_output": "campaign/exact/threehour-evaluation",
+    "wait_timeout_seconds": 2400,
+    "gpu_suite_timeout_seconds": 600,
+    "gpu": 0,
+    "lease_while_waiting": false,
+    "games_per_greedy_candidate": {
+      "validated_cnn_2h": 4096,
+      "previous_cnn_1h_anchor": 2048
+    },
+    "rnad_sample_replicas": [
+      420071,
+      420072
+    ],
+    "rnad_sample_games_per_opponent_per_replica": 1024,
+    "seeds": [
+      3000100000001,
+      3000200000001
+    ],
+    "scope": "All three frozen mixed3h captures; common paired complete-game deals. RNaD3h includes threshold amendment and is NOT correctedrecipe2h. Developmental only; final seeds untouched.",
+    "next": "Do not repeat. CNN3h is strongest developmental candidate; reserve independent final confirmation until final weights screened. Current validated champion remains2hCNN.",
+    "summary": "experiments/2026-10-17/threehour-comparison-summary.json",
+    "remote_checksums_verified": true,
+    "all_three_checkpoints_locally_verified": true,
+    "gpu0_recovery_verified": true,
+    "gpu_evaluation_seconds": 28.041943425981,
+    "results": {
+      "cnn_ppo": {
+        "sha256": "19840e3a18f37e687de646a4879b7203d15194867644e1dcc4bccfcc069987b3",
+        "training_seconds": 10801.552667114156,
+        "seconds_5090": 1255.0600130441599,
+        "seconds_4090": 9546.492654069996,
+        "selfplay_games": 4646912,
+        "allocated_training_cost_usd": 1.660314029679542,
+        "results": [
+          {
+            "label": "validated_cnn_2h",
+            "games": 4096,
+            "score": 0.5172119140625,
+            "paired_score_95ci": [
+              0.5058015410967057,
+              0.5286222870282943
+            ]
+          },
+          {
+            "label": "previous_cnn_1h_anchor",
+            "games": 2048,
+            "score": 0.52294921875,
+            "paired_score_95ci": [
+              0.5062727110971333,
+              0.5396257264028667
+            ]
+          }
+        ]
+      },
+      "transformer_ppo": {
+        "sha256": "290de15464443c4ec1762c397302d3435d577ea90a3a41d05b5819427e19d461",
+        "training_seconds": 10829.496933338582,
+        "seconds_5090": 1635.5041665015742,
+        "seconds_4090": 9193.992766837007,
+        "selfplay_games": 1390592,
+        "allocated_training_cost_usd": 1.686340890010191,
+        "results": [
+          {
+            "label": "validated_cnn_2h",
+            "games": 4096,
+            "score": 0.487060546875,
+            "paired_score_95ci": [
+              0.47498393278332407,
+              0.49913716096667593
+            ]
+          },
+          {
+            "label": "previous_cnn_1h_anchor",
+            "games": 2048,
+            "score": 0.50048828125,
+            "paired_score_95ci": [
+              0.4836570132984615,
+              0.5173195492015386
+            ]
+          }
+        ]
+      },
+      "cnn_rnad": {
+        "sha256": "2b0b721312aed666909b1d40110daf95b7f12adcd22ddbfea43af3ee32084491",
+        "training_seconds": 10825.425835264177,
+        "seconds_5090": 1382.350604493171,
+        "seconds_4090": 9443.075230771006,
+        "selfplay_games": 3035136,
+        "allocated_training_cost_usd": 1.6711573926951666,
+        "results": [
+          {
+            "label": "validated_cnn_2h",
+            "games": 4096,
+            "score": 0.4564208984375,
+            "paired_score_95ci": [
+              0.4438784231330159,
+              0.4689633737419841
+            ]
+          },
+          {
+            "label": "previous_cnn_1h_anchor",
+            "games": 2048,
+            "score": 0.4619140625,
+            "paired_score_95ci": [
+              0.44461116483977603,
+              0.47921696016022397
+            ]
+          }
+        ]
+      }
+    },
+    "paired_common_opponent_differences": [
+      {
+        "label": "validated_cnn_2h",
+        "cnn_minus_transformer": {
+          "score": 0.0301513671875,
+          "paired95ci": [
+            0.014202756420674905,
+            0.04609997795432509
+          ]
+        }
+      },
+      {
+        "label": "previous_cnn_1h_anchor",
+        "cnn_minus_transformer": {
+          "score": 0.0224609375,
+          "paired95ci": [
+            -0.0004677843796937649,
+            0.04538965937969376
+          ]
+        }
+      }
+    ],
+    "rnad_sampled": [
+      {
+        "label": "validated_cnn_2h",
+        "independent_deals": 512,
+        "action_replicates": 2,
+        "games": 2048,
+        "score": 0.393798828125,
+        "paired95ci": [
+          0.37402997317538833,
+          0.41356768307461167
+        ]
+      },
+      {
+        "label": "previous_cnn_1h_anchor",
+        "independent_deals": 512,
+        "action_replicates": 2,
+        "games": 2048,
+        "score": 0.4033203125,
+        "paired95ci": [
+          0.3843552302698201,
+          0.4222853947301799
+        ]
+      }
+    ]
+  },
+  "latest_runtime_check": {
+    "utc": "2026-10-17T23:36:59.638923+00:00",
+    "status": "rental_destroyed",
+    "remaining_instances": [],
+    "failure": null,
+    "evidence": "experiments/2026-10-17/rental-destruction.json"
+  },
+  "contender_selection": {
+    "utc": "2026-10-17T20:13:10.077266Z",
+    "selected": [
+      "cnn_ppo"
+    ],
+    "remote_path": "campaign/exact/sustained/selection.json",
+    "method": "Existing supported selection file, atomically written; no supervisor restart or checkpoint/recipe reset. Current transformer block finishes normally.",
+    "rationale": "User directs allremainingcompute toCNN/PPO; exactCNNbestvalidated. Transformer/RNaDstopped/preserved, noarchitectureceilingclaim.",
+    "recovery_verified_utc": "2026-10-17T20:16:41.816104Z",
+    "workers": {
+      "0": {
+        "pid": 4453,
+        "contender": "cnn_ppo",
+        "devices": [
+          0,
+          1
+        ]
+      }
+    },
+    "transformer_exited_cleanly": true,
+    "superseded_by_user": "All compute to sameCNN; latest instruction train until17:30Toronto, deliver18Toronto. No replica.",
+    "training_deadline": "2026-10-17T23:30:00Z"
+  },
+  "threehour_candidate": {
+    "checkpoint": "artifacts/checkpoints/exact-threehour/cnn_ppo-mixed-3h.pt",
+    "sha256": "19840e3a18f37e687de646a4879b7203d15194867644e1dcc4bccfcc069987b3",
+    "status": "developmental_candidate_not_promoted",
+    "score_vs_2h_leader": 0.5172119140625,
+    "games": 4096,
+    "onnx_export_status": "Native576/576 and actual ORTWebWASM DirectPlayer1016/1016 across12fullgames passed. No production change.",
+    "onnx": "artifacts/exact-cnn-threehour.onnx",
+    "onnx_sha256": "93b24c64c68527267be4750ad62fee9a6611ddd8fe0246e41ce01d4e25b12824",
+    "export_evidence": "experiments/2026-10-17/exact-cnn-threehour-export-summary.json"
+  },
+  "final_development_evaluation": {
+    "status": "complete",
+    "pid": 333506,
+    "script": "experiments/2026-10-17/run-final-development-suite.py",
+    "script_sha256": "ce6b6017f7c2c003e5e38911b9330fd25f13a2321c05b6ae681f01679ddbf1ba",
+    "remote_script": "/tmp/run-final-development-suite.py",
+    "remote_output": "campaign/exact/final-development",
+    "wait_until_utc": "2026-10-17T23:32:00Z",
+    "training_stop_utc": "2026-10-17T23:30:00Z",
+    "gpu": 0,
+    "gpu_suite_timeout_seconds": 600,
+    "snapshot_scope": "All savedrecipe continuation states for preservation plus3hCNN; onlyCNN final and3h weights evaluated. NoRNaDmilestone wait.",
+    "evaluation": "CNN-only fixed4096greedy games percandidate vs2hCNN, freshdevelopmentseed3100100000001. Reserved9100000000001untouched.",
+    "purpose": "Developmental final candidate selection, not independent confirmation or automatic promotion. Final budgets unequal after narrowing.",
+    "next": "At23:31inspectcompletion, retrieve/checksum selectedweights, chooseONEcandidate before reservedconfirmation. Finishoperationaltarget00UTC October18."
+  },
+  "deadline_extension": {
+    "utc": "2026-10-17T20:29:09.675520+00:00",
+    "reason": "User extended CNN training to17:30Toronto, reaffirmed CNN focus, asked bothGPUs same model.",
+    "old_supervisor": 1092,
+    "old_waiter": 3122,
+    "old_watchdog": 393,
+    "old_workers_exited_cleanly": true,
+    "replacement_supervisor": 3225,
+    "replacement_watchdog": 3226,
+    "optimizer_state_reset": false,
+    "main_worker_first_pid": 3258,
+    "scope": "OriginalCNN preserved and advancing; transformer/RNaD stopped and preserved. No CNNreplica created.",
+    "shared_update_profile": "SingleGPU measured rollout0.878s update3.561s total4.441s; isolated shared-model DataParallel benchmark in preparation, no speedupclaim."
+  },
+  "deadline_extension_latest": {
+    "recorded_utc": "2026-10-17T21:54:14.884679+00:00",
+    "user_instruction": "Traun until7 30",
+    "training_stop_utc": "2026-10-17T23:30:00Z",
+    "operational_delivery_target_utc": "2026-10-18T00:00:00Z",
+    "delivery_target_basis": "30minute finalizationallowance communicatedafterlatest19:30Toronto trainingstop.",
+    "previous_stop_utc": "2026-10-17T22:30:00Z",
+    "verification": {
+      "utc_epoch": 1792274094.6158195,
+      "old_supervisor": 261177,
+      "old_watchdog": 260891,
+      "old_waiter": 261178,
+      "old_workers_exited_cleanly": true,
+      "supervisor": 333505,
+      "watchdog": 333187,
+      "waiter": 333506,
+      "controller_command": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/train_exact_multigpu.py",
+        "--output-dir",
+        "campaign/exact/sustained",
+        "--reference",
+        "artifacts/checkpoints/gru-four-hour.pt",
+        "--devices",
+        "0,1",
+        "--shared-update-devices",
+        "0,1",
+        "--block-seconds",
+        "600",
+        "--evaluation-games",
+        "256",
+        "--stop-at",
+        "2026-10-17T23:30:00Z"
+      ],
+      "resume_training_seconds": 17082.34981735819,
+      "resume_games": 7790592,
+      "resume_updates": 569040,
+      "cuda_rng_states": 2,
+      "waiter_sha256": "ce6b6017f7c2c003e5e38911b9330fd25f13a2321c05b6ae681f01679ddbf1ba",
+      "training_stop": "2026-10-17T23:30:00Z",
+      "watchdog_stop": "2026-10-17T23:55:00Z",
+      "delivery_target": "2026-10-18T00:00:00Z"
+    }
+  },
+  "shared_cnn_updates": {
+    "status": "verified_advancing_twoGPU_continuation",
+    "transition": {
+      "supervisor_pid": 4452,
+      "command": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/train_exact_multigpu.py",
+        "--output-dir",
+        "campaign/exact/sustained",
+        "--reference",
+        "artifacts/checkpoints/gru-four-hour.pt",
+        "--devices",
+        "0,1",
+        "--shared-update-devices",
+        "0,1",
+        "--block-seconds",
+        "600",
+        "--evaluation-games",
+        "256",
+        "--stop-at",
+        "2026-10-17T21:30:00Z"
+      ],
+      "backup_sha256": "1f837facceaa36f5f223b595f138d272b0fa5c3c2955fb0fd7e26a581919d76f",
+      "source_sha256": {
+        "train_exact_policy.py": "03732203c9399367b24c2724107e95a3551c19f8033f72dc5cac32cd8a314287",
+        "train_exact_multigpu.py": "704630d09b04d5f62c74c90c092efc6b310851b2fef6672aa4be1018ae4cbcac"
+      },
+      "started_epoch": 1792269601.8526428,
+      "old_supervisor_cleanly_stopped": true
+    },
+    "numerical_evidence": "experiments/2026-10-17/same-cnn-dp-numerics.json",
+    "speed_evidence": "experiments/2026-10-17/same-cnn-dp-benchmark.json",
+    "warm_cycle_seconds_single": 4.3738568,
+    "warm_cycle_seconds_parallel": 3.7779733,
+    "one_batch_parameter_max_abs": 2.9802322387695312e-08,
+    "one_batch_gradient_relative_l2": 0.0002821001604709073,
+    "full_update_single_repeat_max_abs": 0.00013136863708496094,
+    "interpretation": "Same globalbatch/loss/Adam and close one-step numerics. Floating point kernel/reduction differences remain; not bitwise equivalent. Full-update parallel deviation1.43e-4 comparable to single-repeat1.31e-4. Measure sustained throughput before claiming enduring16percent gain.",
+    "rollback": "campaign/exact/shared-update-transition/single-gpu-continuation.pt",
+    "accounting": "Checkpoint training_seconds remainswalltime forLRschedule; execution_accounting andhardware_dispatches tracktwoallocatedGPUs.",
+    "observer2183": "stopped; correctedRNaD2h capture cancelled by userCNNfocus",
+    "runtime_evidence": "experiments/2026-10-17/shared-update-verified.json",
+    "runtime": {
+      "checkpoint_training_seconds": 12679.972057509178,
+      "games": 5500928,
+      "cuda_rng_count": 2,
+      "execution_accounting": {
+        "segments": [
+          {
+            "mode": "update_data_parallel",
+            "visible_device_indices": [
+              0,
+              1
+            ],
+            "allocated_gpu_count": 2,
+            "training_seconds_start": 12616.348260448169,
+            "wall_seconds": 63.62379767099628,
+            "allocated_gpu_seconds": 127.24759534199256,
+            "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+            "parallel_minimum_batch": 1024,
+            "global_batch_size": 1024,
+            "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+          }
+        ]
+      },
+      "iterations_measured": 21,
+      "recent_cycle_mean": 3.902095762047975,
+      "recent_update_mean": 2.9920945028497954,
+      "recent_rollout_mean": 0.9068525652503012,
+      "worker_state": {
+        "status": "training",
+        "reason": null,
+        "failure": null,
+        "workers": {
+          "0": {
+            "contender": "cnn_ppo",
+            "device": "0,1",
+            "started_epoch": 1792269602.5240119,
+            "stop_sent": false,
+            "pid": 4453
+          }
+        },
+        "completed_blocks": 0,
+        "last_completed": [],
+        "paused_slots": [],
+        "controller": "multi_gpu",
+        "stop_at": "2026-10-17T21:30:00Z",
+        "updated_utc": "2026-10-17T20:40:02.524515+00:00"
+      },
+      "waiter_sha256": "ba2644eafebbb7d5f1229b7339b8973015a65628515e69def2aa96817df222c2",
+      "pause_files": [],
+      "utc_epoch": 1792269690.8515484
+    },
+    "sustained_review": {
+      "training_seconds": 22167.622576748166,
+      "games": 10528768,
+      "updates": 762412,
+      "iteration_seconds": 3.776628866995452,
+      "policy_entropy": 0.2623732406646013,
+      "approximate_kl": 0.0005078887586730869,
+      "loss": 0.43617351829177803,
+      "rollout_value_explained_variance": 0.11923536580944916,
+      "parallel_update_gpu_count": 2,
+      "utc": "2026-10-17T23:20:04.357753+00:00",
+      "mean_last100_cycle_seconds": 3.7663510219811,
+      "finite_metrics": true,
+      "evidence": "experiments/2026-10-17/runtime-2319.json",
+      "note": "Healthy advancing continuation; no new strength evaluation."
+    }
+  },
+  "final_confirmation_runner": {
+    "status": "complete_all_gates_pass",
+    "script": "experiments/2026-10-17/run-final-confirmation-suite.py",
+    "remote_script": "/tmp/run-final-confirmation-suite.py",
+    "sha256": "0414890280c95d72ec91ac49f2330666273a4ef38ddc4835434ca20e9789c1c9",
+    "remote_sha256_verified": true,
+    "tests": "11 CPU tests, syntax and Ruff passed; no GPU trial on reservedseeds",
+    "usage": "/opt/conda/bin/python -u /tmp/run-final-confirmation-suite.py --root /workspace/sequence --candidate ABS_IMMUTABLE_PT --candidate-sha SHA --selection-reason DEVELOPMENT_REASON",
+    "output": "campaign/exact/final-confirmation",
+    "gpu_seconds_limit": 360,
+    "sample_sizes": {
+      "head_to_head": 8192,
+      "search128_each": 2048,
+      "baseline32_each": 8192
+    },
+    "all_frozen_opponents_exist": true,
+    "reserved_seed_outcomes_exist": true,
+    "locks": "Finalization/suite/controller/supervisor/allcontenders/GPU0; requires clean natural shutdown, rejects actualtrainerprocesses, unlockbeforeunpause",
+    "plan_policy": "FreezeONEcandidate andbothfixedplans beforeoutcomes; neverchooseanothercandidate oraddsamples usingfinalresults; keep2hCNNifanygatefails",
+    "next": "Use onlyafterfinaldevelopment completes andONEcandidate chosen; retrieve/export locallywhileconfirmation runs, promoteonlyafterallgatespass.",
+    "chosen_candidate": {
+      "path": "campaign/exact/final-development/checkpoints/cnn_ppo-final.pt",
+      "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+      "development_score": 0.5509033203125,
+      "development_games": 4096,
+      "selection_reason": "Highest score of two predeclared developmental CNN candidates, selected before reserved outcomes."
+    },
+    "summary": "experiments/2026-10-17/final-confirmation-summary.json",
+    "verification": "experiments/2026-10-17/final-confirmation-verification.json"
+  },
+  "rendered_browser_final_preparation": {
+    "status": "ready_not_yet_run_on_finalmodel",
+    "script": "experiments/2026-10-17/validate-exact-rendered-browser.cjs",
+    "sha256": "c59825addc96250e0c88a674a56db900bc79b1eda8cf274c77bf53b5a1432e4a",
+    "checks": "ActualbrowserloadedONNX/manifestbytesSHA, localservedmanifestsemanticmatch, existinghuman/Watch/editedAnalysisBoardroutes, zeroMCTS/runtimeerrors",
+    "validation": "Syntax/help/fourinvalidargumentcheckspass. No newbrowserrun ordeploymentyet.",
+    "usage": "NODE SCRIPT --url http://127.0.0.1:8765/ --model-path SELECTED.onnx --output-prefix PREFIX",
+    "serve_actual_files": "/tmp/sequence-ai-venv/bin/python -m http.server 8765 --bind 127.0.0.1 --directory web/static",
+    "warning": "Do not reuse /tmp/sequence-exact-preview.py: overrides withold2hstagingassets.",
+    "generic_export": "/tmp/sequence-ai-venv/bin/python scripts/export_exact_onnx.py --checkpoint SELECTED.pt --output artifacts/exact-cnn-final.onnx --samples 192",
+    "fixture_generation": "scripts/browser_exact_fixtures.py --checkpoint SELECTED.pt --output /tmp/exact-cnn-final-fixtures.json --games 12",
+    "wasm_parity": "NODE experiments/2026-10-17/check-exact-checkpoint-web.cjs /tmp/sequence-exact-export-validation ONNX FIXTURES CHECKPOINT_SHA OUTPUT",
+    "local_runtime_assets_verified_utc": "2026-10-17T21:30:40.792604+00:00"
+  },
+  "previous_validated_model_before_final_cnn": {
+    "checkpoint": "artifacts/checkpoints/exact-twohour/cnn_ppo-mixed-2h.pt",
+    "remote_checkpoint": "campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+    "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+    "training_seconds": 7254.263982497156,
+    "shared_pretraining": "Common distillation of7.48hCNN, separate cost",
+    "selfplay_games": 3072000,
+    "onnx": "artifacts/exact-cnn-twohour.onnx",
+    "onnx_sha256": "e0e7c9c30bc09dd3308fb422c8a1edfa16e98b4ed102d7129a081049da621c89",
+    "native_action_parity": "576/576",
+    "ort_web_action_parity": "1016/1016 over12completegames;41normalvsJackand24Jackchoices",
+    "export_summary": "experiments/2026-10-17/exact-cnn-twohour-export-summary.json",
+    "production_deployed": false,
+    "status": "independently_validated_leader",
+    "architecture": "exact-action CNN",
+    "algorithm": "PPO",
+    "parameters": 762410,
+    "architecture_details": {
+      "residual_blocks": 3,
+      "channels": 64,
+      "card_embedding_width": 32,
+      "parameters": 762410,
+      "inputs_actually_used": "Canonical board/own-hand channels and own-hand count set encoder; legal exact card-square actions. Board variant does not use ordered history or public played-card count context.",
+      "inference": "One direct policy forward pass, no search/determinization",
+      "training_algorithm": "PPO"
+    },
+    "additional_training_seconds": 7254.263982497156,
+    "additional_hardware": {
+      "RTX5090_seconds": 1255.0600130441599,
+      "RTX4090_seconds": 5999.203969452996
+    },
+    "additional_selfplay_games": 3072000,
+    "local_checksum_verified": true,
+    "confirmation_evidence": "experiments/2026-10-17/twohour-confirmation-summary.json",
+    "independent_results": [
+      {
+        "label": "validated_exact_cnn_1h",
+        "games": 8192,
+        "score": 0.51422119140625,
+        "paired_score_95ci": [
+          0.5059115676167291,
+          0.5225308151957709
+        ]
+      },
+      {
+        "label": "original_search_128",
+        "games": 2048,
+        "score": 0.5947265625,
+        "paired_score_95ci": [
+          0.5765404824211349,
+          0.6129126425788651
+        ]
+      },
+      {
+        "label": "heldout_baseline_32",
+        "games": 1024,
+        "score": 0.77099609375,
+        "paired_score_95ci": [
+          0.7479771824756771,
+          0.7940150050243229
+        ]
+      }
+    ],
+    "heldout_retention_evidence": "experiments/2026-10-17/twohour-heldout-replication/summary.json",
+    "heldout_retention": {
+      "games_per_model": 8192,
+      "independent_deal_pairs": 4096,
+      "candidate_score": 0.78460693359375,
+      "incumbent_score": 0.77923583984375,
+      "candidate_minus_incumbent": 0.00537109375,
+      "paired95ci": [
+        -0.004643367939296662,
+        0.015385555439296662
+      ],
+      "practical_retention_margin": 0.02,
+      "practical_retention_pass": true,
+      "superiority_on_this_opponent_proven": false,
+      "gpu_evaluation_seconds": 140.77955713600386,
+      "remote_file_checksums_verified": true,
+      "no_optional_stopping": true,
+      "scope": "Fixed fresh replication, shared deals and swapped seats; per-deal average difference. Retention permits at most2pp score loss, not equality proof. Margin set before thisreplication, not at outset of campaign."
+    },
+    "native_validation": "artifacts/exact-cnn-twohour.validation.json",
+    "browser_validation": "experiments/2026-10-17/exact-cnn-twohour-browser-validation.json",
+    "supersedes_for_future_promotion": "Future finalists must independently beat this2hCNN and retain heldoutstrength. FrozenGRU trainingreference unchanged. Keep1hCNN as historicalanchor."
+  },
+  "final_delivery": {
+    "model": {
+      "architecture": "exact-action CNN, 3 residual blocks, 64 channels, own-hand set encoder",
+      "algorithm": "PPO",
+      "checkpoint": "artifacts/checkpoints/exact-final/cnn_ppo-final.pt",
+      "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+      "onnx": "artifacts/exact-cnn-final.onnx",
+      "onnx_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+      "confirmation": "experiments/2026-10-17/final-confirmation-summary.json",
+      "all_gates_pass": true,
+      "training_wall_seconds": 22750.368895523163,
+      "allocated_gpu_seconds": 32884.38954292814,
+      "games": 10846208,
+      "observation": "board and own hand; no ordered public history or played-card counts",
+      "play_mode": "direct exact card-and-square, no search or forced-win override"
+    },
+    "confirmation": {
+      "status": "complete",
+      "candidate": {
+        "checkpoint": "/workspace/sequence/campaign/exact/final-development/checkpoints/cnn_ppo-final.pt",
+        "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45"
+      },
+      "incumbent": {
+        "checkpoint": "/workspace/sequence/campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+        "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8"
+      },
+      "head_to_head": {
+        "mean": 0.53619384765625,
+        "paired95ci": [
+          0.5274794391817258,
+          0.5449082561307742
+        ],
+        "independent_deals": 4096,
+        "games": 8192,
+        "gate_pass": true
+      },
+      "heldout_retention": [
+        {
+          "label": "original_search_128",
+          "games_per_model": 2048,
+          "candidate_score": 0.64404296875,
+          "incumbent_score": 0.594970703125,
+          "difference": {
+            "mean": 0.049072265625,
+            "paired95ci": [
+              0.027261321974435787,
+              0.07088320927556421
+            ],
+            "independent_deals": 1024
+          },
+          "practical_retention_margin": 0.02,
+          "gate_pass": true
+        },
+        {
+          "label": "heldout_baseline_32",
+          "games_per_model": 8192,
+          "candidate_score": 0.80584716796875,
+          "incumbent_score": 0.78399658203125,
+          "difference": {
+            "mean": 0.0218505859375,
+            "paired95ci": [
+              0.011689540643268733,
+              0.032011631231731265
+            ],
+            "independent_deals": 4096
+          },
+          "practical_retention_margin": 0.02,
+          "gate_pass": true
+        }
+      ],
+      "all_gates_pass": true,
+      "recommendation": "Eligible for promotion after artifact validation",
+      "automatic_deployment": false,
+      "candidate_reselection_permitted": false,
+      "elapsed_evaluator_seconds": 269.74783630802995,
+      "interval_method": "Normal95% interval over independent deal averages; both swapped seats grouped. Heldout deltas pair candidate/control on the same deal and seat. Fixed samples; no extension after results.",
+      "gpu_lease_wall_seconds": 272.98173629297526
+    },
+    "deployment": {
+      "deployed_utc": "2026-10-17T23:36:15.022777+00:00",
+      "scope": "Local static files only; no public push",
+      "checkpoint_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+      "onnx_sha256": "0bd3130842892f0679458faa7823a0238c4f6355c97c66502feb990007b0309f",
+      "deployed_model": "web/static/model-exact-0bd3130842892f06.onnx",
+      "manifest": {
+        "model": "model-exact-0bd3130842892f06.onnx",
+        "policyKind": "exact_sequence_policy",
+        "playMode": "direct",
+        "actionEncoding": "card_id * 100 + row * 10 + col",
+        "variant": "cnn",
+        "valueMode": "bounded",
+        "historyArchitecture": "board",
+        "observationMode": "board_hand"
+      },
+      "manifest_sha256": "1ce068450340fdb70669384fb3555469752609f7ba98fe6bfb38666039d24c1f",
+      "asset_cache_versions": {
+        "game_engine.js": "324f370d5a5a1062",
+        "direct_player.js": "7a3bc458213c3683",
+        "game.js": "0fcbc0e0fee63ad5",
+        "style.css": "7cfcb63081261844"
+      },
+      "rollback_directory": "artifacts/rollback/exact-final-2026-10-17",
+      "rollback_sha256": {
+        "model.json": "bcc1a1275b2bfacea104d0e6cb5aa7daef3f58eff239a198e74e076702fce592",
+        "model.onnx": "d6e8a786804aa82b19a8c273e1c04af540843e6eae87ee24785497a96fff5fb0",
+        "index.html": "fecb96aeedf4d58d52078023abb1c5c82f988adfc5428454f36b07dd8a6f7982"
+      },
+      "previous_model_retained_unchanged": true,
+      "rendered_validation": "passed",
+      "rendered_validation_report": "experiments/2026-10-17/exact-cnn-final-rendered-browser-validation.json",
+      "rendered_report_sha256": "c4dff95b6f8d649d2a7236be0f8f52d85126230d438755e5660e3255914452b1",
+      "served_model_hash_verified": true,
+      "same_session_reload_verified": true,
+      "search_calls": 0,
+      "runtime_errors": [],
+      "known_browser_diagnostic": "Missing favicon.ico produced one HTTP404 console message; no application, inference, or JavaScript errors",
+      "public_deployment": false,
+      "rollback_instructions": "Restore model.json and index.html from rollback_directory; original model.onnx remains present and unchanged."
+    },
+    "rental": {
+      "instance_id": 56415071,
+      "verified_utc": "2026-10-17T23:36:59.638923+00:00",
+      "task_instance_present": false,
+      "remaining_instance_ids": [],
+      "destroy_command_exit_code": 0,
+      "note": "Destroy CLI returned success exit code with non-JSON output; authoritative subsequent instance listing used for verification."
+    },
+    "training_accounting": {
+      "checkpoint_sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45",
+      "training_wall_seconds": 22750.368895523163,
+      "allocated_gpu_seconds": 32884.38954292814,
+      "hardware_segments": [
+        {
+          "hardware": "RTX5090",
+          "gpus": 1,
+          "wall_seconds": 1255.0600130441599
+        },
+        {
+          "hardware": "RTX4090",
+          "gpus": 1,
+          "wall_seconds": 11361.288234974
+        },
+        {
+          "hardware": "RTX4090",
+          "gpus": 2,
+          "wall_seconds": 10134.020647404977
+        }
+      ],
+      "games": 10846208,
+      "positions": 398980203,
+      "optimizer_updates": 784574,
+      "limitations": "Excludes inherited 7.48-hour CNN pretraining, shared exact-action distillation, tuning, evaluation and idle rental time. Allocated GPU time is not measured GPU busy time or equal FLOPs. Mixed hardware.",
+      "retention_audit": "184 files independently rehashed; all match. Final optimizer, Python/NumPy/CPU and two CUDA RNG states, historical pools, all three continuations and reference models preserved.",
+      "shared_teacher": {
+        "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+        "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229",
+        "training_seconds": 26913.58923665015,
+        "lineage": "Verified exact-common-warm shared_distillation.teacher_sha256; not earlier board-four-hour checkpoint."
+      },
+      "shared_distillation": {
+        "elapsed_seconds_including_collection": 9.462135,
+        "collection_seconds": 1.415753
+      }
+    },
+    "spending_evidence": "experiments/2026-10-17/spending-ledger-final.json",
+    "provider_reported_charges_usd": 18.227,
+    "final_invoice": false,
+    "automation_deleted": true,
+    "public_published": false,
+    "legacy_flask_api": "unchanged search backend"
+  }
+}

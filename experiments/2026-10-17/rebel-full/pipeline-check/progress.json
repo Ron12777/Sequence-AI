@@ -1,0 +1,22 @@
+{
+  "games": 2,
+  "elapsed_seconds": 22.872202275088057,
+  "recipe": {
+    "teacher": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/board-four-hour.pt",
+    "reference": "/run/media/rohan-mistry/OS/Users/rhnm0/Documents/GitHub/Sequence-AI/artifacts/checkpoints/gru-four-hour.pt",
+    "particles": 4,
+    "iterations": 4,
+    "depth": 1,
+    "seed": 1717000001,
+    "learning_rate": 0.0001,
+    "updates_per_game": 2,
+    "root_replay": 20000,
+    "mc_replay": 10000,
+    "batch_per_pool": 128,
+    "objective": "equal mean CFR root MSE and chosen pre-draw full-game return MSE",
+    "opponents": "50% self-play, 50% frozen GRU, balanced seats"
+  },
+  "scope": "full standard Sequence, approximate particle public-belief search",
+  "pid": 2,
+  "status": "training"
+}

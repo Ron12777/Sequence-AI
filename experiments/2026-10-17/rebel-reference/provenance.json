@@ -1,0 +1,12 @@
+{
+  "source_url": "https://github.com/facebookresearch/rebel",
+  "source_commit": "7960a42750f3407ea9eb2c3333d4c2a7961f6df4",
+  "checkpoint_url": "https://dl.fbaipublicfiles.com/rebel/liarsdice_ckpt/1x4f_cfr_1000.ckpt",
+  "checkpoint_bytes": 306878,
+  "checkpoint_sha256": "82d72666bd9ec988914be0e01c61cbba91679e5c5e44867c153ac42ec11d0e8a",
+  "torch_version": "2.14.1+cpu",
+  "parameter_count": 72964,
+  "compiler": "c++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "cpu": "Intel(R) Core(TM) 7 240H",
+  "checkpoint_origin": "Official pretrained checkpoint; no new training in this reproduction; original training hardware/GPU-hours not reconstructed."
+}

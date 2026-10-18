@@ -1,0 +1,42 @@
+<!doctype html><meta charset="utf-8"><title>Exact-checkpoint browser parity</title>
+<pre id="status">Running browser inference validation…</pre>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js"></script>
+<script src="../../web/static/game_engine.js"></script>
+<script src="../../web/static/direct_player.js"></script>
+<script>
+(async () => {
+ const status=document.getElementById('status');
+ try {
+  ort.env.wasm.numThreads=1;
+  const params=new URLSearchParams(location.search);
+  const session=await ort.InferenceSession.create(params.get('model') || '../../artifacts/gru-four-hour.onnx',{executionProviders:['wasm']});
+  let policyError=0,valueError=0,count=0,totalMs=0;
+  const fixtures=await (await fetch(params.get('fixtures') || 'browser-gru-four-hour-fixtures.json')).json();
+  for(const fixture of fixtures){
+   const game=new SequenceGame();game.hands=fixture.hands;game.deck=fixture.deck;
+   let expected;
+   const checkedSession={inputNames:session.inputNames,run:async feeds=>{
+    const start=performance.now();const out=await session.run(feeds);totalMs+=performance.now()-start;
+    for(let i=0;i<100;i++){
+     const diff=Math.abs(out.policy.data[i]-expected.logits[i]);policyError=Math.max(policyError,diff);
+     if(diff>1e-5+1e-5*Math.abs(expected.logits[i]))throw Error('Policy mismatch '+count+': '+diff);
+    }
+    const diff=Math.abs(out.value.data[0]-expected.value);valueError=Math.max(valueError,diff);
+    if(diff>1e-5+1e-5*Math.abs(expected.value))throw Error('Value mismatch '+count);
+    return out;
+   }};
+   const player=new DirectPlayer(checkedSession);
+   for(expected of fixture.steps){
+    const result=await player.chooseMove(game);
+    if(JSON.stringify(result.move)!==JSON.stringify(expected.best))throw Error('Move mismatch '+count+': '+JSON.stringify(result.move)+' vs '+JSON.stringify(expected.best));
+    const sum=Array.from(result.policy).reduce((a,b)=>a+b,0);
+    if(Math.abs(sum-1)>1e-6)throw Error('Policy normalization');
+    if(!game.makeMove(expected.move))throw Error('Replay move failed');
+    count++;status.textContent='Validated '+count+' states';
+   }
+  }
+  const report={passed:true,states:count,policyMaxAbs:policyError,valueMaxAbs:valueError,inferenceMsPerMove:totalMs/count,runtime:'onnxruntime-web 1.18.0 WASM single thread',userAgent:navigator.userAgent};
+  status.textContent=JSON.stringify(report,null,2);
+ }catch(error){status.textContent=JSON.stringify({passed:false,error:String(error),stack:error.stack},null,2);}
+})();
+</script>

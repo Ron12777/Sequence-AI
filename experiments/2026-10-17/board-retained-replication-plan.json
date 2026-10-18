@@ -1,0 +1,37 @@
+{
+  "threads": 2,
+  "purpose": "Fresh independent replication of retained7.48-hour CNN versus incumbent and held-out opponents",
+  "candidate": {
+    "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+    "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229"
+  },
+  "opponents": [
+    {
+      "label": "validated_gru_four_hour",
+      "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+      "sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+      "kind": "history",
+      "simulations": 0,
+      "games": 4096,
+      "seed": 1700000000001
+    },
+    {
+      "label": "original_champion_search",
+      "checkpoint": "artifacts/checkpoints/overnight-round0.pt",
+      "sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+      "kind": "champion",
+      "simulations": 128,
+      "games": 2048,
+      "seed": 1700001000001
+    },
+    {
+      "label": "heldout_baseline",
+      "checkpoint": "artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "kind": "champion",
+      "simulations": 32,
+      "games": 512,
+      "seed": 1700002000001
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "architecture": "joint_attention",
+    "epoch": 0,
+    "heldout_policy_cross_entropy": 1.6397785009001353,
+    "heldout_value_mse": 0.83810538727404,
+    "heldout_game_loss": 2.4778838881741754,
+    "seconds": 0.0
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 1,
+    "train_loss": 2.466202524359726,
+    "heldout_policy_cross_entropy": 1.6195196133439935,
+    "heldout_value_mse": 0.8728700924052288,
+    "heldout_game_loss": 2.4923897057492224,
+    "seconds": 15.95082689798437
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 2,
+    "train_loss": 2.3592348984128915,
+    "heldout_policy_cross_entropy": 1.6153180510720564,
+    "heldout_value_mse": 0.9642339585303206,
+    "heldout_game_loss": 2.579552009602377,
+    "seconds": 31.847313140984625
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 3,
+    "train_loss": 2.205261653076749,
+    "heldout_policy_cross_entropy": 1.6144635164491608,
+    "heldout_value_mse": 1.0847483560244753,
+    "heldout_game_loss": 2.699211872473636,
+    "seconds": 46.586881313007325
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 4,
+    "train_loss": 2.07870785437465,
+    "heldout_policy_cross_entropy": 1.6141942377485226,
+    "heldout_value_mse": 1.1983398356981556,
+    "heldout_game_loss": 2.8125340734466784,
+    "seconds": 61.14139229990542
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 5,
+    "train_loss": 1.985628371845822,
+    "heldout_policy_cross_entropy": 1.6142887566082575,
+    "heldout_value_mse": 1.2657350359334663,
+    "heldout_game_loss": 2.880023792541724,
+    "seconds": 77.32138032908551
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 6,
+    "train_loss": 1.9194939748361826,
+    "heldout_policy_cross_entropy": 1.6135173746875362,
+    "heldout_value_mse": 1.3041149196120836,
+    "heldout_game_loss": 2.9176322942996196,
+    "seconds": 92.91157910390757
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 7,
+    "train_loss": 1.874333514458937,
+    "heldout_policy_cross_entropy": 1.6131962301404088,
+    "heldout_value_mse": 1.3483473223900673,
+    "heldout_game_loss": 2.9615435525304763,
+    "seconds": 109.52600011299364
+  },
+  {
+    "architecture": "joint_attention",
+    "epoch": 8,
+    "train_loss": 1.8417335813494513,
+    "heldout_policy_cross_entropy": 1.612854235124753,
+    "heldout_value_mse": 1.3523839407266047,
+    "heldout_game_loss": 2.9652381758513577,
+    "seconds": 124.665783660952
+  }
+]

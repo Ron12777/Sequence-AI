@@ -1,0 +1,28 @@
+{
+  "threads": 2,
+  "purpose": "Independent retained pre-migration sustained-model comparison; final reserved seeds untouched",
+  "candidate": {
+    "checkpoint": "artifacts/checkpoints/board-pre-migration-final.pt",
+    "sha256": "cd18cad504fa6bc99689152401f7b60fdd7c5f55d7c37e662e5655ab04ed3229"
+  },
+  "opponents": [
+    {
+      "label": "validated_gru_four_hour",
+      "checkpoint": "artifacts/checkpoints/gru-four-hour.pt",
+      "sha256": "6553336da158e850f12db5079c6203c8b67cbe03aaaac1f936c08c02deb7afcb",
+      "kind": "history",
+      "simulations": 0,
+      "games": 2048,
+      "seed": 1600000000001
+    },
+    {
+      "label": "matched_gru_pre_migration",
+      "checkpoint": "artifacts/checkpoints/gru-pre-migration-final.pt",
+      "sha256": "c6bcfad7cec97d151868c509332b74dd0ad22a6bf842a9c5a9e21ab0d1fbdeee",
+      "kind": "history",
+      "simulations": 0,
+      "games": 2048,
+      "seed": 1600001000001
+    }
+  ]
+}

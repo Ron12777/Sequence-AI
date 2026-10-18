@@ -1,0 +1,23 @@
+[
+  {
+    "architecture": "gru",
+    "epoch": 1,
+    "train_loss": 2.074584863849522,
+    "heldout_game_loss": 2.3153781294822693,
+    "seconds": 1.4661212880164385
+  },
+  {
+    "architecture": "gru",
+    "epoch": 2,
+    "train_loss": 1.7237732152348941,
+    "heldout_game_loss": 2.432710724217551,
+    "seconds": 2.657597899902612
+  },
+  {
+    "architecture": "gru",
+    "epoch": 3,
+    "train_loss": 1.5399452288126207,
+    "heldout_game_loss": 2.5334068877356395,
+    "seconds": 3.8310403139330447
+  }
+]

@@ -34,3 +34,50 @@ Thumbs.db
 
 # Downloaded files to get the cool loss curves from my Lambda cloud filesystem
 downloads/
+
+# Rust and experiment artifacts
+native/target/
+artifacts/
+runs/
+experiments/**/*.pt
+experiments/**/*.tar.gz
+
+# Raw large experiment evidence is kept locally; lossless .gz copies are versioned.
+/experiments/2026-10-17/4090-hour-evaluation/cnn_ppo.json
+/experiments/2026-10-17/4090-hour-evaluation/cnn_rnad.json
+/experiments/2026-10-17/4090-hour-evaluation/transformer_ppo.json
+/experiments/2026-10-17/architecture_results.json
+/experiments/2026-10-17/browser-gru-fixtures.json
+/experiments/2026-10-17/browser-gru-four-hour-fixtures.json
+/experiments/2026-10-17/exact-warm-screen.json
+/experiments/2026-10-17/onehour-common-control.json
+/experiments/2026-10-17/onehour-common-sample1.json
+/experiments/2026-10-17/onehour-common-sample2.json
+/experiments/2026-10-17/onehour-confirmation/cnn_ppo.json
+/experiments/2026-10-17/onehour-evaluation/cnn_ppo.json
+/experiments/2026-10-17/onehour-evaluation/cnn_rnad.json
+/experiments/2026-10-17/onehour-evaluation/transformer_ppo.json
+/experiments/2026-10-17/onehour-sampling/cnn_ppo-replicate1.json
+/experiments/2026-10-17/onehour-sampling/cnn_ppo-replicate2.json
+/experiments/2026-10-17/onehour-sampling/cnn_rnad-replicate1.json
+/experiments/2026-10-17/onehour-sampling/cnn_rnad-replicate2.json
+/experiments/2026-10-17/onehour-sampling/transformer_ppo-replicate1.json
+/experiments/2026-10-17/onehour-sampling/transformer_ppo-replicate2.json
+/experiments/2026-10-17/rnad-recovery-1h/corrected_greedy.json
+/experiments/2026-10-17/rnad-recovery-1h/corrected_sample1.json
+/experiments/2026-10-17/rnad-recovery-1h/corrected_sample2.json
+/experiments/2026-10-17/rnad-recovery-1h/prechange_greedy.json
+/experiments/2026-10-17/rnad-recovery-1h/prechange_sample1.json
+/experiments/2026-10-17/rnad-recovery-1h/prechange_sample2.json
+/experiments/2026-10-17/threehour-evaluation/cnn_ppo_greedy.json
+/experiments/2026-10-17/threehour-evaluation/cnn_rnad_greedy.json
+/experiments/2026-10-17/threehour-evaluation/cnn_rnad_sample1.json
+/experiments/2026-10-17/threehour-evaluation/cnn_rnad_sample2.json
+/experiments/2026-10-17/threehour-evaluation/transformer_ppo_greedy.json
+/experiments/2026-10-17/twohour-confirmation/cnn_ppo.json
+/experiments/2026-10-17/twohour-confirmation/incumbent_control.json
+/experiments/2026-10-17/twohour-evaluation/cnn_ppo.json
+/experiments/2026-10-17/twohour-evaluation/transformer_ppo.json
+/experiments/2026-10-17/twohour-heldout-replication/cnn_ppo.json
+/experiments/2026-10-17/twohour-heldout-replication/cpu-attempt/cnn_ppo.json
+/experiments/2026-10-17/twohour-heldout-replication/incumbent_control.json

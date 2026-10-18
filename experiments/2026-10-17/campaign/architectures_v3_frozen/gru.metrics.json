@@ -1,0 +1,82 @@
+[
+  {
+    "architecture": "gru",
+    "epoch": 0,
+    "heldout_policy_cross_entropy": 1.6397785009001353,
+    "heldout_value_mse": 0.83810538727404,
+    "heldout_game_loss": 2.4778838881741754,
+    "seconds": 0.0
+  },
+  {
+    "architecture": "gru",
+    "epoch": 1,
+    "train_loss": 2.4714418750859064,
+    "heldout_policy_cross_entropy": 1.606579420319784,
+    "heldout_value_mse": 0.8477584901976237,
+    "heldout_game_loss": 2.454337910517408,
+    "seconds": 7.525688621215522
+  },
+  {
+    "architecture": "gru",
+    "epoch": 2,
+    "train_loss": 2.4439804882838807,
+    "heldout_policy_cross_entropy": 1.6035662069037435,
+    "heldout_value_mse": 0.8547211419657496,
+    "heldout_game_loss": 2.458287348869493,
+    "seconds": 14.607845177175477
+  },
+  {
+    "architecture": "gru",
+    "epoch": 3,
+    "train_loss": 2.3872517888046385,
+    "heldout_policy_cross_entropy": 1.6056245869186239,
+    "heldout_value_mse": 1.0162223143072124,
+    "heldout_game_loss": 2.6218469012258363,
+    "seconds": 21.519168398110196
+  },
+  {
+    "architecture": "gru",
+    "epoch": 4,
+    "train_loss": 2.238620132286922,
+    "heldout_policy_cross_entropy": 1.6053971506063622,
+    "heldout_value_mse": 1.130031647170279,
+    "heldout_game_loss": 2.7354287977766414,
+    "seconds": 27.54401751118712
+  },
+  {
+    "architecture": "gru",
+    "epoch": 5,
+    "train_loss": 2.1329749549099244,
+    "heldout_policy_cross_entropy": 1.6051932300319136,
+    "heldout_value_mse": 1.2490346804316994,
+    "heldout_game_loss": 2.854227910463613,
+    "seconds": 34.915609108051285
+  },
+  {
+    "architecture": "gru",
+    "epoch": 6,
+    "train_loss": 2.062659835467604,
+    "heldout_policy_cross_entropy": 1.6050447850328173,
+    "heldout_value_mse": 1.3509339331118448,
+    "heldout_game_loss": 2.9559787181446624,
+    "seconds": 41.70050862710923
+  },
+  {
+    "architecture": "gru",
+    "epoch": 7,
+    "train_loss": 2.0105716445401747,
+    "heldout_policy_cross_entropy": 1.604883619751799,
+    "heldout_value_mse": 1.3993506598362937,
+    "heldout_game_loss": 3.004234279588093,
+    "seconds": 47.37564860004932
+  },
+  {
+    "architecture": "gru",
+    "epoch": 8,
+    "train_loss": 1.9606847154366875,
+    "heldout_policy_cross_entropy": 1.6051032212930945,
+    "heldout_value_mse": 1.4820521784095657,
+    "heldout_game_loss": 3.0871553997026604,
+    "seconds": 53.141691024182364
+  }
+]

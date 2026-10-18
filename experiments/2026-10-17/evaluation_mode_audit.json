@@ -1,0 +1,12 @@
+{
+  "discovered_utc": "2026-10-16T22:56:37.508841+00:00",
+  "issue": "Some research callers loaded the reference in training mode. BatchNorm used batch statistics and changed reference buffers during evaluation. The GPU-budget comparison also initialized later candidates from a mutated reference, violating common initialization.",
+  "affected": [
+    "compute_budget_v1 architecture ranking and its reference matches",
+    "standalone direct_selfplay evaluations, including history_ppo_long_v1",
+    "manual research confirmations whose explicit eval mode has not been independently audited"
+  ],
+  "unaffected": "Production arena CLI sets model.eval(); production champion confirmation remains valid. Architecture_experiments main also explicitly freezes its teacher.",
+  "repair": "evaluate_policy freezes both models; predict rejects training mode; sustained runner explicitly freezes references; regression tests compare all parameter and buffer tensors before and after direct and search evaluation.",
+  "action": "Invalidated affected rankings. Stop initial sustained_v1, which had no completed saved training iteration; restart clean sustained_v2 from verified champion. No repeated short sweep."
+}

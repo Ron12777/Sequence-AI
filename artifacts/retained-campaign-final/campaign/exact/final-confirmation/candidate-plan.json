@@ -1,0 +1,39 @@
+{
+  "device": "cuda",
+  "threads": 1,
+  "env_threads": 1,
+  "batch_size": 256,
+  "purpose": "FINAL fixed confirmation of one previously selected candidate. Reserved fresh paired deals, greedy exact policy, no candidate reselection or sample extension. Head-to-head lower95CI>0.5 and both heldout paired difference lower95CI>-0.02 required. No automatic deployment.",
+  "candidate": {
+    "checkpoint": "/workspace/sequence/campaign/exact/final-development/checkpoints/cnn_ppo-final.pt",
+    "sha256": "59d1ed9cc5364e9a67e95fd150286cfdb22f3e0454b987a96858c349ca63dd45"
+  },
+  "opponents": [
+    {
+      "label": "validated_cnn_2h",
+      "kind": "exact",
+      "checkpoint": "/workspace/sequence/campaign/exact/milestones-v2/cnn_ppo-mixed-2h.pt",
+      "sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+      "games": 8192,
+      "seed": 9100000000001
+    },
+    {
+      "label": "original_search_128",
+      "kind": "champion",
+      "checkpoint": "/workspace/sequence/artifacts/checkpoints/overnight-round0.pt",
+      "sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+      "games": 2048,
+      "seed": 9100001000001,
+      "simulations": 128
+    },
+    {
+      "label": "heldout_baseline_32",
+      "kind": "champion",
+      "checkpoint": "/workspace/sequence/artifacts/checkpoints/small-standard.pt",
+      "sha256": "d82402b1246b1e10641aef7bc17ec470f8557729f6ab7f10f16a4e5acc983cef",
+      "games": 8192,
+      "seed": 9100002000001,
+      "simulations": 32
+    }
+  ]
+}

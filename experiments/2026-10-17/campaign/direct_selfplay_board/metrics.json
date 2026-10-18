@@ -1,0 +1,178 @@
+[
+  {
+    "games": 128,
+    "positions": 7391,
+    "decisive_games": 128,
+    "rollout_seconds": 1.420295333955437,
+    "loss": 0.3112153146287491,
+    "approximate_kl": 0.009769136345908166,
+    "updates": 58,
+    "iteration": 1,
+    "seconds": 2.218443838879466
+  },
+  {
+    "games": 128,
+    "positions": 7446,
+    "decisive_games": 128,
+    "rollout_seconds": 1.005928440950811,
+    "loss": 0.30711232324441273,
+    "approximate_kl": 0.0067069573650390645,
+    "updates": 60,
+    "iteration": 2,
+    "seconds": 3.692674103891477
+  },
+  {
+    "games": 128,
+    "positions": 7437,
+    "decisive_games": 128,
+    "rollout_seconds": 0.9174186449963599,
+    "loss": 0.2542754740764697,
+    "approximate_kl": 0.007269807103102721,
+    "updates": 60,
+    "iteration": 3,
+    "seconds": 5.284333932911977
+  },
+  {
+    "games": 128,
+    "positions": 7299,
+    "decisive_games": 127,
+    "rollout_seconds": 0.9174898841883987,
+    "loss": 0.31959373863606616,
+    "approximate_kl": 0.008765886764916199,
+    "updates": 58,
+    "iteration": 4,
+    "seconds": 6.651309584965929
+  },
+  {
+    "games": 128,
+    "positions": 7418,
+    "decisive_games": 128,
+    "rollout_seconds": 0.8671537369955331,
+    "loss": 0.30627079719099504,
+    "approximate_kl": 0.005843785481131598,
+    "updates": 58,
+    "iteration": 5,
+    "seconds": 8.084925760049373
+  },
+  {
+    "games": 128,
+    "positions": 7418,
+    "decisive_games": 128,
+    "rollout_seconds": 0.8667829639744014,
+    "loss": 0.29420826211571693,
+    "approximate_kl": 0.007121043318248071,
+    "updates": 58,
+    "iteration": 6,
+    "seconds": 9.51349410507828
+  },
+  {
+    "games": 128,
+    "positions": 7409,
+    "decisive_games": 127,
+    "rollout_seconds": 0.841486076824367,
+    "loss": 0.31631740388171425,
+    "approximate_kl": 0.006537837335646804,
+    "updates": 58,
+    "iteration": 7,
+    "seconds": 10.843738212948665
+  },
+  {
+    "games": 128,
+    "positions": 7442,
+    "decisive_games": 128,
+    "rollout_seconds": 0.8461403318215162,
+    "loss": 0.3576348026593526,
+    "approximate_kl": 0.006473335716085178,
+    "updates": 60,
+    "iteration": 8,
+    "seconds": 12.253067380050197
+  },
+  {
+    "games": 128,
+    "positions": 7266,
+    "decisive_games": 127,
+    "rollout_seconds": 0.8390774510335177,
+    "loss": 0.31274558552380266,
+    "approximate_kl": 0.008103483556240087,
+    "updates": 58,
+    "iteration": 9,
+    "seconds": 13.661289182957262
+  },
+  {
+    "games": 128,
+    "positions": 7590,
+    "decisive_games": 127,
+    "rollout_seconds": 0.8819039058871567,
+    "loss": 0.296297741184632,
+    "approximate_kl": 0.008951480418788075,
+    "updates": 60,
+    "iteration": 10,
+    "seconds": 14.974711488001049
+  },
+  {
+    "games": 128,
+    "positions": 7192,
+    "decisive_games": 128,
+    "rollout_seconds": 0.8162691709585488,
+    "loss": 0.3369933225471398,
+    "approximate_kl": 0.007289983166566375,
+    "updates": 58,
+    "iteration": 11,
+    "seconds": 16.35324604692869
+  },
+  {
+    "games": 128,
+    "positions": 7379,
+    "decisive_games": 128,
+    "rollout_seconds": 0.8314961290452629,
+    "loss": 0.31033132045433437,
+    "approximate_kl": 0.008638160372560504,
+    "updates": 58,
+    "iteration": 12,
+    "seconds": 17.766705041984096
+  },
+  {
+    "games": 128,
+    "positions": 7414,
+    "decisive_games": 128,
+    "rollout_seconds": 0.8549631230998784,
+    "loss": 0.3037496717839405,
+    "approximate_kl": 0.006833408647629579,
+    "updates": 58,
+    "iteration": 13,
+    "seconds": 19.141628993907943
+  },
+  {
+    "games": 128,
+    "positions": 7550,
+    "decisive_games": 127,
+    "rollout_seconds": 0.862103674095124,
+    "loss": 0.29716745192805927,
+    "approximate_kl": 0.007035676970258464,
+    "updates": 60,
+    "iteration": 14,
+    "seconds": 20.506523726973683
+  },
+  {
+    "games": 128,
+    "positions": 7219,
+    "decisive_games": 127,
+    "rollout_seconds": 0.8113025529310107,
+    "loss": 0.3596242432450426,
+    "approximate_kl": 0.00708586609220345,
+    "updates": 58,
+    "iteration": 15,
+    "seconds": 21.84454369591549
+  },
+  {
+    "games": 128,
+    "positions": 7656,
+    "decisive_games": 128,
+    "rollout_seconds": 0.8676975481212139,
+    "loss": 0.3225382043669621,
+    "approximate_kl": 0.00789596210718931,
+    "updates": 60,
+    "iteration": 16,
+    "seconds": 23.187886781059206
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "native_checks": 252,
+  "states_per_batch_configuration": 192,
+  "native_prediction_rows": 576,
+  "native_argmax_matches": 576,
+  "max_native_logit_error": 1.52587890625e-05,
+  "max_native_value_error": 1.1175870895385742e-06,
+  "compressed_fixture_bytes": 462179,
+  "checkpoint_sha256": "bfcb0193d48dc0d40449fdbf440df44a7b0400cc33d996e412b1b491b75d6ed8",
+  "onnx_sha256": "e0e7c9c30bc09dd3308fb422c8a1edfa16e98b4ed102d7129a081049da621c89",
+  "browser_validation": "experiments/2026-10-17/exact-cnn-twohour-browser-validation.json",
+  "native_validation": "artifacts/exact-cnn-twohour.validation.json",
+  "browser_move_matches": 1016,
+  "browser_states": 1016,
+  "normal_vs_jack_cases": {
+    "states": 41,
+    "selected_normal": 41,
+    "selected_jack": 0
+  },
+  "promotion_claim": false,
+  "deployment_changed": false
+}

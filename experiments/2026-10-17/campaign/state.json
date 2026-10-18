@@ -1,0 +1,37 @@
+{
+  "round": 2,
+  "promotions": 1,
+  "status": "running",
+  "pid": 1448,
+  "training_stop_utc": "2026-10-17T15:00:00Z",
+  "champion_sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+  "stage": "training",
+  "config": {
+    "name": "ensemble_finetune128",
+    "epochs": 32,
+    "simulations": 128,
+    "lr": 0.0001,
+    "noise": 0.25,
+    "fresh": false,
+    "search_mode": "ensemble"
+  },
+  "updated_at": "2026-10-16T21:59:31.618382+00:00",
+  "last_result": {
+    "round": 1,
+    "config": {
+      "name": "ensemble_finetune64",
+      "epochs": 64,
+      "simulations": 64,
+      "lr": 0.0001,
+      "noise": 0.25,
+      "fresh": false,
+      "search_mode": "ensemble"
+    },
+    "parent_sha256": "884ecab0d77a2274749153b743e1412aa2fbf63401bfd7a45620f84f09114c85",
+    "seed": 1106,
+    "promoted": false,
+    "seconds": 3130.0927209854126
+  },
+  "champion_search": "ensemble",
+  "search_adoption": "User selected four-deal search as the sole production method; comparisons do not establish universal superiority."
+}

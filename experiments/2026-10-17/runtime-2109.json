@@ -1,0 +1,175 @@
+{
+  "utc_epoch": 1792271401.4981875,
+  "processes": [
+    {
+      "pid": 3226,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/campaign_watchdog.py",
+        "--instance",
+        "56415071",
+        "--stop-at",
+        "2026-10-17T21:55:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 3314,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/tmp/run-final-development-suite.py",
+        "--root",
+        "/workspace/sequence",
+        "--cnn-only",
+        ""
+      ]
+    },
+    {
+      "pid": 4452,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "scripts/train_exact_multigpu.py",
+        "--output-dir",
+        "campaign/exact/sustained",
+        "--reference",
+        "artifacts/checkpoints/gru-four-hour.pt",
+        "--devices",
+        "0,1",
+        "--shared-update-devices",
+        "0,1",
+        "--block-seconds",
+        "600",
+        "--evaluation-games",
+        "256",
+        "--stop-at",
+        "2026-10-17T21:30:00Z",
+        ""
+      ]
+    },
+    {
+      "pid": 94409,
+      "args": [
+        "/opt/conda/bin/python",
+        "-u",
+        "/workspace/sequence/scripts/train_exact_multigpu.py",
+        "--worker",
+        "--output-dir",
+        "/workspace/sequence/campaign/exact/sustained",
+        "--reference",
+        "/workspace/sequence/artifacts/checkpoints/gru-four-hour.pt",
+        "--stop-at",
+        "2026-10-17T21:30:00Z",
+        "--block-seconds",
+        "600.0",
+        "--evaluation-games",
+        "256",
+        "--worker-slot",
+        "0",
+        "--worker-device",
+        "0,1",
+        "--contender",
+        "cnn_ppo",
+        "--parent-pid",
+        "4452",
+        "--shared-update-devices",
+        "0,1",
+        "--stop-file",
+        "/workspace/sequence/campaign/exact/sustained/worker_control/0-1792270810160638009.stop",
+        ""
+      ]
+    }
+  ],
+  "state": {
+    "status": "training",
+    "reason": null,
+    "failure": null,
+    "workers": {
+      "0": {
+        "contender": "cnn_ppo",
+        "device": "0,1",
+        "started_epoch": 1792270810.160567,
+        "stop_sent": false,
+        "pid": 94409
+      }
+    },
+    "completed_blocks": 2,
+    "last_completed": [
+      {
+        "slot": 0,
+        "contender": "cnn_ppo",
+        "exit_code": 0
+      }
+    ],
+    "paused_slots": [],
+    "controller": "multi_gpu",
+    "stop_at": "2026-10-17T21:30:00Z",
+    "updated_utc": "2026-10-17T21:00:10.161124+00:00"
+  },
+  "training_seconds": 14378.205242874159,
+  "games": 6393856,
+  "iterations": 3122,
+  "cuda_rng_count": 2,
+  "execution_segments": [
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 12616.348260448169,
+      "wall_seconds": 601.5682515939989,
+      "allocated_gpu_seconds": 1203.1365031879977,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    },
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 13217.91651124219,
+      "wall_seconds": 600.9658504429972,
+      "allocated_gpu_seconds": 1201.9317008859944,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    },
+    {
+      "mode": "update_data_parallel",
+      "visible_device_indices": [
+        0,
+        1
+      ],
+      "allocated_gpu_count": 2,
+      "training_seconds_start": 13818.882361055177,
+      "wall_seconds": 559.322882648994,
+      "allocated_gpu_seconds": 1118.645765297988,
+      "scope": "Allocated GPU time for this whole block, including primary-only rollouts and checkpoints; not measured GPU busy time",
+      "parallel_minimum_batch": 1024,
+      "global_batch_size": 1024,
+      "rng_transition": "A saved single CUDA state is copied to both visible devices; same-mode states restored independently"
+    }
+  ],
+  "mean_cycle_seconds_last100": 3.8759636578007486,
+  "latest_metrics": {
+    "loss": 0.4447486839474064,
+    "policy_entropy": 0.30005559161917805,
+    "approximate_kl": 0.0004305133981987426,
+    "rollout_value_explained_variance": 0.10151408851398847,
+    "gradient_norm": 4.239947843225035,
+    "parallel_update_gpu_count": 2
+  },
+  "pauses": [],
+  "final_waiter_log": "",
+  "final_suite_started": false,
+  "gpu_state": "0, NVIDIA GeForce RTX 4090, 3382 MiB, 66 %\n1, NVIDIA GeForce RTX 4090, 982 MiB, 62 %\n"
+}

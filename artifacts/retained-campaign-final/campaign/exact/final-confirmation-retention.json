@@ -1,0 +1,38 @@
+{
+  "campaign/exact/final-confirmation/chosen-candidate.json": {
+    "sha256": "50c6abb23a752eca0070369b5a38efbf6e3202ca14c8c2d8973c4a1dc1c37562",
+    "bytes": 881
+  },
+  "campaign/exact/final-confirmation/candidate-plan.json": {
+    "sha256": "ed9d29f2520e57019d17a90efcd728f48952c5ff30ca339aabfd54aca8d88084",
+    "bytes": 1530
+  },
+  "campaign/exact/final-confirmation/incumbent_control-plan.json": {
+    "sha256": "d6f5fb09c56d60af8fd4fba6227bc7a954713a9101486844f26cea093ebc1a04",
+    "bytes": 1221
+  },
+  "campaign/exact/final-confirmation/execution-provenance.json": {
+    "sha256": "2a5de69d61415f65645d682707aefdfb01cae1140704c3b12bc0479140c00634",
+    "bytes": 758
+  },
+  "campaign/exact/final-confirmation/candidate.log": {
+    "sha256": "7a1b02e9dfb8054c795e22e4905d38914c9cbe000e8f6c620253eba1a8ec663c",
+    "bytes": 5244
+  },
+  "campaign/exact/final-confirmation/candidate.json": {
+    "sha256": "298f58dc69b53c74747d4f6c164a611a06295bc7e69afa904e264790ef4deaed",
+    "bytes": 24303470
+  },
+  "campaign/exact/final-confirmation/incumbent_control.log": {
+    "sha256": "c0caaf0c66b7456e1e12df3bf293dcc5be6ba5d8698a1c9d8d1058f251e9201e",
+    "bytes": 2939
+  },
+  "campaign/exact/final-confirmation/incumbent_control.json": {
+    "sha256": "76659641603f6254a6f914428122539941b9b3dc49a9070689ea05d23f1988bd",
+    "bytes": 14092141
+  },
+  "campaign/exact/final-confirmation/summary.json": {
+    "sha256": "7a26d404eced1a22721ca46249496654b63f5cd2df7999b787eb6013b2e707e9",
+    "bytes": 1998
+  }
+}

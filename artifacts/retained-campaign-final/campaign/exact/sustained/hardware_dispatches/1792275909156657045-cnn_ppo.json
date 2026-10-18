@@ -1,0 +1,28 @@
+{
+  "contender": "cnn_ppo",
+  "physical_device": "0,1",
+  "worker_slot": 0,
+  "device_name": "NVIDIA GeForce RTX 4090",
+  "cuda_visible_devices": "0,1",
+  "pid": 469180,
+  "started_utc": "2026-10-17T22:25:09.252167+00:00",
+  "training_seconds_before": 18887.817757656157,
+  "block_seconds_requested": 600.0,
+  "status": "complete",
+  "accounting": "Checkpoint training_seconds and training_wall_seconds are wall time; allocated_gpu_seconds equals wall time times exclusively owned GPU count. This is allocated cost, not measured kernel activity or equivalent FLOPs.",
+  "physical_devices": [
+    "0",
+    "1"
+  ],
+  "gpu_count": 2,
+  "shared_update": true,
+  "single_to_shared_rng_transition": false,
+  "finished_utc": "2026-10-17T22:35:13.869922+00:00",
+  "training_seconds_after": 19491.641361991176,
+  "training_gpu_seconds": 1207.6472086700378,
+  "monitor_seconds": 0.21346621500561014,
+  "worker_wall_seconds": 604.7132968902588,
+  "stopped_by_signal": false,
+  "training_wall_seconds": 603.8236043350189,
+  "allocated_gpu_seconds": 1207.6472086700378
+}

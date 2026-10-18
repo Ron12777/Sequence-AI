@@ -1,0 +1,1 @@
+{"simulations": 32, "search_mode": "single", "opponent": "greedy", "games": 512, "seed": 130000007, "wins": 410, "losses": 102, "draws": 0, "score": 0.80078125, "decisive_win_rate_95ci": [0.7640002428364296, 0.8330822724163147], "seconds": 9.490814259042963, "neural_evaluations": 392294, "mean_moves": 50.30078125, "checkpoint": "/workspace/sequence/campaign/round_0000/latest.pt"}
