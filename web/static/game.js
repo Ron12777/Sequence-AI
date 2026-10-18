@@ -74,6 +74,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     watchAiBtn.addEventListener('click', watchAiVsAi);
     hintBtn.addEventListener('click', getHint);
+    const historyToggle = document.getElementById('toggleHistoryBtn');
+    if (historyToggle) historyToggle.addEventListener('click', () => {
+        const expanded = historyToggle.getAttribute('aria-expanded') !== 'true';
+        historyToggle.setAttribute('aria-expanded', String(expanded));
+        historyToggle.closest('.history-panel').classList.toggle('history-expanded', expanded);
+        if (expanded) {
+            const history = document.getElementById('moveHistory');
+            history.scrollTop = history.scrollHeight;
+        }
+    });
 
     // Analysis Mode
     const analysisBtn = document.getElementById('analysisBtn');
@@ -1058,25 +1068,16 @@ function updateHistory(move, player) {
     const suitSymbol = SUIT_SYMBOLS[suitChar];
     const isRed = (suitChar === 'H' || suitChar === 'D');
 
-    let playerName;
-    if (watchMode) {
-        playerName = player === 1 ? 'AI 1' : 'AI 2';
-    } else {
-        playerName = player === 1 ? 'YOU' : 'AI';
-    }
-
-    // const playerName = player === 1 ? 'YOU' : 'AI';
-    const locText = move.is_removal ? `Remove (${move.col + 1}, ${move.row + 1})` : `(${move.col + 1}, ${move.row + 1})`;
-
-
+    const playerName = watchMode ? (player === 1 ? 'Red' : 'Blue') : (player === 1 ? 'You' : 'AI');
+    const number = historyEl.children.length + 1;
+    const location = `${move.col + 1}, ${move.row + 1}`;
+    const action = move.is_removal ? 'Removed chip at' : 'Placed chip at';
+    item.setAttribute('aria-label', `Move ${number}, ${playerName}, ${cardStr}, ${action.toLowerCase()} column ${move.col + 1}, row ${move.row + 1}`);
     item.innerHTML = `
-        <span class="card-label-inline">
-            ${playerName}: 
-        </span>
-        <span style="color:${isRed ? '#ef4444' : '#e0e0e0'}; margin-left: 5px; font-weight:bold;">
-            ${rankChar}${suitSymbol}
-        </span>
-        <span style="margin-left: 5px;">${locText}</span>
+        <span class="history-number">${number}</span>
+        <span class="history-player">${playerName}</span>
+        <span class="history-card ${isRed ? 'suit-red' : 'suit-black'}">${rankChar}${suitSymbol}</span>
+        <span class="history-location" title="${action} column ${move.col + 1}, row ${move.row + 1}">${move.is_removal ? '− ' : ''}${location}</span>
     `;
 
     historyEl.appendChild(item);

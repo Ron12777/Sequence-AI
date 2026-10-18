@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sequence</title>
-    <link rel="stylesheet" href="style.css?v=f5719e0fb1b3cc45">
+    <link rel="stylesheet" href="style.css?v=1ae2499fca5c5383">
 </head>
 <body>
     <main class="app-container">
@@ -79,10 +79,11 @@
                         <input type="range" id="judgeDepth" min="1" max="500" step="1" value="128">
                     </div>
                 </div>
-                <details class="history-panel">
-                    <summary>Moves</summary>
-                    <div id="moveHistory" class="move-history" aria-label="Move history"></div>
-                </details>
+                <section class="history-panel" aria-label="Moves">
+                    <h2 class="history-title">Moves</h2>
+                    <button id="toggleHistoryBtn" class="history-toggle" aria-expanded="false" aria-controls="moveHistory">Moves <span aria-hidden="true">⌄</span></button>
+                    <div id="moveHistory" class="move-history" role="log" aria-label="Move history"></div>
+                </section>
             </aside>
         </div>
         <button id="mobileDrawerToggle" class="mobile-drawer-toggle" onclick="toggleMobileDrawer()" aria-label="Toggle controls" hidden>Controls</button>
@@ -105,6 +106,6 @@
     <script src="game_engine.js?v=324f370d5a5a1062"></script>
     <script src="mcts.js"></script>
     <script src="direct_player.js?v=7a3bc458213c3683"></script>
-    <script src="game.js?v=111e5a3d04268ea0"></script>
+    <script src="game.js?v=61eaa3b7a2559429"></script>
 </body>
 </html>

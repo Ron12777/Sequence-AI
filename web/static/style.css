@@ -98,13 +98,19 @@ button:disabled { opacity: .5; cursor: wait; }
 .depth-control input[type="range"] { width: 100%; accent-color: #a5bbab; }
 .difficulty-label { font-size: 11px; color: var(--muted); }
 .direct-policy .depth-control { display: none !important; }
-.history-panel { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
-.history-panel summary { font-size: 13px; color: var(--muted); }
-.move-history { max-height: 220px; overflow-y: auto; margin-top: 10px; font-size: 12px; }
-.history-item { display: flex; gap: 7px; padding: 6px; border-bottom: 1px solid #303934; }
-.history-player-1 { border-left: 2px solid var(--red); }
-.history-player-2 { border-left: 2px solid var(--blue); }
-.card-label-inline { font-weight: 600; }
+.history-panel { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.history-title { margin: 0; font-size: 13px; font-weight: 600; color: var(--text); }
+.history-toggle { display: none; }
+.move-history { max-height: 320px; overflow-y: auto; margin-top: 10px; font-size: 12px; scrollbar-width: thin; scrollbar-color: #637265 transparent; }
+.move-history:empty::before { content: 'No moves yet'; display: block; padding: 14px 0; color: var(--muted); }
+.history-item { display: grid; grid-template-columns: 18px 26px 34px minmax(0, 1fr); align-items: center; gap: 5px; min-height: 43px; padding: 6px 0; border-bottom: 1px solid #ffffff0a; font-variant-numeric: tabular-nums; }
+.history-item:last-child { border-bottom: 0; }
+.history-number { color: #96a599; font-size: 11px; }
+.history-player { font-weight: 600; }
+.history-player-1 .history-player { color: #f18c83; }
+.history-player-2 .history-player { color: #85b6e5; }
+.history-card { display: grid; place-items: center; min-height: 29px; background: #f4f0e3; border-radius: 4px; font-weight: 650; box-shadow: 0 1px 2px #0003; }
+.history-location { justify-self: end; color: #c7d0c8; white-space: nowrap; }
 .eval-bar-container { display: none; width: 100%; margin-top: 10px; }
 .eval-bar-container.visible { display: block; }
 .eval-labels { display: flex; justify-content: center; align-items: center; margin-bottom: 5px; font-size: 12px; color: var(--muted); }
@@ -149,7 +155,13 @@ button:disabled { opacity: .5; cursor: wait; }
     .controls { display: grid; grid-template-columns: 1fr 1fr; }
     .toggle-wrapper, .ai-progress-container, #aiError, .analysis-controls, .depth-control { grid-column: 1 / -1; }
     .btn { min-height: 44px; }
-    .history-panel { margin-top: 12px; }
+    .history-panel { margin-top: 12px; padding-top: 6px; }
+    .history-title { display: none; }
+    .history-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; font-size: 13px; font-weight: 600; }
+    .history-expanded .history-toggle span { transform: rotate(180deg); }
+    .history-panel:not(.history-expanded) .move-history { display: none; }
+    .move-history { margin-top: 0; max-height: 260px; }
+    .history-item { grid-template-columns: 28px 1fr 40px 1fr; gap: 12px; }
     .card-picker-content { padding: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
