@@ -142,7 +142,7 @@ test('selected 2S keeps its own targets even after hovering AS', async ({page}, 
 
 test('one card tap then a center or edge tap places a move and gets an AI reply', async ({page}, testInfo) => {
   await openGame(page);
-  for (const point of ['center', 'left gutter', 'bottom gutter']) {
+  for (const point of ['center', 'left edge', 'bottom edge']) {
     if (point !== 'center') await page.getByRole('button', {name: 'New game', exact: true}).click();
     // Every initial seven-card hand contains a placing card (only four removal Jacks exist).
     const card = page.locator('#handP1 .card:not([data-card="JS"]):not([data-card="JH"])').first();
@@ -156,8 +156,8 @@ test('one card tap then a center or edge tap places a move and gets an AI reply'
     const col = Number(await target.getAttribute('data-col'));
     await target.scrollIntoViewIfNeeded();
     const box = await target.boundingBox();
-    const x = point === 'left gutter' ? box.x - .75 : box.x + box.width / 2;
-    const y = point === 'bottom gutter' ? box.y + box.height + .75 : box.y + box.height / 2;
+    const x = point === 'left edge' ? box.x + 1 : box.x + box.width / 2;
+    const y = point === 'bottom edge' ? box.y + box.height - 1 : box.y + box.height / 2;
     if (testInfo.project.use.hasTouch) await page.touchscreen.tap(x, y);
     else await page.mouse.click(x, y);
     await expect(page.locator('.history-item')).toHaveCount(2);

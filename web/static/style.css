@@ -36,7 +36,7 @@ button:disabled { opacity: .5; cursor: wait; }
 .game-container { display: grid; grid-template-columns: minmax(0, 1fr) 200px; align-items: start; gap: 24px; }
 .game-area { display: flex; flex-direction: column; min-width: 0; gap: 14px; }
 .board-container { min-width: 0; }
-.board { --board-gap: 4px; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: var(--board-gap); padding: 9px; border: 1px solid #6e8b71; border-radius: 12px; background: #315344; box-shadow: 0 12px 30px #0003, inset 0 0 0 3px #263f32; }
+.board { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; padding: 9px; border: 1px solid #6e8b71; border-radius: 12px; background: #315344; box-shadow: 0 12px 30px #0003, inset 0 0 0 3px #263f32; }
 .cell { aspect-ratio: 4 / 5; min-width: 0; position: relative; border-radius: 4px; background: #f4f0e3; box-shadow: 0 1px 1px #0004, inset 0 0 0 1px #fff7; cursor: pointer; user-select: none; }
 .cell-content { display: flex; height: 100%; flex-direction: column; align-items: center; justify-content: center; line-height: 1; }
 .cell-rank { font-size: clamp(15px, 2.3vw, 23px); font-weight: 650; }
@@ -146,7 +146,7 @@ button:disabled { opacity: .5; cursor: wait; }
 .mobile-drawer-toggle { display: none; }
 @media (hover: hover) {
     .btn:hover { filter: brightness(1.12); }
-    .card:hover { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .card:not(.selected):hover { outline: 2px solid var(--accent); outline-offset: 1px; }
     .cell:hover { filter: brightness(.93); }
 }
 @media (max-width: 720px) {
@@ -159,7 +159,7 @@ button:disabled { opacity: .5; cursor: wait; }
     .game-container { display: flex; flex-direction: column; gap: 18px; }
     .game-area, .side-panel { width: 100%; }
     .game-area { gap: 10px; }
-    .board { --board-gap: 3px; padding: 6px; border-radius: 9px; }
+    .board { padding: 6px; gap: 3px; border-radius: 9px; }
     .cell { aspect-ratio: 4 / 5; }
     .cell-rank { font-size: clamp(13px, 3.8vw, 20px); }
     .cell-suit { font-size: clamp(16px, 4.6vw, 24px); }
@@ -201,7 +201,5 @@ button:disabled { opacity: .5; cursor: wait; }
 [role="button"]:focus-visible { outline: 3px solid var(--gold, #d7c47c); outline-offset: 2px; }
 .btn:disabled { cursor: default; }
 
-/* Include half the gutter in each square's hit area without overlapping neighbors. */
-.cell[role="button"]::before { content: ''; position: absolute; inset: calc(var(--board-gap) / -2); }
 .cell, .card { touch-action: manipulation; -webkit-user-select: none; }
 .cell > *, .card > * { pointer-events: none; }
