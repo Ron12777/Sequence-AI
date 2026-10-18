@@ -10,6 +10,7 @@ let modelError = null;
 let onnxSession = null;
 let selectedCard = null;
 let selectedCardIndex = null;
+let hintMove = null;
 const handLayout = new HandLayout();
 let hoveredCard = null;
 let watchMode = false;
@@ -199,6 +200,7 @@ function cancelPendingWork() {
     selectedCard = null;
     selectedCardIndex = null;
     hoveredCard = null;
+    hintMove = null;
 }
 
 function syncControls() {
@@ -460,7 +462,10 @@ function renderBoard() {
 
             // Highlight valid moves
             const activeCard = hoveredCard || selectedCard;
-            if (activeCard && !watchMode && !analysisMode && !isThinking && !game.gameOver && game.currentPlayer === 1) {
+            if (hintMove && hintMove.row === row && hintMove.col === col) {
+                cell.classList.add('best-move');
+            }
+            if (!hintMove && activeCard && !watchMode && !analysisMode && !isThinking && !game.gameOver && game.currentPlayer === 1) {
                 const moves = game.getLegalMoves(1);
                 const validMove = moves.find(m => m.card === activeCard && m.row === row && m.col === col);
                 if (validMove) {
@@ -515,6 +520,7 @@ function renderP1Hand() {
 
         if (cardStr === selectedCard && index === selectedCardIndex) {
             card.classList.add('selected');
+            if (hintMove) card.classList.add('hint-card');
         }
 
         // Gameplay or Analysis
@@ -627,6 +633,7 @@ function handleCardClick(cardStr, index = -1) {
 
 
     const deselect = selectedCard === cardStr && selectedCardIndex === index;
+    hintMove = null;
     selectedCard = deselect ? null : cardStr;
     selectedCardIndex = deselect ? null : index;
 
@@ -661,6 +668,7 @@ async function handleCellClick(row, col) {
     selectedCard = null;
     selectedCardIndex = null;
     hoveredCard = null;
+    hintMove = null;
 
     renderBoard();
     renderP1Hand();
@@ -854,10 +862,11 @@ async function getHint() {
         if (result.move) {
             selectedCard = result.move.card;
             selectedCardIndex = game.hands[1].indexOf(selectedCard);
+            hintMove = result.move;
+            hoveredCard = null;
             isThinking = false;
             renderP1Hand();
             renderBoard();
-            document.querySelector(`.cell[data-row="${result.move.row}"][data-col="${result.move.col}"]`)?.classList.add('best-move');
         }
     } catch (error) {
         if (isCurrent()) showAiError(error);

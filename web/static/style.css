@@ -69,6 +69,7 @@ button:disabled { opacity: .5; cursor: wait; }
 .card-bottom { position: absolute; right: 5px; bottom: 5px; transform: rotate(180deg); }
 .card-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: clamp(19px, 2.7vw, 29px); }
 .card.selected { outline: 3px solid var(--blue); outline-offset: 1px; transform: translateY(-3px); }
+.card.selected.hint-card { outline-color: #b99322; background: #f4e6a9; }
 .card.back { border: 3px double #a7b9a2; background: repeating-linear-gradient(45deg, #355547 0 4px, #3c6050 4px 5px) !important; color: #d5dfc8; }
 .p2-hand .card.back { aspect-ratio: 1.6; }
 .card.back > div { overflow: hidden; font-size: 20px !important; }

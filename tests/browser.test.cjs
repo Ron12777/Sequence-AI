@@ -262,14 +262,14 @@ test('explicit board-hand CNN analyzes edited positions and hint retains exact c
   // Exercise the actual hint function through the same direct player.
   const source=fs.readFileSync('web/static/game.js','utf8');
   const start=source.indexOf('async function getHint()'),end=source.indexOf('\n}\n',start)+2;
-  let highlighted=false;
   Object.assign(context,{game,aiPlayer:player,selectedCard:null,watchMode:false,analysisMode:false,isThinking:false,uiGeneration:0,
     capturePosition:()=>({position:cloneGame(game),isCurrent:()=>true}),updateStatus(){},
-    document:{getElementById:()=>null,querySelector:()=>({classList:{add:()=>{highlighted=true;}}})},
+    document:{getElementById:()=>null},
     chooseAiMove:()=>player.chooseMove(game),renderP1Hand:()=>{},renderBoard:()=>{},showAiError:e=>{throw e;}});
   vm.runInContext(source.slice(start,end),context);
   await context.getHint();
-  assert.equal(context.selectedCard,'JC');assert.ok(highlighted);assert.equal(calls,2);
+  assert.equal(context.selectedCard,'JC');assert.equal(context.hintMove.card,'JC');
+  assert.equal(context.hintMove.row,result.move.row);assert.equal(context.hintMove.col,result.move.col);assert.equal(calls,2);
   assert.equal(JSON.stringify(game),before);
 });
 
