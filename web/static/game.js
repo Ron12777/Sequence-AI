@@ -492,7 +492,7 @@ function renderBoard() {
 
 // Keep hit targets in place while the pointer moves between hand and board.
 function updateBoardHighlights() {
-    const activeCard = hoveredCard || selectedCard;
+    const activeCard = selectedCard || hoveredCard;
     const moves = !hintMove && activeCard && !watchMode && !analysisMode && !isThinking && !game.gameOver && game.currentPlayer === 1
         ? game.getLegalMoves(1).filter(move => move.card === activeCard) : [];
     for (const cell of boardEl.querySelectorAll('.cell')) {
@@ -653,6 +653,7 @@ function handleCardClick(cardStr, index = -1) {
 
     const deselect = selectedCard === cardStr && selectedCardIndex === index;
     hintMove = null;
+    hoveredCard = null;
     selectedCard = deselect ? null : cardStr;
     selectedCardIndex = deselect ? null : index;
 

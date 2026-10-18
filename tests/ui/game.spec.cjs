@@ -111,6 +111,35 @@ test('moving from a hand card to the board keeps the same click targets', async 
   expect(await target.evaluate(cell => cell.isConnected)).toBe(true);
 });
 
+test('selected 2S keeps its own targets even after hovering AS', async ({page}, testInfo) => {
+  await openGame(page);
+  await page.getByRole('button', {name: 'Edit board', exact: true}).click();
+  for (const [index, rank] of [[0, 'A'], [1, '2']]) {
+    await page.locator('#handP1 .card').nth(index).click();
+    await page.getByRole('dialog', {name: 'Choose card', exact: true})
+      .getByRole('button', {name: new RegExp(`^${rank} of spades`)}).click();
+  }
+  await page.getByRole('button', {name: 'Done editing', exact: true}).click();
+  for (const slot of [0, 1]) {
+    const card = page.locator(`#handP1 .card[data-slot="${slot}"]`);
+    if (testInfo.project.use.hasTouch) await card.tap();
+    else await card.click();
+  }
+  await expect(page.locator('#handP1 .card.selected')).toHaveAttribute('data-card', '2S');
+  // Reproduce a lingering preview from a different card while 2S is selected.
+  await page.locator('#handP1 .card[data-slot="0"]').hover();
+  await expect(page.locator('.cell.valid-move')).toHaveCount(2);
+  for (const cell of await page.locator('.cell.valid-move').all()) {
+    await expect(cell).toHaveAttribute('aria-label', /^2S, /);
+  }
+  const target = page.locator('.cell.valid-move').first();
+  if (testInfo.project.use.hasTouch) await target.tap();
+  else await target.click();
+  await expect(page.locator('.history-item')).toHaveCount(2);
+  await expect(page.locator('.history-player-1')).toHaveAttribute('aria-label', /You, 2S, placed chip/);
+  await expect(page.locator('#aiError')).toBeHidden();
+});
+
 test('one card tap then a center or edge tap places a move and gets an AI reply', async ({page}, testInfo) => {
   await openGame(page);
   for (const point of ['center', 'left gutter', 'bottom gutter']) {
