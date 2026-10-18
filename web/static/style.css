@@ -57,7 +57,7 @@ button:disabled { opacity: .5; cursor: wait; }
 .highlight-orb.p2 { border-color: var(--blue); }
 .highlight-orb.best { width: 86%; height: 86%; border: 3px solid #b99322; background: #e7cb552e; }
 .hand-vertical { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.hand-label { width: 34px; flex: 0 0 34px; color: var(--muted); font-size: 12px; }
+.hand-label { width: 42px; flex: 0 0 42px; color: var(--text); font-size: 14px; font-weight: 500; }
 .card-stack { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); width: 100%; gap: 6px; padding: 3px 0; }
 .card { min-width: 0; position: relative; aspect-ratio: .72; border-radius: 5px; background: #f0eee5; padding: 5px; border: 1px solid #ddd8c9; box-shadow: 0 3px 6px #0003; cursor: pointer; user-select: none; }
 .card-top, .card-bottom { font-size: clamp(12px, 1.8vw, 17px); font-weight: 650; line-height: .95; }
@@ -72,7 +72,7 @@ button:disabled { opacity: .5; cursor: wait; }
 .btn { display: block; width: 100%; min-height: 42px; padding: 10px 12px; background: #303c34; border: 1px solid #506052; border-radius: 8px; box-shadow: 0 1px 2px #0002; text-align: center; font-size: 14px; font-weight: 500; }
 .btn.primary { background: #e0d9b6; color: #293326; border-color: #e9e2c6; }
 .btn.gold { border-color: #b8a661; }
-#pauseControls { flex-direction: column; gap: 8px; }
+#pauseControls { display: flex; flex-direction: column; gap: 8px; }
 .toggle-wrapper { display: flex; align-items: center; justify-content: space-between; min-height: 42px; gap: 8px; font-size: 14px; }
 .toggle-switch { display: block; position: relative; width: 34px; height: 20px; flex: 0 0 34px; }
 .toggle-switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
@@ -145,23 +145,35 @@ button:disabled { opacity: .5; cursor: wait; }
     .cell { aspect-ratio: 4 / 5; }
     .cell-rank { font-size: clamp(13px, 3.8vw, 20px); }
     .cell-suit { font-size: clamp(16px, 4.6vw, 24px); }
-    .hand-vertical { gap: 6px; }
-    .hand-label { flex-basis: 24px; width: 24px; font-size: 11px; }
+    .hand-vertical { display: block; }
+    .hand-label { display: flex; align-items: center; gap: 7px; width: auto; margin-bottom: 6px; font-size: 14px; }
+    .hand-label::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
+    .p2-hand .hand-label::before { background: var(--blue); }
     .card-stack { gap: 4px; }
     .card { padding: 3px; border-radius: 4px; }
     .card-top, .card-bottom { font-size: clamp(11px, 3vw, 15px); }
     .card-bottom { right: 3px; bottom: 3px; }
     .card-center { font-size: clamp(15px, 4.3vw, 23px); }
-    .controls { display: grid; grid-template-columns: 1fr 1fr; }
-    .toggle-wrapper, .ai-progress-container, #aiError, .analysis-controls, .depth-control { grid-column: 1 / -1; }
+    .side-panel { padding: 0; border: 0; border-radius: 0; background: none; }
+    .controls { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .controls > .btn, #pauseControls > .btn { flex: 1 1 calc(25% - 6px); width: auto; min-width: 0; height: 44px; min-height: 44px; padding: 0 5px; font-size: 12px; }
+    #pauseControls { display: contents; }
+    .toggle-wrapper, .ai-progress-container, #aiError, .analysis-controls, .depth-control { flex-basis: 100%; width: 100%; }
+    .toggle-wrapper { justify-content: flex-start; gap: 12px; min-height: 42px; }
     .btn { min-height: 44px; }
+    .analysis-controls .btn { display: inline-block; width: calc(50% - 4px); }
+    .analysis-controls .btn + .btn { margin-top: 0; }
     .history-panel { margin-top: 12px; padding-top: 6px; }
     .history-title { display: none; }
     .history-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 44px; padding: 0; border: 0; background: none; font-size: 13px; font-weight: 600; }
     .history-expanded .history-toggle span { transform: rotate(180deg); }
     .history-panel:not(.history-expanded) .move-history { display: none; }
     .move-history { margin-top: 0; max-height: 260px; }
-    .history-item { grid-template-columns: 28px 1fr 40px 1fr; gap: 12px; }
+    .history-item { grid-template-columns: 28px 48px 40px minmax(0, 1fr); gap: 10px; min-height: 42px; font-size: 14px; }
+    .history-number { font-size: 12px; }
+    .history-location { justify-self: start; padding-left: 8px; }
+    .history-toggle { font-size: 14px; }
+    .history-card { min-height: 30px; }
     .card-picker-content { padding: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {

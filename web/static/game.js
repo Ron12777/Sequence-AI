@@ -301,9 +301,9 @@ function newGame() {
     const headerP1 = document.getElementById('handHeaderP1');
     const headerP2 = document.getElementById('handHeaderP2');
 
-    if (lblP1) lblP1.textContent = "YOU";
+    if (lblP1) lblP1.textContent = "You";
     if (lblP2) lblP2.textContent = "AI";
-    if (headerP1) headerP1.textContent = "YOU";
+    if (headerP1) headerP1.textContent = "You";
     if (headerP2) headerP2.textContent = "AI";
 
     // Hide P1 Slider (User plays P1)
@@ -1246,7 +1246,7 @@ window.pauseGame = () => {
     const pauseControls = document.getElementById('pauseControls');
 
     if (newGameBtn) newGameBtn.style.display = 'none';
-    if (pauseControls) pauseControls.style.display = 'flex';
+    if (pauseControls) pauseControls.hidden = false;
 };
 
 window.resumeGame = () => {
@@ -1254,7 +1254,7 @@ window.resumeGame = () => {
     const pauseControls = document.getElementById('pauseControls');
 
     if (newGameBtn) newGameBtn.style.display = 'block';
-    if (pauseControls) pauseControls.style.display = 'none';
+    if (pauseControls) pauseControls.hidden = true;
 
     isPaused = false;
     // Resume AI loop
@@ -1266,7 +1266,7 @@ window.resetFromPause = () => {
     const pauseControls = document.getElementById('pauseControls');
 
     if (newGameBtn) newGameBtn.style.display = 'block';
-    if (pauseControls) pauseControls.style.display = 'none';
+    if (pauseControls) pauseControls.hidden = true;
 
     isPaused = false;
     newGame();
@@ -1279,7 +1279,7 @@ function updateResetButtonState(isWatchMode) {
     // Ensure button is visible when state changes
     btn.style.display = 'block';
     const pauseControls = document.getElementById('pauseControls');
-    if (pauseControls) pauseControls.style.display = 'none';
+    if (pauseControls) pauseControls.hidden = true;
 
     if (isWatchMode && !game.gameOver) {
         btn.textContent = "Pause";
