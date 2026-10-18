@@ -86,7 +86,7 @@ test('Watch button starts play, pause freezes it, resume and editing preserve mo
   await expect(page.locator('#watchAiBtn')).toBeVisible();
 });
 
-test('all 52 cards are visible, each suit selects correctly, keyboard close restores focus', async ({page}, testInfo) => {
+test('four unlabelled rows show all 52 cards, selection and keyboard focus work', async ({page}, testInfo) => {
   await openGame(page);
   await page.getByRole('button', {name: 'Edit board', exact: true}).click();
   const otherHand = await page.locator('#handP2 .card').evaluateAll(cards => cards.map(c => c.dataset.card));
@@ -99,9 +99,13 @@ test('all 52 cards are visible, each suit selects correctly, keyboard close rest
     await expect(dialog.locator('.current-card')).toHaveCount(1);
     const bounds = await dialog.locator('.picker-card').evaluateAll(cards => cards.map(card => {
       const r = card.getBoundingClientRect();
-      return {visible: r.top >= 0 && r.bottom <= window.innerHeight && r.left >= 0 && r.right <= window.innerWidth, width: r.width, height: r.height};
+      return {top: r.top, visible: r.top >= 0 && r.bottom <= window.innerHeight && r.left >= 0 && r.right <= window.innerWidth, width: r.width, height: r.height};
     }));
-    expect(bounds.every(r => r.visible && r.width >= 24 && r.height >= 42)).toBe(true);
+    expect(bounds.every(r => r.visible && r.width >= 24 && r.height >= 24)).toBe(true);
+    expect(new Set(bounds.map(r => Math.round(r.top))).size).toBe(4);
+    expect(await dialog.innerText()).not.toMatch(/clubs|diamonds|hearts|spades/i);
+    await expect(dialog.locator('.picker-rank')).toHaveCount(52);
+    await expect(dialog.locator('.picker-symbol')).toHaveCount(52);
     if (suit === 'C') await testInfo.attach('all-cards', {body: await page.screenshot(), contentType: 'image/png'});
     await dialog.getByRole('button', {name: new RegExp(`^J of ${name}(, current card)?$`)}).click();
     await expect(dialog).toBeHidden();

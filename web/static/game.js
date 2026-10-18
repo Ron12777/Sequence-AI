@@ -950,10 +950,6 @@ function openCardPicker(player, index) {
         group.className = 'picker-suit-group';
         group.setAttribute('role', 'group');
         group.setAttribute('aria-label', suitNames[suit]);
-        const label = document.createElement('div');
-        label.className = 'picker-suit-label' + (suit === 'D' || suit === 'H' ? ' red-suit' : '');
-        label.innerHTML = `<span aria-hidden="true">${SUIT_SYMBOLS[suit]}</span> ${suitNames[suit]}`;
-        group.appendChild(label);
         const cards = document.createElement('div');
         cards.className = 'picker-ranks';
         for (const rank of ranks) {
@@ -963,7 +959,7 @@ function openCardPicker(player, index) {
             button.className = 'picker-card ' + (suit === 'D' || suit === 'H' ? 'suit-red' : 'suit-black');
             button.classList.toggle('current-card', card === current);
             button.setAttribute('aria-label', `${rank} of ${suitNames[suit].toLowerCase()}${card === current ? ', current card' : ''}`);
-            button.textContent = rank;
+            button.innerHTML = `<span class="picker-rank">${rank}</span><span class="picker-symbol" aria-hidden="true">${SUIT_SYMBOLS[suit]}</span>`;
             button.addEventListener('click', () => selectCard(card));
             cards.appendChild(button);
         }
