@@ -32,7 +32,7 @@ python -m pip install -r requirements-test.txt .
 OMP_NUM_THREADS=1 python -m pytest -q
 npm ci
 npm test
-npx playwright install --with-deps chromium
+npx playwright install --with-deps chromium webkit
 npm run test:ui
 ```
 

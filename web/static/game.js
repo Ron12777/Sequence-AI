@@ -476,19 +476,6 @@ function renderBoard() {
                 cell.classList.add('has-chip', 'free-chip');
             }
 
-            // Highlight valid moves
-            const activeCard = hoveredCard || selectedCard;
-            if (hintMove && hintMove.row === row && hintMove.col === col) {
-                cell.classList.add('best-move');
-            }
-            if (!hintMove && activeCard && !watchMode && !analysisMode && !isThinking && !game.gameOver && game.currentPlayer === 1) {
-                const moves = game.getLegalMoves(1);
-                const validMove = moves.find(m => m.card === activeCard && m.row === row && m.col === col);
-                if (validMove) {
-                    cell.classList.add(validMove.is_removal ? 'removal-target' : 'valid-move');
-                }
-            }
-
             // Highlight sequences
             highlightSequences(cell, row, col);
 
@@ -499,6 +486,21 @@ function renderBoard() {
 
             boardEl.appendChild(cell);
         }
+    }
+    updateBoardHighlights();
+}
+
+// Keep hit targets in place while the pointer moves between hand and board.
+function updateBoardHighlights() {
+    const activeCard = hoveredCard || selectedCard;
+    const moves = !hintMove && activeCard && !watchMode && !analysisMode && !isThinking && !game.gameOver && game.currentPlayer === 1
+        ? game.getLegalMoves(1).filter(move => move.card === activeCard) : [];
+    for (const cell of boardEl.querySelectorAll('.cell')) {
+        const row = Number(cell.dataset.row), col = Number(cell.dataset.col);
+        cell.classList.remove('best-move', 'valid-move', 'removal-target');
+        if (hintMove && hintMove.row === row && hintMove.col === col) cell.classList.add('best-move');
+        const move = moves.find(move => move.row === row && move.col === col);
+        if (move) cell.classList.add(move.is_removal ? 'removal-target' : 'valid-move');
     }
 }
 
@@ -546,13 +548,15 @@ function renderP1Hand() {
         }
 
         if (isMyTurn) {
-            card.addEventListener('mouseenter', () => {
+            card.addEventListener('pointerenter', event => {
+                if (event.pointerType !== 'mouse') return;
                 hoveredCard = cardStr;
-                renderBoard();
+                updateBoardHighlights();
             });
-            card.addEventListener('mouseleave', () => {
+            card.addEventListener('pointerleave', event => {
+                if (event.pointerType !== 'mouse') return;
                 hoveredCard = null;
-                renderBoard();
+                updateBoardHighlights();
             });
         }
 

@@ -7,11 +7,11 @@ python -m pip install -r requirements-test.txt .
 OMP_NUM_THREADS=1 python -m pytest -q -rs
 npm ci
 npm test
-npx playwright install --with-deps chromium
+npx playwright install --with-deps chromium webkit
 npm run test:ui
 ```
 
-`tests/ui/` opens the shipped page in Chromium at desktop and phone sizes. It
+`tests/ui/` opens the shipped page in Chromium and WebKit at desktop and phone sizes. It
 loads the actual ONNX model and ORT Web WASM, clicks the page's real handlers,
 and checks play, evaluation before a move, Watch speed/pause/resume, no-move draws, editing, the
 52-card picker, keyboard focus, corner markers, layout bounds and load failure.

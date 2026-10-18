@@ -75,7 +75,7 @@ test('evaluation before any move, Hint, human move and real AI reply', async ({p
   await expect(suggested).toHaveCount(1);
   await expect(page.locator('.cell.valid-move, .cell.removal-target')).toHaveCount(0);
   await expect(page.locator('#handP1 .hint-card')).toHaveCount(1);
-  // Hover rerenders the board; the single gold recommendation must survive.
+  // Hover changes highlights; the single gold recommendation must survive.
   await page.locator('#handP1 .hint-card').hover();
   await expect(suggested).toHaveCount(1);
   await expect(page.locator('.cell.valid-move, .cell.removal-target')).toHaveCount(0);
@@ -100,6 +100,42 @@ test('evaluation before any move, Hint, human move and real AI reply', async ({p
   await expect(page.locator('#aiError')).toBeHidden();
   await expect(page.locator('#aiProgressContainer')).toHaveCount(0);
   await noHorizontalOverflow(page);
+});
+
+test('moving from a hand card to the board keeps the same click targets', async ({page}) => {
+  await openGame(page);
+  const target = await page.locator('#board .cell').nth(1).elementHandle();
+  await page.locator('#handP1 .card').first().hover();
+  expect(await target.evaluate(cell => cell.isConnected)).toBe(true);
+  await page.locator('#hintBtn').hover();
+  expect(await target.evaluate(cell => cell.isConnected)).toBe(true);
+});
+
+test('one card tap then a center or edge tap places a move and gets an AI reply', async ({page}, testInfo) => {
+  await openGame(page);
+  for (const point of ['center', 'left gutter', 'bottom gutter']) {
+    if (point !== 'center') await page.getByRole('button', {name: 'New game', exact: true}).click();
+    // Every initial seven-card hand contains a placing card (only four removal Jacks exist).
+    const card = page.locator('#handP1 .card:not([data-card="JS"]):not([data-card="JH"])').first();
+    const slot = await card.getAttribute('data-slot');
+    if (testInfo.project.use.hasTouch) await card.tap();
+    else await card.click();
+    await expect(page.locator(`#handP1 .card[data-slot="${slot}"]`)).toHaveClass(/selected/);
+    const target = page.locator('.cell.valid-move').first();
+    await expect(target).toBeVisible();
+    const row = Number(await target.getAttribute('data-row'));
+    const col = Number(await target.getAttribute('data-col'));
+    await target.scrollIntoViewIfNeeded();
+    const box = await target.boundingBox();
+    const x = point === 'left gutter' ? box.x - .75 : box.x + box.width / 2;
+    const y = point === 'bottom gutter' ? box.y + box.height + .75 : box.y + box.height / 2;
+    if (testInfo.project.use.hasTouch) await page.touchscreen.tap(x, y);
+    else await page.mouse.click(x, y);
+    await expect(page.locator('.history-item')).toHaveCount(2);
+    await expect(page.locator('.history-player-1')).toHaveAttribute('aria-label', new RegExp(`placed chip at column ${col + 1}, row ${row + 1}$`));
+    await expect(page.locator('#turnIndicator')).toContainText('Your turn');
+    await expect(page.locator('#aiError')).toBeHidden();
+  }
 });
 
 test('Watch button starts play, pause freezes it, resume and editing preserve modes', async ({page}) => {
