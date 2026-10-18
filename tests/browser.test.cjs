@@ -8,6 +8,14 @@ vm.runInContext(fs.readFileSync('web/static/game_engine.js', 'utf8') + '\n' +
                 'globalThis.engine = {SequenceGame, MCTSNode, MCTS, cloneGame};', context);
 const {SequenceGame, MCTSNode, MCTS, cloneGame} = context.engine;
 
+test('all shipped local JavaScript parses as a complete browser script', () => {
+  const html=fs.readFileSync('web/static/index.html','utf8');
+  const scripts=Array.from(html.matchAll(/<script\s+src="([^"?]+)(?:\?[^" ]*)?"/g), match=>match[1])
+    .filter(path=>!/^https?:/.test(path));
+  assert.ok(scripts.includes('game.js'));
+  for(const script of scripts) new vm.Script(fs.readFileSync('web/static/'+script,'utf8'),{filename:script});
+});
+
 test('illegal browser moves cannot mutate hand or board', () => {
   const game = new SequenceGame(); game.hands[1] = ['AC'];
   const before = JSON.stringify(game);
