@@ -57,6 +57,13 @@ test('evaluation before any move, Hint, human move and real AI reply', async ({p
   await page.locator('#handP1 .hint-card').hover();
   await expect(suggested).toHaveCount(1);
   await expect(page.locator('.cell.valid-move, .cell.removal-target')).toHaveCount(0);
+  await page.locator('#hintBtn').hover();
+  await expect(suggested).toHaveCount(1);
+  await expect(page.locator('.cell.valid-move, .cell.removal-target')).toHaveCount(0);
+  await page.locator('#handP1 .card:not(.hint-card)').first().hover();
+  await page.locator('#hintBtn').hover();
+  await expect(suggested).toHaveCount(1);
+  await expect(page.locator('.cell.valid-move, .cell.removal-target')).toHaveCount(0);
   const beforeHand = await page.locator('#handP1 .card').evaluateAll(cards => cards.map(c => c.dataset.card));
   const playedSlot = Number(await page.locator('#handP1 .card.selected').getAttribute('data-slot'));
   await suggested.click();
