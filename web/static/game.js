@@ -41,6 +41,9 @@ const evalText = document.getElementById('evalText');
 const showEvalBar = document.getElementById('showEvalBar');
 let hasEvalValue = false;
 let evaluationRequest = 0;
+// UI cancellation discards results, but cannot stop an in-flight WASM run.
+// Keep evaluation, hints and play on one queue across pause/reset/resume.
+let aiRequestQueue = Promise.resolve();
 
 function setEvalBarVisible(visible) {
     if (!evalBarContainer) return;
@@ -275,16 +278,23 @@ function showAiError(error) {
 }
 
 async function chooseAiMove(position, onProgress = null, depthId = 'depth') {
-    if (!aiPlayer) throw modelError || new Error('AI is not loaded');
-    showAiError(null);
-    if (aiPlayer instanceof DirectPlayer) {
-        const result = await aiPlayer.chooseMove(position);
-        if (onProgress) onProgress(1, 1, result.policy, result.value);
-        return result;
-    }
+    const actor = aiPlayer;
+    if (!actor) throw modelError || new Error('AI is not loaded');
     const slider = document.getElementById(depthId);
-    const search = new MCTS(aiPlayer.session, slider ? Number(slider.value) : 128, aiPlayer.numDeals);
-    return search.search(position, onProgress);
+    const depth = slider ? Number(slider.value) : 128;
+    const request = aiRequestQueue.then(async () => {
+        showAiError(null);
+        if (actor instanceof DirectPlayer) {
+            const result = await actor.chooseMove(position);
+            if (onProgress) onProgress(1, 1, result.policy, result.value);
+            return result;
+        }
+        const search = new MCTS(actor.session, depth, actor.numDeals);
+        return search.search(position, onProgress);
+    });
+    // A failed prediction must not prevent the next request from running.
+    aiRequestQueue = request.catch(() => {});
+    return request;
 }
 
 /**

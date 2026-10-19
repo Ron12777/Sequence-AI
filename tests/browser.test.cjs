@@ -565,3 +565,30 @@ test('Watch ends no-move positions as a draw without inference or an error', asy
   ui.newGame();assert.equal(ui.game.gameOver,false);
   assert.equal(get('gameOverOverlay').classList.contains('visible'),false);
 });
+
+test('evaluation and play serialize shared inference, including after a failed request', async () => {
+  let active=0, peak=0, calls=0;
+  const player=new DirectPlayer({inputNames:['input'],run:async()=>{
+    active++;peak=Math.max(peak,active);
+    const call=++calls;
+    await new Promise(resolve=>setTimeout(resolve,5));
+    active--;
+    if(call===3) throw new Error('inference failed');
+    return {policy:{data:new Float32Array(100)},value:{data:new Float32Array([.25])}};
+  }},runtime);
+  const ui=vm.createContext({DirectPlayer,aiPlayer:player,modelError:null,
+    aiRequestQueue:Promise.resolve(),document:{getElementById:()=>null},showAiError(){}});
+  const source=fs.readFileSync('web/static/game.js','utf8');
+  const start=source.indexOf('async function chooseAiMove(');
+  vm.runInContext(source.slice(start,source.indexOf('\n}\n',start)+2),ui);
+  const game=new SequenceGame();
+  const first=await Promise.all([ui.chooseAiMove(cloneGame(game)),ui.chooseAiMove(cloneGame(game))]);
+  assert.equal(peak,1,'evaluation and play must not enter the shared session concurrently');
+  assert.ok(first.every(result=>result.move));
+  const recovered=await Promise.allSettled([ui.chooseAiMove(cloneGame(game)),ui.chooseAiMove(cloneGame(game))]);
+  assert.equal(recovered[0].status,'rejected');
+  assert.match(recovered[0].reason.message,/inference failed/);
+  assert.equal(recovered[1].status,'fulfilled');
+  assert.ok(recovered[1].value.move);
+  assert.equal(peak,1);
+});

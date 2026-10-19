@@ -167,6 +167,37 @@ test('one card tap then a center or edge tap places a move and gets an AI reply'
   }
 });
 
+for (const speed of ['500', '0']) {
+  test(`evaluation can overlap Watch start and resume at speed ${speed}`, async ({page}) => {
+    await openGame(page);
+    await page.getByLabel('Watch speed').selectOption(speed);
+    // Same event turn guarantees evaluation has not finished before Watch starts.
+    await page.evaluate(() => {
+      document.getElementById('showEvalBar').click();
+      document.getElementById('watchAiBtn').click();
+    });
+    await expect.poll(() => page.locator('.history-item').count()).toBeGreaterThan(1);
+    await expect(page.locator('#aiError')).toBeHidden();
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await page.getByRole('button', {name: 'Pause', exact: true}).click();
+      const count = await page.locator('.history-item').count();
+      await page.getByRole('checkbox', {name: 'Show evaluation'}).uncheck();
+      await page.evaluate(() => {
+        document.getElementById('showEvalBar').click();
+        document.querySelector('#pauseControls button').click();
+      });
+      await expect.poll(() => page.locator('.history-item').count()).toBeGreaterThan(count);
+      await expect(page.locator('#aiError')).toBeHidden();
+    }
+    await page.getByRole('button', {name: 'Pause', exact: true}).click();
+    // Request a fresh paused evaluation and verify the model session still works.
+    await page.getByRole('checkbox', {name: 'Show evaluation'}).uncheck();
+    await page.getByRole('checkbox', {name: 'Show evaluation'}).check();
+    await expect(page.locator('#evalText')).toHaveText(/^(Red|Blue) \d+%$/);
+    await expect(page.locator('#aiError')).toBeHidden();
+  });
+}
+
 test('Watch button starts play, pause freezes it, resume and editing preserve modes', async ({page}) => {
   await openGame(page);
   await expect(page.getByLabel('Watch speed')).toBeVisible();
