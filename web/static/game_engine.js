@@ -99,7 +99,10 @@ function shuffle(array) {
  * Main Game State Class
  */
 class SequenceGame {
-    constructor() {
+    constructor({autoReplaceDeadCards = false} = {}) {
+        // Reference/training replays keep their original draw rules.
+        // The interactive web game enables automatic hand exchanges.
+        this.autoReplaceDeadCards = autoReplaceDeadCards;
         this.reset();
     }
 
@@ -311,7 +314,7 @@ class SequenceGame {
 
         // Switch player
         this.currentPlayer = 3 - player;
-        if (!this.gameOver) {
+        if (this.autoReplaceDeadCards && !this.gameOver) {
             // The next player draws first if both hands need replacements.
             this.lastCardExchanges = [
                 ...this.replaceDeadCards(this.currentPlayer),

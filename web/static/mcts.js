@@ -89,6 +89,8 @@ function cloneGame(game) {
     const clone = Object.create(SequenceGame.prototype);
     clone.board = game.board.map(row => [...row]);
     clone.currentPlayer = game.currentPlayer;
+    clone.autoReplaceDeadCards = game.autoReplaceDeadCards;
+    clone.lastCardExchanges = (game.lastCardExchanges || []).map(exchange => ({...exchange}));
     clone.deck = [...game.deck];
     clone.hands = {
         1: [...game.hands[1]],

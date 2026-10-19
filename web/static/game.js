@@ -302,7 +302,7 @@ async function chooseAiMove(position, onProgress = null, depthId = 'depth') {
  */
 function newGame() {
     cancelPendingWork();
-    game = new SequenceGame();
+    game = new SequenceGame({autoReplaceDeadCards: true});
     watchMode = false;
     analysisMode = false;
     isPaused = false;

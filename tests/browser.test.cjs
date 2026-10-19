@@ -595,7 +595,7 @@ test('evaluation and play serialize shared inference, including after a failed r
 
 for (const actor of [1, 2]) {
   test(`player ${actor}'s move replaces dead cards in both hands without moving their slots`, () => {
-    const g=new SequenceGame(),layout=new HandLayout(),other=3-actor;
+    const g=new SequenceGame({autoReplaceDeadCards:true}),layout=new HandLayout(),other=3-actor;
     g.currentPlayer=actor;g.hands[actor]=['AC','KS','AC'];g.hands[other]=['AC','JH','AC'];
     g.board[0][1]=other;g.deck=['QD','KH','KC','AD'];
     layout.cards(g,actor);
@@ -623,7 +623,7 @@ test('dead-card replacement skips further dead draws and leaves live cards and J
 });
 
 test('exhausted deck discards dead duplicates and preserves gaps in both hands', () => {
-  const g=new SequenceGame(),layout=new HandLayout();
+  const g=new SequenceGame({autoReplaceDeadCards:true}),layout=new HandLayout();
   g.hands[1]=['AC','KS','AC'];g.hands[2]=['AC','JH','AC'];g.deck=[];g.board[0][1]=2;
   assert.ok(layout.makeMove(g,{card:'AC',row:5,col:2,is_removal:false},2));
   assert.deepEqual(layout.cards(g,1).map(c=>[c.card,c.slot]),[['KS',1]]);
@@ -641,4 +641,21 @@ test('dead-card notice gives counts without exposing replacement identities and 
   ui.watchMode=true;
   ui.showDeadCardNotice([{player:2,card:'AC',replacement:null}]);
   assert.equal(get('cardNotice').textContent,'Blue discarded 1 dead card; deck empty.');
+});
+
+
+test('web draw rule survives reset and cloning without changing reference replays', () => {
+  const reference=new SequenceGame(), web=new SequenceGame({autoReplaceDeadCards:true});
+  for (const game of [reference,web]) {
+    game.hands[1]=['AC','AC'];game.hands[2]=['KS'];game.deck=['KH','AD'];game.board[0][1]=2;
+    assert.ok(game.makeMove({card:'AC',row:5,col:2,is_removal:false}));
+  }
+  assert.ok(reference.hands[1].includes('AC'));
+  assert.ok(!web.hands[1].includes('AC'));
+  const clone=cloneGame(web);
+  assert.equal(clone.autoReplaceDeadCards,true);
+  clone.lastCardExchanges[0].card='JS';
+  assert.equal(web.lastCardExchanges[0].card,'AC');
+  web.reset();assert.equal(web.autoReplaceDeadCards,true);
+  const {ui}=modeHarness();ui.newGame();assert.equal(ui.game.autoReplaceDeadCards,true);
 });
