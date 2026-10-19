@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequence</title>
+    <link rel="stylesheet" href="style.css?v=dead-cards-20261018">
+</head>
+<body>
+    <main class="app-container">
+        <header class="app-header">
+            <h1 class="game-title">Sequence</h1>
+            <div id="turnIndicator" role="status" aria-live="polite" class="turn-indicator">
+                <span class="turn-dot" aria-hidden="true"></span>
+                <span class="text">Your turn</span>
+            </div>
+            <div class="scores" aria-label="Completed sequences">
+                <div class="score player-score"><span id="labelP1" class="label">You</span><span id="playerSequences" class="value">0</span></div>
+                <div class="score ai-score"><span id="labelP2" class="label">AI</span><span id="aiSequences" class="value">0</span></div>
+            </div>
+        </header>
+        <div class="game-container">
+            <section class="game-area" aria-label="Game board and hands">
+                <div class="hand-vertical p2-hand">
+                    <span id="handHeaderP2" class="hand-label">AI</span>
+                    <div id="handP2" class="card-stack"></div>
+                </div>
+                <div class="board-container">
+                    <div id="board" class="board" aria-label="Sequence board"></div>
+                    <div id="evalBarContainer" class="eval-bar-container">
+                        <div class="eval-labels"><span id="evalText" class="eval-text">50%</span></div>
+                        <div class="eval-bar-bg"><div id="evalBarFill" class="eval-bar-fill"></div></div>
+                    </div>
+                </div>
+                <div class="hand-vertical p1-hand">
+                    <div id="handP1" class="card-stack"></div>
+                    <span id="handHeaderP1" class="hand-label">You</span>
+                </div>
+            </section>
+            <aside class="side-panel" aria-label="Game controls">
+                <div class="controls">
+                    <button id="newGameBtn" class="btn primary">New game</button>
+                    <div id="pauseControls" hidden>
+                        <button onclick="resumeGame()" class="btn primary">Resume</button>
+                        <button onclick="resetFromPause()" class="btn secondary">New game</button>
+                    </div>
+                    <button id="hintBtn" class="btn secondary">Hint</button>
+                    <button id="watchAiBtn" class="btn secondary">Watch AI</button>
+                    <div id="watchSpeedControl" class="watch-speed" hidden>
+                        <label for="watchSpeed">Watch speed</label>
+                        <select id="watchSpeed" aria-label="Watch speed">
+                            <option value="1000">0.5×</option>
+                            <option value="500" selected>1×</option>
+                            <option value="250">2×</option>
+                            <option value="100">5×</option>
+                            <option value="0">Max</option>
+                        </select>
+                    </div>
+                    <button id="analysisBtn" class="btn secondary">Edit board</button>
+                    <div class="toggle-wrapper">
+                        <span class="toggle-label">Evaluation</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showEvalBar" aria-label="Show evaluation">
+                            <span class="slider" aria-hidden="true"></span>
+                        </label>
+                    </div>
+                    <p id="aiError" role="alert" hidden></p>
+                    <p id="cardNotice" role="status" hidden></p>
+                    <div id="analysisControls" class="analysis-controls" style="display:none;">
+                        <p class="instruction-text">Tap a square or card to edit.</p>
+                        <button id="toggleTurnBtn" class="btn secondary">Switch turn</button>
+                        <button id="bestMoveBtn" class="btn secondary">Best move</button>
+                    </div>
+                    <div id="depthP1Container" class="control-group depth-control" style="display:none;">
+                        <div class="control-row"><label id="depthP1Title" for="depthP1">Red simulations</label><input type="number" id="depthP1Value" class="depth-number-input" aria-label="Red simulations" min="1" max="500" value="128"></div>
+                        <input type="range" id="depthP1" min="1" max="500" step="1" value="128">
+                        <span id="difficultyLabelP1" class="difficulty-label">Standard search</span>
+                    </div>
+                    <div class="control-group depth-control">
+                        <div class="control-row"><label id="depthTitle" for="depth">Search simulations</label><input type="number" id="depthValue" class="depth-number-input" aria-label="Search simulations" min="1" max="500" value="128"></div>
+                        <input type="range" id="depth" min="1" max="500" step="1" value="128">
+                        <span id="difficultyLabel" class="difficulty-label">Standard search</span>
+                    </div>
+                    <div class="control-group depth-control">
+                        <div class="control-row"><label id="judgeDepthTitle" for="judgeDepth">Evaluation simulations</label><input type="number" id="judgeDepthValue" class="depth-number-input" aria-label="Evaluation simulations" min="1" max="500" value="128"></div>
+                        <input type="range" id="judgeDepth" min="1" max="500" step="1" value="128">
+                    </div>
+                </div>
+                <section class="history-panel" aria-label="Moves">
+                    <h2 class="history-title">Moves</h2>
+                    <button id="toggleHistoryBtn" class="history-toggle" aria-expanded="false" aria-controls="moveHistory">Moves <span aria-hidden="true">⌄</span></button>
+                    <div id="moveHistory" class="move-history" role="log" aria-label="Move history"></div>
+                </section>
+            </aside>
+        </div>
+    </main>
+    <div id="gameOverOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="gameOverText">
+        <div class="overlay-content">
+            <button class="overlay-close" onclick="dismissGameOver()" aria-label="Close">&times;</button>
+            <h2 id="gameOverText">Game over</h2>
+            <button onclick="newGame()" class="btn primary">Play again</button>
+        </div>
+    </div>
+    <div id="cardPickerOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="cardPickerTitle">
+        <div class="overlay-content card-picker-content">
+            <button class="overlay-close" onclick="closeCardPicker()" aria-label="Close card picker">&times;</button>
+            <h2 id="cardPickerTitle">Choose card</h2>
+            <div id="cardPickerGrid" class="card-picker-grid"></div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js"></script>
+    <script src="game_engine.js?v=dead-cards-20261018"></script>
+    <script src="mcts.js"></script>
+    <script src="direct_player.js?v=7a3bc458213c3683"></script>
+    <script src="hand_layout.js?v=dead-cards-20261018"></script>
+    <script src="game.js?v=dead-cards-20261018"></script>
+</body>
+</html>
