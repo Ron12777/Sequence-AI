@@ -171,25 +171,32 @@ for (const speed of ['500', '0']) {
   test(`evaluation can overlap Watch start and resume at speed ${speed}`, async ({page}) => {
     await openGame(page);
     await page.getByLabel('Watch speed').selectOption(speed);
-    // Same event turn guarantees evaluation has not finished before Watch starts.
-    await page.evaluate(() => {
-      document.getElementById('showEvalBar').click();
-      document.getElementById('watchAiBtn').click();
-    });
-    await expect.poll(() => page.locator('.history-item').count()).toBeGreaterThan(1);
-    await expect(page.locator('#aiError')).toBeHidden();
-    for (let attempt = 0; attempt < 2; attempt++) {
-      await page.getByRole('button', {name: 'Pause', exact: true}).click();
-      const count = await page.locator('.history-item').count();
+    for (let attempt = 0; attempt < 3; attempt++) {
       await page.getByRole('checkbox', {name: 'Show evaluation'}).uncheck();
-      await page.evaluate(() => {
+      const before = await page.locator('.history-item').count();
+      // Start evaluation and play in the same event turn. Pause through the
+      // real button as soon as two moves appear: Max can finish an entire
+      // game before a later automation round trip reaches Pause.
+      const after = await page.evaluate(resuming => new Promise(resolve => {
+        const history = document.getElementById('moveHistory');
+        const count = history.querySelectorAll('.history-item').length;
+        const observer = new MutationObserver(() => {
+          const moves = history.querySelectorAll('.history-item').length;
+          if (moves >= count + 2) {
+            observer.disconnect();
+            document.getElementById('newGameBtn').click();
+            resolve(moves);
+          }
+        });
+        observer.observe(history, {childList: true});
         document.getElementById('showEvalBar').click();
-        document.querySelector('#pauseControls button').click();
-      });
-      await expect.poll(() => page.locator('.history-item').count()).toBeGreaterThan(count);
+        (resuming ? document.querySelector('#pauseControls button')
+          : document.getElementById('watchAiBtn')).click();
+      }), attempt > 0);
+      expect(after).toBeGreaterThan(before);
+      await expect(page.getByRole('button', {name: 'Resume', exact: true})).toBeVisible();
       await expect(page.locator('#aiError')).toBeHidden();
     }
-    await page.getByRole('button', {name: 'Pause', exact: true}).click();
     // Request a fresh paused evaluation and verify the model session still works.
     await page.getByRole('checkbox', {name: 'Show evaluation'}).uncheck();
     await page.getByRole('checkbox', {name: 'Show evaluation'}).check();
