@@ -118,6 +118,7 @@ class SequenceGame {
         this.hands = { 1: [], 2: [] };
         this.discardPiles = { 1: [], 2: [] };
         this.publicEvents = [];
+        this.lastCardExchanges = [];
         this.publicHistoryComplete = true;
         this.completedSequences = { 1: [], 2: [] };
         this.gameOver = false;
@@ -241,6 +242,24 @@ class SequenceGame {
         return null; // Deck empty
     }
 
+    // Only normal cards with both squares occupied are dead. Keep Jacks,
+    // including removal Jacks with no current target.
+    replaceDeadCards(player) {
+        const exchanges = [];
+        const hand = this.hands[player];
+        for (let index = 0; index < hand.length;) {
+            const card = hand[index];
+            if (isJack(card) || this.isCardPlayable(card, player)) { index++; continue; }
+            this.discardPiles[player].push(card);
+            this.publicEvents.push([cardToIndex(card), 100, player, 2]);
+            const replacement = this.drawPlayableCard(player);
+            exchanges.push({player, index, card, replacement});
+            if (replacement) { hand[index] = replacement; index++; }
+            else hand.splice(index, 1);
+        }
+        return exchanges;
+    }
+
     /**
      * Execute a move
      */
@@ -257,6 +276,8 @@ class SequenceGame {
         if (!Number.isInteger(row) || !Number.isInteger(col) ||
             !this.getLegalMoves(player).some(m => m.card === card && m.row === row &&
                 m.col === col && m.is_removal === Boolean(is_removal))) return false;
+
+        this.lastCardExchanges = [];
 
         // Remove card from hand
         this.hands[player].splice(cardIndex, 1);
@@ -290,6 +311,13 @@ class SequenceGame {
 
         // Switch player
         this.currentPlayer = 3 - player;
+        if (!this.gameOver) {
+            // The next player draws first if both hands need replacements.
+            this.lastCardExchanges = [
+                ...this.replaceDeadCards(this.currentPlayer),
+                ...this.replaceDeadCards(player)
+            ];
+        }
         this.finishIfNoLegalMoves();
 
         return true;

@@ -309,6 +309,7 @@ function newGame() {
     closeCardPicker();
     dismissGameOver();
     showAiError(modelError);
+    showDeadCardNotice([]);
     resetEvalBar();
     setEvalBarVisible(false);
     const history = document.getElementById('moveHistory');
@@ -905,10 +906,29 @@ async function getHint() {
     }
 }
 
+function showDeadCardNotice(exchanges) {
+    const notice = document.getElementById('cardNotice');
+    if (!notice) return;
+    const messages = [];
+    for (const player of [1, 2]) {
+        const cards = exchanges.filter(e => e.player === player);
+        if (!cards.length) continue;
+        const name = watchMode ? (player === 1 ? 'Red' : 'Blue') : (player === 1 ? 'You' : 'AI');
+        const replaced = cards.filter(e => e.replacement).length;
+        const discarded = cards.length - replaced;
+        if (replaced) messages.push(`${name} replaced ${replaced} dead card${replaced === 1 ? '' : 's'}.`);
+        if (discarded) messages.push(`${name} discarded ${discarded} dead card${discarded === 1 ? '' : 's'}; deck empty.`);
+    }
+    // Counts only: never reveal the opponent's replacement cards.
+    notice.textContent = messages.join(' ');
+    notice.hidden = !messages.length;
+}
+
 /**
  * Update Move History
  */
 function updateHistory(move, player) {
+    if (game.lastCardExchanges?.length) showDeadCardNotice(game.lastCardExchanges);
     const historyEl = document.getElementById('moveHistory');
     if (!historyEl) return;
 

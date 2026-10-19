@@ -33,7 +33,12 @@ class HandLayout {
         // replace the particular copy the person clicked.
         [slots[removedIndex], slots[selectedIndex]] = [slots[selectedIndex], slots[removedIndex]];
         const [vacatedSlot] = slots.splice(removedIndex, 1);
-        if (game.hands[player].length === length) slots.push(vacatedSlot);
+        const exchanges = game.lastCardExchanges || [];
+        const removedDeadCards = exchanges.filter(e => e.player === player && !e.replacement).length;
+        if (game.hands[player].length + removedDeadCards === length) slots.push(vacatedSlot);
+        for (const exchange of exchanges) {
+            if (!exchange.replacement) this.slots[exchange.player].splice(exchange.index, 1);
+        }
         // With no replacement, leave that grid column empty; other cards stay put.
         return true;
     }

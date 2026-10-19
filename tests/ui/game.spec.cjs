@@ -340,3 +340,27 @@ test('playing the second duplicate replaces only that chosen hand slot', async (
   expect(after.slice(0, 6)).toEqual(before.slice(0, 6));
   await expect(page.locator('#hintBtn')).toBeEnabled();
 });
+
+test('a card that dies in hand is replaced in its slot with a notice', async ({page}) => {
+  await openGame(page);
+  await page.getByRole('button', {name: 'Edit board', exact: true}).click();
+  for (let index = 0; index < 7; index++) {
+    await page.locator('#handP1 .card').nth(index).click();
+    await page.getByRole('dialog', {name: 'Choose card', exact: true})
+      .getByRole('button', {name: index < 2 ? /^A of clubs/ : /^J of hearts/}).click();
+  }
+  await page.getByRole('button', {name: 'AC, row 1, column 2', exact: true}).click();
+  await page.getByRole('button', {name: 'Done editing', exact: true}).click();
+  await page.locator('#handP1 .card[data-slot="0"]').click();
+  await page.getByRole('button', {name: 'AC, row 6, column 3', exact: true}).click();
+  await expect(page.locator('.history-item')).toHaveCount(2);
+  await expect(page.locator('#handP1 .card[data-slot="1"]')).not.toHaveAttribute('data-card', 'AC');
+  await expect(page.locator('#cardNotice')).toBeVisible();
+  await expect(page.locator('#cardNotice')).toContainText('replaced');
+  for (let slot = 2; slot < 7; slot++) {
+    await expect(page.locator(`#handP1 .card[data-slot="${slot}"]`)).toHaveAttribute('data-card', 'JH');
+  }
+  await expect(page.locator('#aiError')).toBeHidden();
+  await page.getByRole('button', {name: 'New game', exact: true}).click();
+  await expect(page.locator('#cardNotice')).toBeHidden();
+});

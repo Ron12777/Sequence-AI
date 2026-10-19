@@ -436,7 +436,7 @@ function modeHarness() {
   vm.runInContext(fs.readFileSync('web/static/game_engine.js','utf8')+'\nglobalThis.BOARD_LAYOUT=BOARD_LAYOUT;',ui);
   const source=fs.readFileSync('web/static/game.js','utf8');
   for(const name of ['cancelPendingWork','syncControls','renderPosition','resultMessage','updateStatus',
-    'newGame','closeCardPicker','dismissGameOver','pauseGame','resumeGame','watchAiVsAi','triggerAiTurn',
+    'newGame','showDeadCardNotice','closeCardPicker','dismissGameOver','pauseGame','resumeGame','watchAiVsAi','triggerAiTurn',
     'getHint','toggleAnalysisMode','toggleTurn','handleAnalysisCellClick','highlightSequences','selectCard','showGameOver']) {
     const start=source.search(new RegExp('(?:async )?function '+name+'\\('));
     vm.runInContext(source.slice(start,source.indexOf('\n}\n',start)+2),ui);
@@ -591,4 +591,54 @@ test('evaluation and play serialize shared inference, including after a failed r
   assert.equal(recovered[1].status,'fulfilled');
   assert.ok(recovered[1].value.move);
   assert.equal(peak,1);
+});
+
+for (const actor of [1, 2]) {
+  test(`player ${actor}'s move replaces dead cards in both hands without moving their slots`, () => {
+    const g=new SequenceGame(),layout=new HandLayout(),other=3-actor;
+    g.currentPlayer=actor;g.hands[actor]=['AC','KS','AC'];g.hands[other]=['AC','JH','AC'];
+    g.board[0][1]=other;g.deck=['QD','KH','KC','AD'];
+    layout.cards(g,actor);
+    assert.ok(layout.makeMove(g,{card:'AC',row:5,col:2,is_removal:false},2));
+    // Regular draw AD; next player's two dead cards draw KC then KH; actor draws QD.
+    assert.deepEqual(layout.cards(g,actor).map(c=>c.card),['QD','KS','AD']);
+    assert.deepEqual(layout.cards(g,other).map(c=>c.card),['KC','JH','KH']);
+    assert.equal(g.currentPlayer,other);
+    assert.equal(g.deck.length,0);
+    assert.equal(g.lastCardExchanges.length,3);
+    assert.equal(g.publicEvents.filter(e=>e[3]===2).length,3);
+    assert.equal(g.gameOver,false);
+  });
+}
+
+test('dead-card replacement skips further dead draws and leaves live cards and Jacks alone', () => {
+  const g=new SequenceGame();g.hands[1]=['AC','KS','JH','JC'];
+  g.board[0][1]=1;g.board[5][2]=2;g.board[1][6]=2;
+  g.deck=['AD','AC'];
+  const changes=g.replaceDeadCards(1);
+  assert.equal(changes.length,1);assert.equal(changes[0].replacement,'AD');
+  assert.deepEqual(Array.from(g.hands[1]),['AD','KS','JH','JC']);
+  assert.deepEqual(Array.from(g.discardPiles[1]),['AC','AC']);
+  assert.equal(g.publicEvents.length,2);
+});
+
+test('exhausted deck discards dead duplicates and preserves gaps in both hands', () => {
+  const g=new SequenceGame(),layout=new HandLayout();
+  g.hands[1]=['AC','KS','AC'];g.hands[2]=['AC','JH','AC'];g.deck=[];g.board[0][1]=2;
+  assert.ok(layout.makeMove(g,{card:'AC',row:5,col:2,is_removal:false},2));
+  assert.deepEqual(layout.cards(g,1).map(c=>[c.card,c.slot]),[['KS',1]]);
+  assert.deepEqual(layout.cards(g,2).map(c=>[c.card,c.slot]),[['JH',1]]);
+  assert.equal(g.lastCardExchanges.length,3);
+  assert.ok(g.lastCardExchanges.every(e=>e.replacement===null));
+});
+
+test('dead-card notice gives counts without exposing replacement identities and clears on new game', () => {
+  const {ui,get}=modeHarness();
+  ui.showDeadCardNotice([{player:1,card:'AC',replacement:'JD'}, {player:2,card:'AC',replacement:'AS'}]);
+  assert.equal(get('cardNotice').textContent,'You replaced 1 dead card. AI replaced 1 dead card.');
+  assert.equal(get('cardNotice').hidden,false);
+  ui.newGame();assert.equal(get('cardNotice').hidden,true);
+  ui.watchMode=true;
+  ui.showDeadCardNotice([{player:2,card:'AC',replacement:null}]);
+  assert.equal(get('cardNotice').textContent,'Blue discarded 1 dead card; deck empty.');
 });
